@@ -1,3 +1,14 @@
+Metadata-Version: 2.4
+Name: curik
+Version: 0.1.0
+Summary: Curriculum development tool scaffold for League infrastructure
+Author: League Infrastructure
+License: MIT
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
 # curik
 
 Curriculum development agent.

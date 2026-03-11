@@ -1,0 +1,2 @@
+[console_scripts]
+curik = curik.cli:main
