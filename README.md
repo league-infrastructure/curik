@@ -1,0 +1,2 @@
+# curik
+Curriculum development agent. 
