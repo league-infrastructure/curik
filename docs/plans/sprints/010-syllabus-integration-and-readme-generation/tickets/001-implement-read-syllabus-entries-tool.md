@@ -22,6 +22,14 @@ Create the `curik/syllabus.py` module with a `read_syllabus_entries()` function 
 - [ ] `read_syllabus_entries` MCP tool is registered in `server.py` and callable via the MCP protocol
 - [ ] MCP tool accepts a `course_path` parameter and returns JSON array of entry objects
 
+## Implementation Notes
+
+`jtl-syllabus` is now a project dependency (in `pyproject.toml`). Use
+`syllabus.models.Course.from_yaml()` to parse `syllabus.yaml` instead of raw
+PyYAML. The `Course` model already provides `modules` containing `LessonSet`s
+containing `Lesson`s, each with `uid`, `name`, `path`, and `description` fields.
+This eliminates the need for manual dict construction from raw YAML.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/` to verify no regressions

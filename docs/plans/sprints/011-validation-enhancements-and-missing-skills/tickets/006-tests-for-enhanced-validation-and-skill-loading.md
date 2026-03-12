@@ -32,6 +32,12 @@ implementations.
 - [ ] Backward compatibility tests: `validate_lesson()` and `validate_course()` called without `tier` produce unchanged behavior compared to pre-sprint baseline
 - [ ] All tests pass with `uv run pytest tests/test_validation_enhanced.py -v`
 
+## Implementation Notes
+
+`jtl-syllabus` is available as a project dependency (in `pyproject.toml`). Tests
+can use `Course.to_yaml()` to create `syllabus.yaml` test fixtures
+programmatically from Pydantic models, rather than writing raw YAML strings.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/test_validation.py` to confirm existing tests still pass alongside the new file

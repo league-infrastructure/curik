@@ -16,7 +16,9 @@ from .project import CurikError, _course_dir
 # ---------------------------------------------------------------------------
 
 
-def scaffold_structure(root: Path, structure: dict[str, Any]) -> dict[str, list[str]]:
+def scaffold_structure(
+    root: Path, structure: dict[str, Any], course_type: str = "course"
+) -> dict[str, list[str]]:
     """Create the directory tree and stub files described by *structure*.
 
     *structure* has the form::
@@ -24,6 +26,9 @@ def scaffold_structure(root: Path, structure: dict[str, Any]) -> dict[str, list[
         {"modules": [
             {"name": "01-intro", "lessons": ["01-hello.md", "02-variables.md"]},
         ]}
+
+    When *course_type* is ``"resource-collection"``, directories are created
+    under ``resources/`` instead of directly under the project root.
 
     Returns ``{"created": [...], "existing": [...]}``.
     """
@@ -40,12 +45,16 @@ def scaffold_structure(root: Path, structure: dict[str, Any]) -> dict[str, list[
         if not mod_name:
             raise CurikError("Each module must have a 'name' key.")
 
-        mod_dir = root / mod_name
+        if course_type == "resource-collection":
+            mod_dir = root / "resources" / mod_name
+        else:
+            mod_dir = root / mod_name
+        mod_rel = str(mod_dir.relative_to(root))
         if mod_dir.exists():
-            existing.append(mod_name)
+            existing.append(mod_rel)
         else:
             mod_dir.mkdir(parents=True, exist_ok=True)
-            created.append(mod_name)
+            created.append(mod_rel)
 
         for lesson in mod.get("lessons", []):
             lesson_path = mod_dir / lesson
