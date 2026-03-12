@@ -1,12 +1,12 @@
 ---
-id: "003"
-title: "Phase 2 Scaffolding and Outlines"
-status: planning
+id: '003'
+title: Phase 2 Scaffolding and Outlines
+status: done
 branch: sprint/003-phase-2-scaffolding-and-outlines
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
