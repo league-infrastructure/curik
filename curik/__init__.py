@@ -3,6 +3,7 @@
 from .project import (
     CurikError,
     advance_phase,
+    get_course_status,
     get_phase,
     get_spec,
     init_course,
@@ -15,6 +16,7 @@ from .project import (
 __all__ = [
     "CurikError",
     "advance_phase",
+    "get_course_status",
     "get_phase",
     "get_spec",
     "init_course",

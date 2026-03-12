@@ -170,3 +170,26 @@ def advance_phase(root: Path, target_phase: str) -> None:
     state = _read_state(root)
     state["phase"] = "phase2"
     _state_file(root).write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+
+
+def get_course_status(root: Path) -> dict[str, str | int]:
+    """Return a summary of the course state: phase, open issues, active change plans."""
+    root = root.resolve()
+    state = _read_state(root)
+    course_dir = _course_dir(root)
+
+    open_issues = 0
+    issues_dir = course_dir / "issues" / "open"
+    if issues_dir.is_dir():
+        open_issues = sum(1 for f in issues_dir.iterdir() if f.suffix == ".md")
+
+    active_plans = 0
+    plans_dir = course_dir / "change-plan" / "active"
+    if plans_dir.is_dir():
+        active_plans = sum(1 for f in plans_dir.iterdir() if f.suffix == ".md")
+
+    return {
+        "phase": state["phase"],
+        "open_issues": open_issues,
+        "active_change_plans": active_plans,
+    }

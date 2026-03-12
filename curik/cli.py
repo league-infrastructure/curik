@@ -63,16 +63,9 @@ def main(argv: list[str] | None = None) -> int:
             advance_phase(root, args.target)
             return 0
         if args.command == "mcp":
-            print(
-                json.dumps(
-                    {
-                        "status": "not_implemented",
-                        "message": "MCP server command is reserved for future implementation.",
-                        "path": str(root),
-                    },
-                    indent=2,
-                )
-            )
+            from .server import run_server
+
+            run_server(root)
             return 0
     except CurikError as error:
         parser.exit(status=1, message=f"{error}\n")
