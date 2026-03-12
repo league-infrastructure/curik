@@ -6,129 +6,123 @@ status: draft
 # Sprint 004 Use Cases
 
 ## SUC-001: Lesson Author Young Writes a Tier 1 Lesson with Instructor Guide
+
 Parent: UC-R6 (Agent Specialization), UC-R8 (Curriculum Structure Support)
 
-- **Actor**: Lesson Author Young agent (invoked by Curriculum Architect)
+- **Actor**: Lesson Author Young agent
 - **Preconditions**:
-  - Course is in Phase 2 (scaffolding complete).
-  - A lesson stub exists for the target lesson (created by `create_lesson_stub`
-    with tier=1).
-  - The course spec and module outline are approved.
+  - Course is in Phase 2 with an approved outline.
+  - Lesson stub exists at the target path (created by Sprint 003 scaffolding).
+  - The stub contains empty instructor guide `<div>` sections with all 7 field
+    headings.
+  - `course.yml` specifies `tier: 1` or `tier: 2`.
 - **Main Flow**:
-  1. Curriculum Architect delegates a lesson to the Lesson Author Young agent
-     by invoking the `lesson-writing-young` skill with the lesson path and
-     module outline.
-  2. The agent reads the lesson stub, which contains instructor guide
-     placeholders for all seven required fields.
-  3. The agent writes the instructor guide as the primary content: Objectives,
-     Materials (physical manipulatives, printed handouts), Timing (activity
-     breakdown), Key Concepts, Common Mistakes, Assessment Cues (observable
-     behaviors), and Differentiation (scaffolding and extension).
-  4. The agent writes student-facing activity descriptions (brief, since Tier 1
-     students do not use computers -- the instructor guide drives the lesson).
-  5. The agent invokes the `instructor-guide-sections` skill to self-validate
-     that all seven fields are present and non-empty.
-  6. If validation fails, the agent fills in missing fields and re-validates.
-  7. The agent saves the completed lesson file.
+  1. Curriculum Architect invokes the Lesson Author Young agent for a specific
+     lesson stub.
+  2. Agent loads the `lesson-writing-young` skill definition.
+  3. Agent reads the lesson stub and the approved outline for this lesson.
+  4. Agent writes the instructor guide as the primary content — the instructor
+     guide IS the lesson for Tier 1. Student-facing content is minimal or
+     absent (students do not use computers at this tier).
+  5. Agent fills all 7 required instructor guide fields inside the
+     `<div class="instructor-guide" markdown>` section:
+     - Objectives (what students will learn)
+     - Materials (physical supplies needed)
+     - Timing (minute-by-minute breakdown)
+     - Key Concepts (core ideas to convey)
+     - Common Mistakes (anticipated misconceptions)
+     - Assessment Cues (how to check understanding without a quiz)
+     - Differentiation (adjustments for different skill levels)
+  6. Agent writes activity descriptions that are physical and hands-on (no
+     screen-based activities for Tier 1).
+  7. Agent saves the completed lesson file.
+  8. Agent calls `validate_instructor_guide` on the saved file.
+  9. Validation passes — all 7 fields present and non-empty.
 - **Postconditions**:
-  - The lesson file contains all seven instructor guide fields with real
-    content (no "TBD" or empty sections).
-  - The lesson file follows the Tier 1 template structure (instructor guide
-    primary, minimal student-facing content).
+  - Lesson file contains a complete instructor guide with all 7 fields filled.
+  - Activities described are appropriate for grades 2-5 (physical, hands-on).
+  - Validation returns no errors.
 - **Acceptance Criteria**:
-  - [ ] Lesson Author Young agent definition exists and loads via MCP
-  - [ ] `lesson-writing-young` skill definition exists and loads via MCP
-  - [ ] Generated Tier 1 lesson has instructor guide as primary content
-  - [ ] All seven instructor guide fields are present and non-empty
-  - [ ] Student-facing section contains activity descriptions only (no code)
-  - [ ] Validation function confirms all fields pass
+  - [ ] Lesson Author Young agent definition is loaded and used.
+  - [ ] `lesson-writing-young` skill is followed during authoring.
+  - [ ] All 7 instructor guide fields are present and non-empty.
+  - [ ] No screen-based or coding activities appear in Tier 1 output.
+  - [ ] `validate_instructor_guide` returns zero errors.
 
 ## SUC-002: Lesson Author Older Writes a Tier 3 Lesson with Notebook and Instructor Guide
+
 Parent: UC-R6 (Agent Specialization), UC-R8 (Curriculum Structure Support)
 
-- **Actor**: Lesson Author Older agent (invoked by Curriculum Architect)
+- **Actor**: Lesson Author Older agent
 - **Preconditions**:
-  - Course is in Phase 2 (scaffolding complete).
-  - Lesson stubs exist for both the Markdown lesson and the Jupyter notebook
-    (created by `create_lesson_stub` with tier=3).
-  - The course spec and module outline are approved.
+  - Course is in Phase 2 with an approved outline.
+  - Lesson stub (Markdown) and notebook stub (.ipynb) exist at the target path.
+  - `course.yml` specifies `tier: 3` or `tier: 4`.
 - **Main Flow**:
-  1. Curriculum Architect delegates a lesson to the Lesson Author Older agent
-     by invoking the `lesson-writing-older` skill with the lesson path, notebook
-     path, and module outline.
-  2. The agent reads the Markdown lesson stub, which contains inline
-     `<div class="instructor-guide" markdown>` sections with placeholders.
-  3. The agent writes the student-facing lesson content: explanations, code
-     examples, and references to the companion notebook.
-  4. The agent fills in all seven instructor guide fields within the inline
-     `<div class="instructor-guide" markdown>` wrappers, covering: Objectives,
-     Materials (software, accounts, repos), Timing, Key Concepts, Common
-     Mistakes (code errors, misconceptions), Assessment Cues (code review
-     checkpoints), and Differentiation.
-  5. The agent creates or updates the companion Jupyter notebook with:
+  1. Curriculum Architect invokes the Lesson Author Older agent for a specific
+     lesson.
+  2. Agent loads the `lesson-writing-older` skill definition.
+  3. Agent reads the Markdown lesson stub, the notebook stub, and the approved
+     outline for this lesson.
+  4. Agent writes student-facing content in the Markdown lesson file — concept
+     explanations, code examples, links to the notebook.
+  5. Agent fills the inline instructor guide `<div class="instructor-guide" markdown>`
+     section in the Markdown file with all 7 required fields. For Tiers 3-4 the
+     instructor guide is supplementary (students read the main content directly).
+  6. Agent populates the Jupyter notebook with:
      - Markdown cells for instructions and explanations.
      - Code cells with starter code or exercises.
-     - An instructor guide cell (tagged with metadata) containing answer keys
-       or solution hints.
-  6. The agent invokes the `instructor-guide-sections` skill to validate both
-     the Markdown lesson and the notebook.
-  7. If validation fails, the agent fills in missing fields and re-validates.
-  8. The agent saves both files.
+     - An instructor guide cell (Markdown cell with `instructor-guide` tag in
+       cell metadata) containing solution hints and teaching notes.
+  7. Agent saves both the lesson Markdown and the notebook.
+  8. Agent calls `validate_instructor_guide` on the Markdown file.
+  9. Validation passes.
 - **Postconditions**:
-  - The Markdown lesson contains inline instructor guide sections with all
-    seven fields populated.
-  - The Jupyter notebook is valid nbformat v4 JSON with instruction cells,
-    code cells, and an instructor guide cell.
-  - Both files follow the Tier 3 template structure.
+  - Markdown lesson has student-facing content and a complete inline instructor
+    guide section.
+  - Jupyter notebook is valid, contains instruction cells, code cells, and an
+    instructor guide cell.
+  - Validation returns no errors for the Markdown file.
 - **Acceptance Criteria**:
-  - [ ] Lesson Author Older agent definition exists and loads via MCP
-  - [ ] `lesson-writing-older` skill definition exists and loads via MCP
-  - [ ] Generated Tier 3 Markdown lesson uses `<div class="instructor-guide" markdown>` sections
-  - [ ] All seven instructor guide fields are present in the Markdown lesson
-  - [ ] Companion Jupyter notebook is valid nbformat v4 JSON
-  - [ ] Notebook contains instructor guide cell with metadata tag
-  - [ ] Validation function confirms all fields pass for both files
+  - [ ] Lesson Author Older agent definition is loaded and used.
+  - [ ] `lesson-writing-older` skill is followed during authoring.
+  - [ ] Markdown file contains `<div class="instructor-guide" markdown>` with
+        all 7 fields.
+  - [ ] Jupyter notebook is valid JSON and opens without error.
+  - [ ] Notebook contains at least one instructor guide cell tagged in metadata.
+  - [ ] `validate_instructor_guide` returns zero errors for the Markdown file.
 
-## SUC-003: Agent Validates Instructor Guide Completeness
+## SUC-003: Validate That All Instructor Guide Fields Are Present
+
 Parent: UC-R7 (Validation)
 
-- **Actor**: Any Lesson Author agent (Young or Older)
+- **Actor**: Any agent (typically invoked by Lesson Author or Reviewer)
 - **Preconditions**:
-  - A lesson file exists (Markdown or Jupyter notebook).
-  - The lesson file contains instructor guide sections (inline or primary).
+  - A lesson Markdown file exists with an instructor guide `<div>` section.
 - **Main Flow**:
-  1. The agent invokes the `instructor-guide-sections` skill, passing the
-     lesson file path.
-  2. The skill calls the instructor guide validation function, which parses
-     the lesson file and checks for the presence and content of all seven
-     required fields:
-     - **Objectives** -- learning goals for the lesson
-     - **Materials** -- what the instructor and students need
-     - **Timing** -- time allocation per activity or section
-     - **Key Concepts** -- core ideas the lesson teaches
-     - **Common Mistakes** -- errors students typically make
-     - **Assessment Cues** -- how to tell if students understand
-     - **Differentiation** -- how to adjust for different ability levels
-  3. For each field, the validator checks:
-     - The field heading or marker is present in the file.
-     - The content below the heading is non-empty.
-     - The content is not a placeholder string ("TBD", "TODO", "FIXME").
-  4. The validator returns a result object listing any missing or invalid
-     fields with actionable messages (e.g., "Materials section is empty --
-     list physical items needed for the activity").
-  5. If all fields pass, the skill confirms the instructor guide is complete.
-  6. If any fields fail, the agent uses the error messages to fill in the
-     missing content, then re-invokes validation.
+  1. Agent calls `validate_instructor_guide(file_path)`.
+  2. Validator opens the file and locates all
+     `<div class="instructor-guide" markdown>` sections.
+  3. For each section, validator checks for the 7 required field headings:
+     Objectives, Materials, Timing, Key Concepts, Common Mistakes, Assessment
+     Cues, Differentiation.
+  4. For each field heading found, validator checks that the content below it
+     is non-empty (not blank, not "TBD", not placeholder text).
+  5. Validator returns a result object:
+     - `valid: true/false`
+     - `errors: [list of {field, message} objects]`
+     - `file: path`
 - **Postconditions**:
-  - The validation result accurately reflects the state of all seven fields.
-  - If the agent acts on the result, the lesson ends with all fields valid.
+  - Caller receives a structured validation result.
+  - If errors exist, each error identifies the specific missing or empty field
+    and its location.
 - **Acceptance Criteria**:
-  - [ ] `instructor-guide-sections` skill definition exists and loads via MCP
-  - [ ] Validation function checks all seven required fields
-  - [ ] Validation detects missing field headings
-  - [ ] Validation detects empty field content
-  - [ ] Validation detects placeholder strings ("TBD", "TODO", "FIXME")
-  - [ ] Validation returns actionable error messages per field
-  - [ ] Validation works on Markdown lessons (inline div format)
-  - [ ] Validation works on Jupyter notebooks (metadata-tagged cells)
-  - [ ] All-pass case returns a clean result with no errors
+  - [ ] Validation detects a missing field heading and returns an error naming
+        that field.
+  - [ ] Validation detects an empty field (heading present, no content) and
+        returns an error.
+  - [ ] Validation detects "TBD" placeholder content and returns an error.
+  - [ ] Validation returns `valid: true` when all 7 fields are present and
+        filled with real content.
+  - [ ] Validation handles files with multiple instructor guide `<div>` sections
+        (checks each independently).
