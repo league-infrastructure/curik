@@ -1,12 +1,12 @@
 ---
-id: "007"
-title: "Polish Documentation and Migration"
-status: planning
+id: '007'
+title: Polish Documentation and Migration
+status: done
 branch: sprint/007-polish-documentation-and-migration
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
