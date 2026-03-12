@@ -52,7 +52,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "init":
             result = init_course(root)
-            print(json.dumps(result, indent=2))
+            created = result.get("created", [])
+            print(f"Curik initialized. Created {len(created)} files/directories.")
+            print()
+            print("Curik is ready. Open Claude Code in this directory and say:")
+            print()
+            print('  "Start Curik"')
             return 0
         if args.command == "get-phase":
             print(json.dumps(get_phase(root), indent=2))
