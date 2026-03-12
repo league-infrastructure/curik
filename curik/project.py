@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-SPEC_SECTIONS = {
+SPEC_SECTION_HEADINGS: dict[str, str] = {
     "course-concept": "## Course Concept",
     "pedagogical-model": "## Pedagogical Model",
     "research-summary": "## Research Summary",
@@ -32,7 +32,7 @@ def _spec_file(root: Path) -> Path:
 
 def _default_spec() -> str:
     blocks = ["# Curik Course Specification", ""]
-    for heading in SPEC_SECTIONS.values():
+    for heading in SPEC_SECTION_HEADINGS.values():
         blocks.extend([heading, "TBD", ""])
     return "\n".join(blocks).rstrip() + "\n"
 
@@ -103,7 +103,7 @@ def get_phase(root: Path) -> dict[str, str | list[str]]:
     state = _read_state(root)
     requirements = []
     if state["phase"] == "phase1":
-        requirements = list(SPEC_SECTIONS.keys())
+        requirements = list(SPEC_SECTION_HEADINGS.keys())
     return {"phase": state["phase"], "requirements": requirements}
 
 
@@ -115,10 +115,12 @@ def get_spec(root: Path) -> str:
 
 
 def update_spec(root: Path, section: str, content: str) -> None:
-    if section not in SPEC_SECTIONS:
+    if section not in SPEC_SECTION_HEADINGS:
         raise CurikError(f"Unknown spec section: {section}")
+    if not content or not content.strip():
+        raise CurikError("Spec content cannot be empty.")
     text = get_spec(root)
-    heading = SPEC_SECTIONS[section]
+    heading = SPEC_SECTION_HEADINGS[section]
     lines = text.splitlines()
     start = next((i for i, line in enumerate(lines) if line.strip() == heading), None)
     if start is None:
@@ -128,7 +130,7 @@ def update_spec(root: Path, section: str, content: str) -> None:
         if lines[idx].startswith("## "):
             end = idx
             break
-    updated = lines[: start + 1] + [content.strip() or "TBD", ""] + lines[end:]
+    updated = lines[: start + 1] + [content.strip(), ""] + lines[end:]
     _spec_file(root).write_text("\n".join(updated).rstrip() + "\n", encoding="utf-8")
 
 
@@ -149,7 +151,7 @@ def advance_phase(root: Path, target_phase: str) -> None:
         raise CurikError("Only advancing to phase2 is supported in the initial version.")
     spec = get_spec(root)
     missing = []
-    for section_key, heading in SPEC_SECTIONS.items():
+    for section_key, heading in SPEC_SECTION_HEADINGS.items():
         marker = f"{heading}\n"
         if marker not in spec:
             missing.append(section_key)
@@ -157,8 +159,8 @@ def advance_phase(root: Path, target_phase: str) -> None:
         segment = spec.split(marker, 1)[1]
         next_heading_index = segment.find("\n## ")
         body = segment[:next_heading_index] if next_heading_index >= 0 else segment
-        normalized = body.strip().replace("TBD", "").strip()
-        if not normalized:
+        body_lines = [line.strip() for line in body.splitlines() if line.strip()]
+        if not body_lines or all(line == "TBD" for line in body_lines):
             missing.append(section_key)
     if missing:
         raise CurikError(

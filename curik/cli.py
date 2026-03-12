@@ -35,6 +35,9 @@ def _build_parser() -> argparse.ArgumentParser:
     advance_phase_parser = sub.add_parser("advance-phase", help="Advance to target phase")
     advance_phase_parser.add_argument("target")
     advance_phase_parser.add_argument("--path", default=".", help="Repository path")
+
+    mcp_parser = sub.add_parser("mcp", help="Run Curik MCP server placeholder")
+    mcp_parser.add_argument("--path", default=".", help="Repository path")
     return parser
 
 
@@ -59,6 +62,18 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "advance-phase":
             advance_phase(root, args.target)
             return 0
+        if args.command == "mcp":
+            print(
+                json.dumps(
+                    {
+                        "status": "not_implemented",
+                        "message": "MCP server command is reserved for future implementation.",
+                        "path": str(root),
+                    },
+                    indent=2,
+                )
+            )
+            return 0
     except CurikError as error:
         parser.exit(status=1, message=f"{error}\n")
-    parser.exit(status=2, message="Unsupported command\n")
+    return 0
