@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
 
+from .assets import (
+    get_agent_definition,
+    get_skill_definition,
+    list_agents,
+    list_skills,
+)
 from .project import (
     CurikError,
     advance_phase,
@@ -18,6 +25,7 @@ from .project import (
     record_pedagogical_model,
     update_spec,
 )
+from .research import get_research_findings, save_research_findings
 
 mcp = FastMCP("curik", instructions="Curik curriculum development tool")
 
@@ -34,8 +42,6 @@ def tool_init_course() -> str:
     """Initialize a new curriculum project with .course/ directory structure."""
     try:
         result = init_course(_root())
-        import json
-
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
@@ -45,8 +51,6 @@ def tool_init_course() -> str:
 def tool_get_phase() -> str:
     """Return the current course phase and what gates must be met to advance."""
     try:
-        import json
-
         return json.dumps(get_phase(_root()), indent=2)
     except CurikError as e:
         return f"Error: {e}"
@@ -115,9 +119,68 @@ def tool_record_alignment(content: str) -> str:
 def tool_get_course_status() -> str:
     """Return a summary: current phase, open issues count, active change plans."""
     try:
-        import json
-
         return json.dumps(get_course_status(_root()), indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+# -- Asset tools --
+
+
+@mcp.tool()
+def tool_list_agents() -> str:
+    """List all available agent definitions."""
+    try:
+        return json.dumps(list_agents())
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_agent_definition(name: str) -> str:
+    """Get the full markdown content of a named agent definition."""
+    try:
+        return get_agent_definition(name)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_list_skills() -> str:
+    """List all available skill definitions."""
+    try:
+        return json.dumps(list_skills())
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_skill_definition(name: str) -> str:
+    """Get the full markdown content of a named skill definition."""
+    try:
+        return get_skill_definition(name)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+# -- Research tools --
+
+
+@mcp.tool()
+def tool_save_research_findings(title: str, content: str) -> str:
+    """Save structured research findings to .course/research/."""
+    try:
+        result = save_research_findings(_root(), title, content)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_research_findings() -> str:
+    """List all saved research findings."""
+    try:
+        return json.dumps(get_research_findings(_root()), indent=2)
     except CurikError as e:
         return f"Error: {e}"
 
