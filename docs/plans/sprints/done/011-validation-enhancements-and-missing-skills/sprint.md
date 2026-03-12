@@ -1,12 +1,12 @@
 ---
-id: "011"
-title: "Validation Enhancements and Missing Skills"
-status: executing
+id: '011'
+title: Validation Enhancements and Missing Skills
+status: done
 branch: sprint/011-validation-enhancements-and-missing-skills
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
