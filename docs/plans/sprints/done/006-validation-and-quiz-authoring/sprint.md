@@ -1,12 +1,12 @@
 ---
-id: "006"
-title: "Validation and Quiz Authoring"
-status: planning
+id: '006'
+title: Validation and Quiz Authoring
+status: done
 branch: sprint/006-validation-and-quiz-authoring
 use-cases:
-  - SUC-006-001
-  - SUC-006-002
-  - SUC-006-003
+- SUC-006-001
+- SUC-006-002
+- SUC-006-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
