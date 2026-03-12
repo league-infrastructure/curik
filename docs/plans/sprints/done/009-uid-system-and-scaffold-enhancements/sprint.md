@@ -1,7 +1,7 @@
 ---
-id: "009"
-title: "UID System and Scaffold Enhancements"
-status: planning
+id: 009
+title: UID System and Scaffold Enhancements
+status: done
 branch: sprint/009-uid-system-and-scaffold-enhancements
 use-cases:
 - SUC-009-001
