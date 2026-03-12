@@ -71,8 +71,8 @@ class TestMigrateStructure(unittest.TestCase):
             modules = ["01-intro", "02-variables", "03-loops"]
             result = migrate_structure(root, 3, modules)
 
-            # .curik/ should be initialized
-            self.assertTrue((root / ".curik" / "state.json").is_file())
+            # .course/ should be initialized
+            self.assertTrue((root / ".course" / "state.json").is_file())
 
             # docs/ and mkdocs.yml should exist
             self.assertTrue((root / "docs").is_dir())

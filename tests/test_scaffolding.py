@@ -154,7 +154,7 @@ class OutlineTest(unittest.TestCase):
             init_course(root)
 
             rel = create_outline(root, "Module 1 Outline", "Some outline content here.")
-            self.assertIn(".curik/outlines/module-1-outline.md", rel)
+            self.assertIn(".course/outlines/module-1-outline.md", rel)
 
             text = get_outline(root, "Module 1 Outline")
             self.assertIn("title: Module 1 Outline", text)
@@ -184,7 +184,7 @@ class OutlineTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             rel = create_outline(root, "Quick Plan", "Content here.")
-            self.assertTrue((root / ".curik" / "outlines" / "quick-plan.md").is_file())
+            self.assertTrue((root / ".course" / "outlines" / "quick-plan.md").is_file())
 
 
 class ChangePlanTest(unittest.TestCase):
@@ -200,7 +200,7 @@ class ChangePlanTest(unittest.TestCase):
             rel = generate_change_plan(root, "Add Recursion Module", items)
             self.assertIn("change-plan/active/add-recursion-module.md", rel)
 
-            path = root / ".curik" / "change-plan" / "active" / "add-recursion-module.md"
+            path = root / ".course" / "change-plan" / "active" / "add-recursion-module.md"
             content = path.read_text()
             self.assertIn("title: Add Recursion Module", content)
             self.assertIn("status: active", content)
@@ -221,7 +221,7 @@ class ChangePlanTest(unittest.TestCase):
             root = Path(tmp)
             rel = generate_change_plan(root, "Quick Fix", ["Do something"])
             self.assertTrue(
-                (root / ".curik" / "change-plan" / "active" / "quick-fix.md").is_file()
+                (root / ".course" / "change-plan" / "active" / "quick-fix.md").is_file()
             )
 
 

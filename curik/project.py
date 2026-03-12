@@ -16,7 +16,7 @@ SPEC_SECTION_HEADINGS: dict[str, str] = {
 }
 
 
-CURIK_DIR = ".curik"
+CURIK_DIR = ".course"
 """Name of the hidden directory created inside each project root."""
 
 
@@ -79,7 +79,7 @@ def init_course(
         course_dir / "overview.md": "# Course Overview\n\nTBD\n",
         course_dir / "research.md": "# Research Findings\n\nTBD\n",
         _state_file(root): json.dumps(
-            {"phase": "phase1", "type": course_type}, indent=2
+            {"phase": "phase1", "sub_phase": "1a", "type": course_type}, indent=2
         )
         + "\n",
         root / "course.yml": (
@@ -124,10 +124,17 @@ def _read_state(root: Path) -> dict[str, str]:
 RESOURCE_COLLECTION_SKIP_SECTIONS = {"pedagogical-model", "alignment-decision"}
 """Spec sections skipped for resource-collection projects."""
 
+PHASE1_SUB_PHASES = ("1a", "1b", "1c", "1d", "1e")
+"""Ordered sub-phases within Phase 1."""
+
+RESOURCE_COLLECTION_SKIP_SUB_PHASES = {"1b", "1d"}
+"""Sub-phases skipped for resource-collection projects."""
+
 
 def get_phase(root: Path) -> dict[str, str | list[str]]:
     state = _read_state(root)
     course_type = state.get("type", "course")
+    sub_phase = state.get("sub_phase", "1a")
     requirements: list[str] = []
     if state["phase"] == "phase1":
         requirements = list(SPEC_SECTION_HEADINGS.keys())
@@ -136,7 +143,13 @@ def get_phase(root: Path) -> dict[str, str | list[str]]:
                 r for r in requirements
                 if r not in RESOURCE_COLLECTION_SKIP_SECTIONS
             ]
-    return {"phase": state["phase"], "requirements": requirements}
+    result: dict[str, str | list[str]] = {
+        "phase": state["phase"],
+        "requirements": requirements,
+    }
+    if state["phase"] == "phase1":
+        result["sub_phase"] = sub_phase
+    return result
 
 
 def get_spec(root: Path) -> str:
@@ -176,6 +189,45 @@ def record_pedagogical_model(root: Path, content: str) -> None:
 
 def record_alignment(root: Path, content: str) -> None:
     update_spec(root, "alignment-decision", content)
+
+
+def advance_sub_phase(root: Path) -> dict[str, str]:
+    """Advance to the next Phase 1 sub-phase.
+
+    For resource-collections, sub-phases 1b and 1d are skipped.
+    Raises CurikError if already at 1e (use ``advance_phase`` to move to phase2).
+
+    Returns ``{"old": old_sub_phase, "new": new_sub_phase}``.
+    """
+    root = root.resolve()
+    state = _read_state(root)
+    if state["phase"] != "phase1":
+        raise CurikError("Cannot advance sub-phase: not in phase1.")
+
+    course_type = state.get("type", "course")
+    current = state.get("sub_phase", "1a")
+
+    if current == "1e":
+        raise CurikError(
+            "Already at sub-phase 1e. Use advance_phase('phase2') to proceed."
+        )
+
+    idx = PHASE1_SUB_PHASES.index(current)
+    # Find the next applicable sub-phase
+    for candidate in PHASE1_SUB_PHASES[idx + 1:]:
+        if (
+            course_type == "resource-collection"
+            and candidate in RESOURCE_COLLECTION_SKIP_SUB_PHASES
+        ):
+            continue
+        state["sub_phase"] = candidate
+        _state_file(root).write_text(
+            json.dumps(state, indent=2) + "\n", encoding="utf-8"
+        )
+        return {"old": current, "new": candidate}
+
+    # Should not reach here since 1e is always valid
+    raise CurikError("No valid sub-phase to advance to.")
 
 
 def advance_phase(root: Path, target_phase: str) -> None:

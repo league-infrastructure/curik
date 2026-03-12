@@ -17,6 +17,7 @@ from .assets import (
 from .project import (
     CurikError,
     advance_phase,
+    advance_sub_phase,
     get_course_status,
     get_phase,
     get_spec,
@@ -35,7 +36,7 @@ from .changes import (
     list_issues,
     review_change_plan,
 )
-from .migrate import inventory_course, migrate_structure
+from .migrate import inventory_course, migrate_structure, sequester_content
 from .quiz import generate_quiz_stub, set_quiz_status, validate_quiz_alignment
 from .research import get_research_findings, save_research_findings
 from .validation import (
@@ -101,6 +102,20 @@ def tool_advance_phase(target: str) -> str:
     try:
         advance_phase(_root(), target)
         return f"Advanced to {target}."
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_advance_sub_phase() -> str:
+    """Advance to the next Phase 1 sub-phase (1a→1b→1c→1d→1e).
+
+    Resource-collection projects skip 1b and 1d.
+    Raises an error if already at 1e — use advance_phase('phase2') instead.
+    """
+    try:
+        result = advance_sub_phase(_root())
+        return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
 
@@ -388,6 +403,20 @@ def tool_inventory_course(repo_path: str) -> str:
     """Analyze a course repository and return its current state as JSON."""
     try:
         result = inventory_course(repo_path)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_sequester_content() -> str:
+    """Move all non-Curik files in the project root into _old/.
+
+    Protected paths (.course/, .git/, .mcp.json, course.yml, _old/) are
+    never moved.  Returns {"moved": [...], "protected": [...]}.
+    """
+    try:
+        result = sequester_content(_root())
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
