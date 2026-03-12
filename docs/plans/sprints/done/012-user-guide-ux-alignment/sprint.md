@@ -1,9 +1,13 @@
 ---
-id: "012"
-title: "User Guide UX Alignment"
-status: planning
+id: '012'
+title: User Guide UX Alignment
+status: done
 branch: sprint/012-user-guide-ux-alignment
-use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+- SUC-004
 ---
 
 # Sprint 012: User Guide UX Alignment
