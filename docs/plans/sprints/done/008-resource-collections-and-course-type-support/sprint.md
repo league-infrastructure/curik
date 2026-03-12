@@ -1,12 +1,12 @@
 ---
-id: "008"
-title: "Resource Collections and Course Type Support"
-status: planning
+id: 008
+title: Resource Collections and Course Type Support
+status: done
 branch: sprint/008-resource-collections-and-course-type-support
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
