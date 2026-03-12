@@ -1,7 +1,7 @@
 ---
-id: "005"
-title: "Create syllabus-integration skill definition"
-status: todo
+id: '005'
+title: Create syllabus-integration skill definition
+status: done
 use-cases: []
 depends-on: []
 ---

@@ -1,7 +1,7 @@
 ---
-id: "004"
-title: "Create status-tracking skill definition"
-status: todo
+id: '004'
+title: Create status-tracking skill definition
+status: done
 use-cases: []
 depends-on: []
 ---

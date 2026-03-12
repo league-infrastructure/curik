@@ -1,7 +1,7 @@
 ---
 id: "011"
 title: "Validation Enhancements and Missing Skills"
-status: planning
+status: executing
 branch: sprint/011-validation-enhancements-and-missing-skills
 use-cases:
   - SUC-001

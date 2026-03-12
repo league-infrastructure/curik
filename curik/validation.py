@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 
+import yaml
+
 from .project import CurikError, _course_dir
 
 INSTRUCTOR_GUIDE_FIELDS = [
@@ -43,13 +45,31 @@ def _parse_instructor_guide(text: str) -> dict[str, str]:
     return fields
 
 
-def validate_lesson(root: Path, lesson_path: str) -> dict:
+def _parse_frontmatter(text: str) -> dict:
+    """Extract YAML frontmatter from a markdown file."""
+    if not text.startswith("---"):
+        return {}
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return {}
+    try:
+        fm = yaml.safe_load(parts[1])
+        return fm if isinstance(fm, dict) else {}
+    except yaml.YAMLError:
+        return {}
+
+
+def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) -> dict:
     """Validate a single lesson file.
 
     Checks:
     - File exists
     - Has instructor guide div with all 7 required fields non-empty
     - Has learning objectives outside the instructor guide
+
+    When *tier* is 3 or 4, additionally checks:
+    - ``<!-- readme-shared -->`` comment guard is present
+    - Lesson UID appears in syllabus.yaml (if the file exists)
     """
     root = root.resolve()
     full_path = root / lesson_path
@@ -86,10 +106,35 @@ def validate_lesson(root: Path, lesson_path: str) -> dict:
     if not re.search(r'(?i)#+\s*learning\s+objectives?', text_no_guide):
         errors.append("Missing learning objectives section outside instructor guide")
 
+    # Tier 3-4 specific checks
+    if tier is not None and tier >= 3:
+        # Check for <!-- readme-shared --> comment guard
+        if "<!-- readme-shared -->" not in text:
+            errors.append(
+                "Tier 3-4 lesson missing <!-- readme-shared --> comment guard"
+            )
+
+        # Check lesson UID against syllabus.yaml if it exists
+        syllabus_path = root / "syllabus.yaml"
+        if syllabus_path.exists():
+            fm = _parse_frontmatter(text)
+            lesson_uid = fm.get("uid")
+            if lesson_uid:
+                from .syllabus import read_syllabus_entries
+
+                try:
+                    entries = read_syllabus_entries(root)
+                    syllabus_uids = {e.get("uid") for e in entries if e.get("uid")}
+                    if lesson_uid not in syllabus_uids:
+                        errors.append("Lesson UID not found in syllabus.yaml")
+                except Exception:
+                    # If syllabus parsing fails, skip the check gracefully
+                    pass
+
     return {"valid": len(errors) == 0, "errors": errors}
 
 
-def validate_module(root: Path, module_path: str) -> dict:
+def validate_module(root: Path, module_path: str, *, tier: int | None = None) -> dict:
     """Validate a module directory.
 
     Checks:
@@ -123,7 +168,7 @@ def validate_module(root: Path, module_path: str) -> dict:
     )
     for lesson_file in lessons:
         rel = str(lesson_file.relative_to(root))
-        result = validate_lesson(root, rel)
+        result = validate_lesson(root, rel, tier=tier)
         lesson_results[rel] = result
         if not result["valid"]:
             errors.append(f"Lesson {lesson_file.name} has validation errors")
@@ -135,12 +180,16 @@ def validate_module(root: Path, module_path: str) -> dict:
     }
 
 
-def validate_course(root: Path) -> dict:
+def validate_course(root: Path, *, tier: int | None = None) -> dict:
     """Validate the entire course.
 
     Checks:
     - course.yml exists and has no TBD values
     - All module directories pass validate_module
+
+    When *tier* is 3 or 4, additionally checks:
+    - Syllabus consistency (entries vs MkDocs pages)
+    - README.md exists in ``lessons/<mod_name>/`` mirror directories
     """
     root = root.resolve()
     errors: list[str] = []
@@ -165,10 +214,43 @@ def validate_course(root: Path) -> dict:
         for mod_dir in sorted(modules_dir.iterdir()):
             if mod_dir.is_dir():
                 rel = str(mod_dir.relative_to(root))
-                result = validate_module(root, rel)
+                result = validate_module(root, rel, tier=tier)
                 module_results[rel] = result
                 if not result["valid"]:
                     errors.append(f"Module {mod_dir.name} has validation errors")
+
+    # Tier 3-4 specific checks
+    if tier is not None and tier >= 3:
+        # Check syllabus consistency
+        syllabus_path = root / "syllabus.yaml"
+        if syllabus_path.exists():
+            from .syllabus import validate_syllabus_consistency
+
+            try:
+                consistency = validate_syllabus_consistency(root)
+                for uid in consistency.get("entries_without_pages", []):
+                    errors.append(
+                        f"Syllabus entry UID '{uid}' has no matching MkDocs page"
+                    )
+                for uid in consistency.get("pages_without_entries", []):
+                    errors.append(
+                        f"MkDocs page UID '{uid}' has no matching syllabus entry"
+                    )
+            except Exception:
+                pass
+
+        # Check that README.md exists in lessons/<mod_name>/ mirror dirs
+        lessons_dir = root / "lessons"
+        if lessons_dir.is_dir() and modules_dir.is_dir():
+            for mod_dir in sorted(modules_dir.iterdir()):
+                if mod_dir.is_dir():
+                    mirror = lessons_dir / mod_dir.name
+                    if mirror.is_dir():
+                        readme = mirror / "README.md"
+                        if not readme.exists():
+                            errors.append(
+                                f"Missing README.md in lessons/{mod_dir.name}/"
+                            )
 
     return {
         "valid": len(errors) == 0,

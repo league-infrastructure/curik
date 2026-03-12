@@ -411,10 +411,14 @@ def tool_migrate_structure(tier: int, modules_json: str) -> str:
 
 
 @mcp.tool()
-def tool_validate_lesson(lesson_path: str) -> str:
-    """Validate a single lesson file for completeness (instructor guide, objectives)."""
+def tool_validate_lesson(lesson_path: str, tier: int | None = None) -> str:
+    """Validate a single lesson file for completeness (instructor guide, objectives).
+
+    When *tier* is 3 or 4, also checks for readme-shared comment guards
+    and verifies the lesson UID appears in syllabus.yaml.
+    """
     try:
-        result = validate_lesson(_root(), lesson_path)
+        result = validate_lesson(_root(), lesson_path, tier=tier)
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
@@ -431,10 +435,14 @@ def tool_validate_module(module_path: str) -> str:
 
 
 @mcp.tool()
-def tool_validate_course() -> str:
-    """Validate the entire course — course.yml and all modules."""
+def tool_validate_course(tier: int | None = None) -> str:
+    """Validate the entire course — course.yml and all modules.
+
+    When *tier* is 3 or 4, also checks syllabus consistency and
+    README existence in lesson mirror directories.
+    """
     try:
-        result = validate_course(_root())
+        result = validate_course(_root(), tier=tier)
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"

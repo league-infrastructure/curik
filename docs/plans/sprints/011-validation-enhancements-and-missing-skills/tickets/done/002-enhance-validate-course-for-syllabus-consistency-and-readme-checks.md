@@ -1,7 +1,7 @@
 ---
-id: "002"
-title: "Enhance validate_course for syllabus consistency and README checks"
-status: todo
+id: '002'
+title: Enhance validate_course for syllabus consistency and README checks
+status: done
 use-cases: []
 depends-on: []
 ---
