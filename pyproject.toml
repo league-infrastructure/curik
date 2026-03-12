@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "curik"
-version = "0.3.0"
+version = "0.20260311.2"
 description = "Curriculum development tool for the League of Amazing Programmers"
 readme = "README.md"
 requires-python = ">=3.10"
