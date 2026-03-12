@@ -31,6 +31,12 @@ Show the section checklist:
 
 I need to draft sections 5-7 based on everything we've decided so far.
 
+### How would you like to proceed?
+
+1. **Draft all three** — I'll draft sections 5, 6, and 7 and show them to you
+2. **One at a time** — walk me through each section separately
+3. **Review first** — show me what's in sections 1-4 before we continue
+
 ---
 ```
 
@@ -63,7 +69,17 @@ in the appropriate format:
 
 ---
 
-**Does this structure work? Anything to add, move, or remove?**
+**Does this structure work?**
+
+### What would you like to do?
+
+1. **Looks good** — move on to the assessment plan
+2. **Add lessons** — I want more lessons or a new module
+3. **Remove or merge** — some of these can be combined
+4. **Reorder** — the sequence needs adjustment
+5. **Start over** — rethink the structure from scratch
+
+---
 ```
 
 ### For Activity / Have Fun courses:
@@ -121,6 +137,15 @@ in the appropriate format:
 ---
 
 **Does this assessment approach work?**
+
+### What would you like to do?
+
+1. **Looks good** — move on to technical decisions
+2. **Change components** — adjust what's being assessed
+3. **Change criteria** — adjust the completion requirements
+4. **Remove assessment** — this course doesn't need formal assessment
+
+---
 ```
 
 ## Section 7: Technical Decisions
@@ -178,11 +203,27 @@ After drafting all three sections, present the complete spec summary:
 
 ---
 
-**The spec is complete. Ready to approve and move to Phase 2?**
+**The spec is complete.**
+
+### What would you like to do?
+
+1. **Approve and move to Phase 2** — lock in the spec and start scaffolding
+2. **Review a specific section** — look at one section in detail
+3. **Change something** — I want to modify part of the spec
+4. **Go back** — revisit an earlier phase before finalizing
 
 Phase 2 will scaffold the directory structure, create lesson stubs,
 and begin content authoring.
+
+---
 ```
 
 When the designer approves, use `update_spec` for each drafted section,
 then call `advance_phase("phase2")`.
+
+## Guided Mode Rule
+
+**In guided mode, EVERY response must end with a numbered choice menu.**
+After drafting a section, after showing a table, after any interaction —
+always end with "What next?" and numbered options. The user should never
+face a blank prompt.
