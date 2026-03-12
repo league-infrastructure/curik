@@ -1,12 +1,12 @@
 ---
-id: "001"
-title: "MCP Server Foundation"
-status: planning
+id: '001'
+title: MCP Server Foundation
+status: done
 branch: sprint/001-mcp-server-foundation
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 001: MCP Server Foundation
