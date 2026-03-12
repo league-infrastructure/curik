@@ -1,9 +1,12 @@
 ---
-id: "005"
-title: "Change Cycle and Issue Management"
-status: planning
+id: '005'
+title: Change Cycle and Issue Management
+status: done
 branch: sprint/005-change-cycle-and-issue-management
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
