@@ -1,13 +1,13 @@
 ---
-id: "004"
-title: "Implement research MCP tools and asset serving"
-status: todo
+id: '002'
+title: Create Research Agent definition
+status: done
 use-cases: []
 depends-on: []
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
-# Implement research MCP tools and asset serving
+# Create Research Agent definition
 
 ## Description
 

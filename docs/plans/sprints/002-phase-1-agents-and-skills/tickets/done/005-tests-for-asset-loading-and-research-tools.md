@@ -1,7 +1,7 @@
 ---
-id: "005"
-title: "Tests for asset loading and research tools"
-status: todo
+id: '005'
+title: Tests for asset loading and research tools
+status: done
 use-cases: []
 depends-on: []
 ---

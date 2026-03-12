@@ -1,13 +1,13 @@
 ---
-id: "001"
-title: "Create Curriculum Architect agent definition"
-status: todo
+id: '003'
+title: Write Phase 1 skill files
+status: done
 use-cases: []
 depends-on: []
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
-# Create Curriculum Architect agent definition
+# Write Phase 1 skill files
 
 ## Description
 

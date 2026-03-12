@@ -1,13 +1,13 @@
 ---
-id: "002"
-title: "Create Research Agent definition"
-status: todo
+id: '001'
+title: Create Curriculum Architect agent definition
+status: done
 use-cases: []
 depends-on: []
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
-# Create Research Agent definition
+# Create Curriculum Architect agent definition
 
 ## Description
 

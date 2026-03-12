@@ -1,13 +1,13 @@
 ---
-id: "003"
-title: "Write Phase 1 skill files"
-status: todo
+id: '004'
+title: Implement research MCP tools and asset serving
+status: done
 use-cases: []
 depends-on: []
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
-# Write Phase 1 skill files
+# Implement research MCP tools and asset serving
 
 ## Description
 
