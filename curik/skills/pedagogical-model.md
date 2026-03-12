@@ -36,6 +36,22 @@ Pick a number, or describe a combination.
 ---
 ```
 
+After the user picks a delivery format, confirm their choice and transition:
+
+```
+---
+
+Great — **[chosen format]** it is.
+
+### What next?
+
+1. **Continue** — let's pick the pedagogical structure
+2. **Go back** — I want to reconsider the delivery format
+3. **Tell me more** — explain what pedagogical structure means before I choose
+
+---
+```
+
 ## Step 2: Pedagogical Structure
 
 After delivery format, present structure options:
@@ -65,6 +81,22 @@ Which combination fits your course?
 ---
 ```
 
+After the user picks a structure, confirm and transition:
+
+```
+---
+
+Got it — **[chosen structure]**.
+
+### What next?
+
+1. **Continue** — let's talk about how a single session runs
+2. **Go back** — I want to change the pedagogical structure
+3. **Tell me more** — what does session structure mean?
+
+---
+```
+
 ## Step 3: Session Structure
 
 Ask about a single class session:
@@ -87,6 +119,22 @@ Describe the flow, or pick a pattern:
 ---
 ```
 
+After session structure is chosen, confirm and transition:
+
+```
+---
+
+Session flow: **[chosen pattern]**.
+
+### What next?
+
+1. **Continue** — let's talk about assessment
+2. **Go back** — I want to change the session structure
+3. **Tell me more** — what are my assessment options?
+
+---
+```
+
 ## Step 4: Assessment
 
 ```
@@ -99,6 +147,22 @@ Describe the flow, or pick a pattern:
 3. **Working project** — a project that demonstrates skills
 4. **Instructor observation** — informal, no formal assessment
 5. **Combination** — describe which
+
+---
+```
+
+After assessment is chosen, confirm and transition:
+
+```
+---
+
+Assessment: **[chosen approach]**.
+
+### What next?
+
+1. **Continue** — let's talk about differentiation (handling different skill levels)
+2. **Go back** — I want to change the assessment approach
+3. **Skip differentiation** — not relevant for this course
 
 ---
 ```
@@ -162,7 +226,23 @@ Show the full pedagogical model summary:
 ---
 
 **Does this look right?**
+
+### What would you like to do?
+
+1. **Looks good — move on** — save this and proceed to Phase 1c (Research)
+2. **Change something** — I want to adjust one or more decisions
+3. **Go back to a specific step** — revisit delivery format, structure, session flow, assessment, or differentiation
+4. **Start over** — rethink the pedagogical model from scratch
+
+---
 ```
 
 When confirmed, call `record_pedagogical_model` with the formatted content
 and `tool_advance_sub_phase()` to move to Phase 1c.
+
+## Guided Mode Rule
+
+**In guided mode, EVERY response must end with a numbered choice menu.**
+After each step, after confirming a choice, after showing a table —
+always end with "What next?" and numbered options. The user should never
+face a blank prompt.
