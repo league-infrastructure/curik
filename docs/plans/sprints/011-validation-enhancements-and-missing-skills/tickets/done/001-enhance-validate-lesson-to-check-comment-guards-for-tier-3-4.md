@@ -1,7 +1,7 @@
 ---
-id: "001"
-title: "Enhance validate_lesson to check comment guards for Tier 3-4"
-status: todo
+id: '001'
+title: Enhance validate_lesson to check comment guards for Tier 3-4
+status: done
 use-cases: []
 depends-on: []
 ---

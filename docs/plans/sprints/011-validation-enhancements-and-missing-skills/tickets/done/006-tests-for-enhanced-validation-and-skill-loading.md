@@ -1,7 +1,7 @@
 ---
-id: "006"
-title: "Tests for enhanced validation and skill loading"
-status: todo
+id: '006'
+title: Tests for enhanced validation and skill loading
+status: done
 use-cases: []
 depends-on: []
 ---

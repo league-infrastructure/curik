@@ -1,7 +1,7 @@
 ---
-id: "003"
-title: "Create repo-scaffolding skill definition"
-status: todo
+id: '003'
+title: Create repo-scaffolding skill definition
+status: done
 use-cases: []
 depends-on: []
 ---
