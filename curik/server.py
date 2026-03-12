@@ -17,6 +17,7 @@ from .assets import (
 from .project import (
     CurikError,
     advance_phase,
+    advance_sub_phase,
     get_course_status,
     get_phase,
     get_spec,
@@ -101,6 +102,20 @@ def tool_advance_phase(target: str) -> str:
     try:
         advance_phase(_root(), target)
         return f"Advanced to {target}."
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_advance_sub_phase() -> str:
+    """Advance to the next Phase 1 sub-phase (1a→1b→1c→1d→1e).
+
+    Resource-collection projects skip 1b and 1d.
+    Raises an error if already at 1e — use advance_phase('phase2') instead.
+    """
+    try:
+        result = advance_sub_phase(_root())
+        return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
 
