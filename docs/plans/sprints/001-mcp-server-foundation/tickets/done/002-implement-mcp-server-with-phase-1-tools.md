@@ -1,13 +1,13 @@
 ---
-id: "002"
-title: "Implement MCP server with Phase 1 tools"
-status: todo
+id: '002'
+title: Implement MCP server with Phase 1 tools
+status: done
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 depends-on:
-  - "001"
+- '001'
 ---
 
 # Implement MCP server with Phase 1 tools

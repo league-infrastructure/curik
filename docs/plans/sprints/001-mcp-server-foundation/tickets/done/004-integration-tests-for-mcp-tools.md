@@ -1,13 +1,13 @@
 ---
-id: "004"
-title: "Integration tests for MCP tools"
-status: todo
+id: '004'
+title: Integration tests for MCP tools
+status: done
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 depends-on:
-  - "003"
+- '003'
 ---
 
 # Integration tests for MCP tools

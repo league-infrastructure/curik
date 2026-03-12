@@ -1,13 +1,13 @@
 ---
-id: "003"
-title: "Wire up curik mcp CLI subcommand"
-status: todo
+id: '003'
+title: Wire up curik mcp CLI subcommand
+status: done
 use-cases:
-  - SUC-001
-  - SUC-002
-  - SUC-003
+- SUC-001
+- SUC-002
+- SUC-003
 depends-on:
-  - "002"
+- '002'
 ---
 
 # Wire up curik mcp CLI subcommand

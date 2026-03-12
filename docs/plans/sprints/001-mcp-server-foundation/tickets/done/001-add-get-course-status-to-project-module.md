@@ -1,9 +1,9 @@
 ---
-id: "001"
-title: "Add get_course_status to project module"
-status: todo
+id: '001'
+title: Add get_course_status to project module
+status: done
 use-cases:
-  - SUC-003
+- SUC-003
 depends-on: []
 ---
 
