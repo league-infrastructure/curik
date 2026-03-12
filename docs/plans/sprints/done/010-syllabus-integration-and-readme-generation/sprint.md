@@ -1,9 +1,12 @@
 ---
-id: "010"
-title: "Syllabus Integration and README Generation"
-status: planning
+id: '010'
+title: Syllabus Integration and README Generation
+status: done
 branch: sprint/010-syllabus-integration-and-readme-generation
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
