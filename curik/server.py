@@ -35,7 +35,7 @@ from .changes import (
     list_issues,
     review_change_plan,
 )
-from .migrate import inventory_course, migrate_structure
+from .migrate import inventory_course, migrate_structure, sequester_content
 from .quiz import generate_quiz_stub, set_quiz_status, validate_quiz_alignment
 from .research import get_research_findings, save_research_findings
 from .validation import (
@@ -388,6 +388,20 @@ def tool_inventory_course(repo_path: str) -> str:
     """Analyze a course repository and return its current state as JSON."""
     try:
         result = inventory_course(repo_path)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_sequester_content() -> str:
+    """Move all non-Curik files in the project root into _old/.
+
+    Protected paths (.course/, .git/, .mcp.json, course.yml, _old/) are
+    never moved.  Returns {"moved": [...], "protected": [...]}.
+    """
+    try:
+        result = sequester_content(_root())
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
