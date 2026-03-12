@@ -16,7 +16,7 @@ SPEC_SECTION_HEADINGS: dict[str, str] = {
 }
 
 
-CURIK_DIR = ".curik"
+CURIK_DIR = ".course"
 """Name of the hidden directory created inside each project root."""
 
 

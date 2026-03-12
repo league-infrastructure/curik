@@ -19,8 +19,8 @@ class CurikProjectTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             result = init_course(root)
-            self.assertIn(".curik/spec.md", result["created"])
-            self.assertTrue((root / ".curik" / "change-plan" / "active").is_dir())
+            self.assertIn(".course/spec.md", result["created"])
+            self.assertTrue((root / ".course" / "change-plan" / "active").is_dir())
             self.assertTrue((root / "course.yml").is_file())
             self.assertTrue((root / ".mcp.json").is_file())
 

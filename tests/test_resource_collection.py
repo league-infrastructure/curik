@@ -31,14 +31,14 @@ class InitCourseTypeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             init_course(root)
-            state = json.loads((root / ".curik" / "state.json").read_text())
+            state = json.loads((root / ".course" / "state.json").read_text())
             self.assertEqual(state["type"], "course")
 
     def test_resource_collection_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             init_course(root, course_type="resource-collection")
-            state = json.loads((root / ".curik" / "state.json").read_text())
+            state = json.loads((root / ".course" / "state.json").read_text())
             self.assertEqual(state["type"], "resource-collection")
 
     def test_resource_collection_course_yml(self) -> None:
@@ -87,7 +87,7 @@ class GetPhaseRequirementsTest(unittest.TestCase):
             root = Path(tmp)
             init_course(root)
             # Remove 'type' from state to simulate legacy project
-            state_path = root / ".curik" / "state.json"
+            state_path = root / ".course" / "state.json"
             state = json.loads(state_path.read_text())
             del state["type"]
             state_path.write_text(json.dumps(state, indent=2) + "\n")
