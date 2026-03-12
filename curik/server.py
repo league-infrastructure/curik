@@ -45,6 +45,7 @@ from .validation import (
     validate_lesson,
     validate_module,
 )
+from .readme import generate_readmes
 from .scaffolding import (
     approve_outline,
     create_lesson_stub,
@@ -53,6 +54,13 @@ from .scaffolding import (
     generate_nav,
     get_outline,
     scaffold_structure,
+)
+from .syllabus import (
+    get_syllabus,
+    read_syllabus_entries,
+    regenerate_syllabus,
+    validate_syllabus_consistency,
+    write_syllabus_url,
 )
 
 mcp = FastMCP("curik", instructions="Curik curriculum development tool")
@@ -482,6 +490,68 @@ def tool_set_quiz_status(quiz_path: str, status: str) -> str:
     """Update a quiz file's status. Valid statuses: drafted, reviewed, complete."""
     try:
         result = set_quiz_status(_root(), quiz_path, status)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+# -- Syllabus tools --
+
+
+@mcp.tool()
+def tool_read_syllabus_entries() -> str:
+    """Read syllabus.yaml and return lesson entries with uid, name, lesson, exercise fields."""
+    try:
+        result = read_syllabus_entries(_root())
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_write_syllabus_url(uid: str, url: str) -> str:
+    """Update the url field for a lesson entry identified by UID in syllabus.yaml."""
+    try:
+        result = write_syllabus_url(_root(), uid, url)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_regenerate_syllabus(lesson_dir: str = "lessons") -> str:
+    """Compile syllabus from lesson directory using jtl-syllabus and write syllabus.yaml."""
+    try:
+        result = regenerate_syllabus(_root(), lesson_dir)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_syllabus() -> str:
+    """Return the raw content of syllabus.yaml."""
+    try:
+        return get_syllabus(_root())
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_trigger_readme_generation(docs_dir: str = "docs/docs") -> str:
+    """Generate README.md files from guarded sections in MkDocs lesson pages."""
+    try:
+        result = generate_readmes(_root(), docs_dir)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_validate_syllabus_consistency() -> str:
+    """Check syllabus entries against MkDocs pages and report mismatches."""
+    try:
+        result = validate_syllabus_consistency(_root())
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
