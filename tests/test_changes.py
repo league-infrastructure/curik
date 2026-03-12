@@ -105,11 +105,11 @@ class TestChangePlanLifecycle(unittest.TestCase):
 
         # Verify plan moved to done
         done_plans = list(
-            (self.root / ".course" / "change-plan" / "done").glob("*.md")
+            (self.root / ".curik" / "change-plan" / "done").glob("*.md")
         )
         self.assertEqual(len(done_plans), 1)
         active_plans = list(
-            (self.root / ".course" / "change-plan" / "active").glob("*.md")
+            (self.root / ".curik" / "change-plan" / "active").glob("*.md")
         )
         self.assertEqual(len(active_plans), 0)
 

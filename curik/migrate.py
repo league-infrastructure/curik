@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .project import CurikError, init_course
+from .project import CurikError, _course_dir, init_course
 from .templates import get_mkdocs_yml
 
 
@@ -74,7 +74,7 @@ def migrate_structure(
 ) -> dict[str, list[str]]:
     """Create the standard Curik directory structure for a course repository.
 
-    Calls init_course first if .course/ does not exist. Creates docs/ with
+    Calls init_course first if CURIK_DIR/ does not exist. Creates docs/ with
     an mkdocs.yml stub and module directories with lesson stubs.
 
     Returns {"created": [list of created paths]}.
@@ -85,8 +85,8 @@ def migrate_structure(
 
     created: list[str] = []
 
-    # Ensure .course/ structure exists
-    course_dir = root / ".course"
+    # Ensure CURIK_DIR/ structure exists
+    course_dir = _course_dir(root)
     if not course_dir.is_dir():
         result = init_course(root)
         created.extend(result["created"])

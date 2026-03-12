@@ -6,22 +6,22 @@ import re
 from datetime import date
 from pathlib import Path
 
-from .project import CurikError
+from .project import CurikError, _course_dir
 
 
 def _issues_dir(root: Path, status: str) -> Path:
     if status == "open":
-        return root / ".course" / "issues" / "open"
+        return _course_dir(root) / "issues" / "open"
     elif status == "done":
-        return root / ".course" / "issues" / "done"
+        return _course_dir(root) / "issues" / "done"
     raise CurikError(f"Unknown issue status directory: {status}")
 
 
 def _plans_dir(root: Path, status: str) -> Path:
     if status == "active":
-        return root / ".course" / "change-plan" / "active"
+        return _course_dir(root) / "change-plan" / "active"
     elif status == "done":
-        return root / ".course" / "change-plan" / "done"
+        return _course_dir(root) / "change-plan" / "done"
     raise CurikError(f"Unknown plan status directory: {status}")
 
 
@@ -137,7 +137,7 @@ def _find_plan(root: Path, plan_number: int) -> Path:
 
 
 def create_issue(root: Path, title: str, content: str) -> dict:
-    """Create a numbered issue file in .course/issues/open/."""
+    """Create a numbered issue file in CURIK_DIR/issues/open/."""
     root = root.resolve()
     open_dir = _issues_dir(root, "open")
     done_dir = _issues_dir(root, "done")
@@ -184,7 +184,7 @@ def list_issues(root: Path, status: str = "open") -> list[dict]:
 
 
 def create_change_plan(root: Path, title: str, issue_numbers: list[int]) -> dict:
-    """Create a numbered change plan in .course/change-plan/active/."""
+    """Create a numbered change plan in CURIK_DIR/change-plan/active/."""
     root = root.resolve()
     active_dir = _plans_dir(root, "active")
     done_dir = _plans_dir(root, "done")

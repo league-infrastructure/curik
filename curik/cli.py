@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from importlib.metadata import version
 from pathlib import Path
 
 from .project import (
@@ -16,6 +17,9 @@ from .project import (
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="curik")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {version('curik')}"
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     init_parser = sub.add_parser("init", help="Initialize Curik files in a repo")

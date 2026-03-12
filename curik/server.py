@@ -65,7 +65,7 @@ def _root() -> Path:
 
 @mcp.tool()
 def tool_init_course() -> str:
-    """Initialize a new curriculum project with .course/ directory structure."""
+    """Initialize a new curriculum project with CURIK_DIR/ directory structure."""
     try:
         result = init_course(_root())
         return json.dumps(result, indent=2)
@@ -194,7 +194,7 @@ def tool_get_skill_definition(name: str) -> str:
 
 @mcp.tool()
 def tool_save_research_findings(title: str, content: str) -> str:
-    """Save structured research findings to .course/research/."""
+    """Save structured research findings to CURIK_DIR/research/."""
     try:
         result = save_research_findings(_root(), title, content)
         return json.dumps(result, indent=2)
@@ -242,7 +242,7 @@ def tool_create_lesson_stub(module: str, lesson: str, tier: int) -> str:
 
 @mcp.tool()
 def tool_create_outline(name: str, content: str) -> str:
-    """Write an outline document to .course/outlines/."""
+    """Write an outline document to CURIK_DIR/outlines/."""
     try:
         rel = create_outline(_root(), name, content)
         return f"Created outline: {rel}"
@@ -285,7 +285,7 @@ def tool_generate_change_plan(title: str, items_json: str) -> str:
 
 @mcp.tool()
 def tool_create_issue(title: str, content: str) -> str:
-    """Create a numbered issue in .course/issues/open/ with YAML frontmatter."""
+    """Create a numbered issue in CURIK_DIR/issues/open/ with YAML frontmatter."""
     try:
         result = create_issue(_root(), title, content)
         return json.dumps(result, indent=2)
@@ -426,7 +426,7 @@ def tool_get_validation_report() -> str:
 
 @mcp.tool()
 def tool_save_validation_report(report_json: str) -> str:
-    """Save a validation report to .course/validation-report.json."""
+    """Save a validation report to CURIK_DIR/validation-report.json."""
     try:
         report = json.loads(report_json)
         result = save_validation_report(_root(), report)

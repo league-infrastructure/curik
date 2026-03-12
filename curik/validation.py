@@ -178,7 +178,7 @@ def validate_course(root: Path) -> dict:
 
 
 def get_validation_report(root: Path) -> dict:
-    """Read the last saved validation report from .course/validation-report.json."""
+    """Read the last saved validation report from CURIK_DIR/validation-report.json."""
     root = root.resolve()
     report_path = _course_dir(root) / "validation-report.json"
     if not report_path.exists():
@@ -187,7 +187,7 @@ def get_validation_report(root: Path) -> dict:
 
 
 def save_validation_report(root: Path, report: dict) -> dict:
-    """Save a validation report to .course/validation-report.json."""
+    """Save a validation report to CURIK_DIR/validation-report.json."""
     root = root.resolve()
     report_path = _course_dir(root) / "validation-report.json"
     report_path.parent.mkdir(parents=True, exist_ok=True)

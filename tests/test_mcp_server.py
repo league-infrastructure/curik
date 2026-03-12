@@ -33,8 +33,8 @@ class MCPToolTest(unittest.TestCase):
 
     def test_init_course_creates_structure(self) -> None:
         result = json.loads(server.tool_init_course())
-        self.assertIn(".course/spec.md", result["created"])
-        self.assertTrue((self.root / ".course" / "state.json").is_file())
+        self.assertIn(".curik/spec.md", result["created"])
+        self.assertTrue((self.root / ".curik" / "state.json").is_file())
         self.assertTrue((self.root / "course.yml").is_file())
 
     def test_init_course_idempotent(self) -> None:
@@ -131,7 +131,7 @@ class MCPToolTest(unittest.TestCase):
     def test_get_course_status_counts_issues(self) -> None:
         init_course(self.root)
         # Create a fake open issue
-        issue_dir = self.root / ".course" / "issues" / "open"
+        issue_dir = self.root / ".curik" / "issues" / "open"
         (issue_dir / "001-test-issue.md").write_text("# Test issue\n")
         result = json.loads(server.tool_get_course_status())
         self.assertEqual(result["open_issues"], 1)

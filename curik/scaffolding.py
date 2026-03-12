@@ -150,7 +150,7 @@ _OUTLINE_FRONTMATTER_RE = re.compile(
 
 
 def create_outline(root: Path, name: str, content: str) -> str:
-    """Write an outline document to ``.course/outlines/{name}.md``.
+    """Write an outline document to ``CURIK_DIR/outlines/{name}.md``.
 
     Returns the relative path of the created file.
     """
@@ -213,7 +213,7 @@ def get_outline(root: Path, name: str) -> str:
 def generate_change_plan(
     root: Path, title: str, items: list[str]
 ) -> str:
-    """Create a numbered change plan in ``.course/change-plan/active/``.
+    """Create a numbered change plan in ``CURIK_DIR/change-plan/active/``.
 
     Returns the relative path of the created file.
     """

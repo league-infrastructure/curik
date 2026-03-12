@@ -14,12 +14,16 @@ SPEC_SECTION_HEADINGS: dict[str, str] = {
 }
 
 
+CURIK_DIR = ".curik"
+"""Name of the hidden directory created inside each project root."""
+
+
 class CurikError(ValueError):
     pass
 
 
 def _course_dir(root: Path) -> Path:
-    return root / ".course"
+    return root / CURIK_DIR
 
 
 def _state_file(root: Path) -> Path:

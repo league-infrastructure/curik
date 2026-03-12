@@ -32,7 +32,7 @@ When invoked by the Curriculum Architect:
    standards that the course could align to.
 
 5. **Persist findings**: Use `save_research_findings` to store structured
-   results in `.course/research/`.
+   results in `CURIK_DIR/research/`.
 
 6. **Return summary**: Produce a structured research summary for the
    Curriculum Architect with recommendations.

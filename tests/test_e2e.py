@@ -26,8 +26,8 @@ class TestPhase1Workflow(unittest.TestCase):
 
             # Step 1: init_course
             result = init_course(root)
-            self.assertIn(".course/spec.md", result["created"])
-            self.assertTrue((root / ".course" / "state.json").is_file())
+            self.assertIn(".curik/spec.md", result["created"])
+            self.assertTrue((root / ".curik" / "state.json").is_file())
             self.assertTrue((root / "course.yml").is_file())
 
             # Verify we start in phase1

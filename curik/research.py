@@ -24,7 +24,7 @@ def _next_number(directory: Path) -> int:
 
 
 def save_research_findings(root: Path, title: str, content: str) -> dict[str, str]:
-    """Save a numbered research finding to .course/research/."""
+    """Save a numbered research finding to CURIK_DIR/research/."""
     root = root.resolve()
     if not (_course_dir(root) / "state.json").exists():
         raise CurikError("Course not initialized. Run 'curik init'.")
