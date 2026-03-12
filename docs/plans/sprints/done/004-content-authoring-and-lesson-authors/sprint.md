@@ -1,9 +1,12 @@
 ---
-id: "004"
-title: "Content Authoring and Lesson Authors"
-status: planning
+id: '004'
+title: Content Authoring and Lesson Authors
+status: done
 branch: sprint/004-content-authoring-and-lesson-authors
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
