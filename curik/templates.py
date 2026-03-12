@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 
-def get_mkdocs_yml(title: str, tier: int) -> str:
+def get_mkdocs_yml(title: str, tier: int, nav: list[dict[str, Any]] | None = None) -> str:
     """Return a tier-appropriate mkdocs.yml configuration string.
 
     All tiers use MkDocs Material theme. Tiers 1-2 include instructor guide
@@ -39,6 +40,15 @@ def get_mkdocs_yml(title: str, tier: int) -> str:
             "extra_javascript:",
             "  - js/instructor-guide.js",
         ])
+
+    if nav is not None:
+        lines.append("")
+        lines.append("nav:")
+        for entry in nav:
+            for section_title, pages in entry.items():
+                lines.append(f"  - {section_title}:")
+                for page in pages:
+                    lines.append(f"    - {page}")
 
     lines.append("")
     return "\n".join(lines)
@@ -106,6 +116,7 @@ def get_course_yml_template(tier: int) -> str:
     lines = [
         "title: TBD",
         "slug: TBD",
+        "uid: TBD",
         f"tier: {tier}",
         f"grades: {grades}",
         f"category: {category}",

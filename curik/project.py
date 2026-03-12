@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .uid import generate_course_uid
+
 SPEC_SECTION_HEADINGS: dict[str, str] = {
     "course-concept": "## Course Concept",
     "pedagogical-model": "## Pedagogical Model",
@@ -83,6 +85,7 @@ def init_course(
         root / "course.yml": (
             "title: TBD\n"
             "slug: TBD\n"
+            f"uid: {generate_course_uid()}\n"
             f"type: {course_type}\n"
             "tier: TBD\n"
             "grades: TBD\n"

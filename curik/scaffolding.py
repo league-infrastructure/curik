@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from .project import CurikError, _course_dir
+from .templates import get_devcontainer_json
+from .uid import generate_unit_uid
 
 
 # ---------------------------------------------------------------------------
@@ -17,7 +19,11 @@ from .project import CurikError, _course_dir
 
 
 def scaffold_structure(
-    root: Path, structure: dict[str, Any], course_type: str = "course"
+    root: Path,
+    structure: dict[str, Any],
+    course_type: str = "course",
+    tier: int | None = None,
+    language: str = "python",
 ) -> dict[str, list[str]]:
     """Create the directory tree and stub files described by *structure*.
 
@@ -64,7 +70,9 @@ def scaffold_structure(
             else:
                 lesson_path.parent.mkdir(parents=True, exist_ok=True)
                 title = _title_from_filename(lesson)
+                uid = generate_unit_uid()
                 lesson_path.write_text(
+                    f"---\nuid: {uid}\n---\n\n"
                     f"# {title}\n\n"
                     '<div class="instructor-guide">\n\n'
                     "Instructor guide content goes here.\n\n"
@@ -73,7 +81,53 @@ def scaffold_structure(
                 )
                 created.append(rel)
 
+    # Tier 3-4 mirror directories (standard courses only)
+    if tier in (3, 4) and course_type != "resource-collection":
+        for mod in modules:
+            mod_name = mod["name"]
+            for mirror_base in ("lessons", "projects"):
+                mirror_dir = root / mirror_base / mod_name
+                mirror_rel = str(mirror_dir.relative_to(root))
+                if mirror_dir.exists():
+                    existing.append(mirror_rel)
+                else:
+                    mirror_dir.mkdir(parents=True, exist_ok=True)
+                    created.append(mirror_rel)
+
+    # Tier 3-4 devcontainer
+    if tier in (3, 4):
+        dc_dir = root / ".devcontainer"
+        dc_file = dc_dir / "devcontainer.json"
+        dc_rel = str(dc_file.relative_to(root))
+        if dc_file.exists():
+            existing.append(dc_rel)
+        else:
+            dc_dir.mkdir(parents=True, exist_ok=True)
+            dc_file.write_text(get_devcontainer_json(language), encoding="utf-8")
+            created.append(dc_rel)
+
     return {"created": sorted(created), "existing": sorted(existing)}
+
+
+# ---------------------------------------------------------------------------
+# Nav generation
+# ---------------------------------------------------------------------------
+
+
+def generate_nav(structure: dict[str, Any]) -> list[dict[str, list[str]]]:
+    """Build a nav list from a structure dict.
+
+    Returns a list of dicts mapping module display names to lesson paths::
+
+        [{"Intro": ["01-intro/01-hello.md", "01-intro/02-variables.md"]}]
+    """
+    nav: list[dict[str, list[str]]] = []
+    for mod in structure.get("modules", []):
+        mod_name = mod["name"]
+        display = _title_from_filename(mod_name)
+        lessons = [f"{mod_name}/{lesson}" for lesson in mod.get("lessons", [])]
+        nav.append({display: lessons})
+    return nav
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +136,7 @@ def scaffold_structure(
 
 
 def create_lesson_stub(
-    root: Path, module: str, lesson: str, tier: int
+    root: Path, module: str, lesson: str, tier: int, uid: str | None = None
 ) -> str:
     """Create a single lesson stub file and return its relative path.
 
@@ -116,6 +170,9 @@ def create_lesson_stub(
             "Instructor guide content goes here.\n\n"
             "</div>\n"
         )
+
+    if uid is not None:
+        content = f"---\nuid: {uid}\n---\n\n{content}"
 
     lesson_path.write_text(content, encoding="utf-8")
     created = str(lesson_path.relative_to(root))
