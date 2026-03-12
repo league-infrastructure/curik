@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
@@ -49,6 +50,7 @@ from .scaffolding import (
     create_lesson_stub,
     create_outline,
     generate_change_plan,
+    generate_nav,
     get_outline,
     scaffold_structure,
 )
@@ -219,7 +221,10 @@ def tool_get_research_findings() -> str:
 
 @mcp.tool()
 def tool_scaffold_structure(
-    structure_json: str, course_type: str = "course"
+    structure_json: str,
+    course_type: str = "course",
+    tier: int = 0,
+    language: str = "python",
 ) -> str:
     """Create the directory tree and lesson stubs described by a JSON structure.
 
@@ -227,12 +232,16 @@ def tool_scaffold_structure(
     {"modules": [{"name": "01-intro", "lessons": ["01-hello.md"]}]}
 
     *course_type* must be ``"course"`` (default) or ``"resource-collection"``.
+    *tier* (1-4) enables tier-specific features; 0 means unset.
+    *language* sets the devcontainer language for tier 3-4 projects.
     """
     try:
         structure = json.loads(structure_json)
-        result = scaffold_structure(
-            _root(), structure, course_type=course_type
-        )
+        kwargs: dict[str, Any] = {"course_type": course_type}
+        if tier > 0:
+            kwargs["tier"] = tier
+            kwargs["language"] = language
+        result = scaffold_structure(_root(), structure, **kwargs)
         return json.dumps(result, indent=2)
     except (json.JSONDecodeError, CurikError) as e:
         return f"Error: {e}"

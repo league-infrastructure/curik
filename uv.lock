@@ -175,7 +175,7 @@ wheels = [
 
 [[package]]
 name = "curik"
-version = "0.20260311.7"
+version = "0.20260312.1"
 source = { editable = "." }
 dependencies = [
     { name = "jtl-syllabus" },
@@ -184,7 +184,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "jtl-syllabus", specifier = ">=1.20250530.2" },
+    { name = "jtl-syllabus", specifier = ">=1.20250530.4" },
     { name = "mcp", specifier = ">=1.0" },
 ]
 
@@ -272,7 +272,7 @@ wheels = [
 
 [[package]]
 name = "jtl-syllabus"
-version = "1.20250530.2"
+version = "1.20260312.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -280,9 +280,9 @@ dependencies = [
     { name = "python-frontmatter" },
     { name = "pyyaml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/56/ee/c496ac161781beead064014db1adea6972e1e4dc6a9b9fa12fdac3f41202/jtl_syllabus-1.20250530.2.tar.gz", hash = "sha256:d66e0faa66f126c0c808987caf36f7ae5f079bcc5c1c8aae8148b1d6bb0b8900", size = 422734, upload-time = "2025-05-30T17:38:38.251Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b8/a2/7c83ad7511c9848297c766ae118ed3464a816709ffd8c4231a5792ad3d02/jtl_syllabus-1.20260312.4.tar.gz", hash = "sha256:68e0ee03330d5e18769653bf17bab4055e99a48de9c60ca81f7fb2312b1fa744", size = 446160, upload-time = "2026-03-12T20:50:40.927Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/08/02de1f9da84456ef6890e363f307e3e209d1b6fd5102caf954542de180e9/jtl_syllabus-1.20250530.2-py3-none-any.whl", hash = "sha256:27eca232476d6039e047f1997be935ce681fa518b047388d3fccbb7764715178", size = 12093, upload-time = "2025-05-30T17:38:36.937Z" },
+    { url = "https://files.pythonhosted.org/packages/04/e2/8ac7c0470d9c1ba74c054c2880b76c1c1a8f220fd843723d96d5cc49663b/jtl_syllabus-1.20260312.4-py3-none-any.whl", hash = "sha256:850a319b3bc70133d515460432aa4809da8ca67e29cd1864500ff11ca3ae06f3", size = 14185, upload-time = "2026-03-12T20:50:40.166Z" },
 ]
 
 [[package]]
