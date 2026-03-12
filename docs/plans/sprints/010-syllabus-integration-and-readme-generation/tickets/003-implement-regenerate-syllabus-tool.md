@@ -24,6 +24,14 @@ Add a `regenerate_syllabus(course_path)` function to `curik/syllabus.py` that in
 - [ ] Both `regenerate_syllabus` and `get_syllabus` MCP tools are registered in `server.py`
 - [ ] MCP tools accept `course_path` parameter and return appropriate JSON responses
 
+## Implementation Notes
+
+`jtl-syllabus` is now a project dependency (in `pyproject.toml`). Use
+`syllabus.sync.compile_syllabus(lesson_dir)` directly instead of shelling out to
+`syl compile` via subprocess. The function returns a `Course` object. Call
+`.to_yaml(path)` to write the compiled syllabus to disk. This avoids subprocess
+overhead and the requirement that `syl` be on `PATH`.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/` to verify no regressions

@@ -40,6 +40,13 @@ full backward compatibility with existing callers.
 - [ ] When `tier` is `None`, 1, or 2, neither the guard check nor the syllabus UID check runs
 - [ ] Existing calls to `validate_lesson()` without the `tier` argument continue to work identically
 
+## Implementation Notes
+
+`jtl-syllabus` is now a project dependency (in `pyproject.toml`). Use
+`syllabus.models.Course.from_yaml()` to read `syllabus.yaml` and check lesson
+UIDs against syllabus entries. The `Course` model provides structured access to
+modules, lesson sets, and lessons with `uid` fields, avoiding raw YAML parsing.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/test_validation.py` to verify no regressions in current lesson validation

@@ -64,10 +64,13 @@ def _root() -> Path:
 
 
 @mcp.tool()
-def tool_init_course() -> str:
-    """Initialize a new curriculum project with CURIK_DIR/ directory structure."""
+def tool_init_course(course_type: str = "course") -> str:
+    """Initialize a new curriculum project with CURIK_DIR/ directory structure.
+
+    *course_type* must be ``"course"`` (default) or ``"resource-collection"``.
+    """
     try:
-        result = init_course(_root())
+        result = init_course(_root(), course_type=course_type)
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
@@ -215,15 +218,21 @@ def tool_get_research_findings() -> str:
 
 
 @mcp.tool()
-def tool_scaffold_structure(structure_json: str) -> str:
+def tool_scaffold_structure(
+    structure_json: str, course_type: str = "course"
+) -> str:
     """Create the directory tree and lesson stubs described by a JSON structure.
 
     *structure_json* must be a JSON string with format:
     {"modules": [{"name": "01-intro", "lessons": ["01-hello.md"]}]}
+
+    *course_type* must be ``"course"`` (default) or ``"resource-collection"``.
     """
     try:
         structure = json.loads(structure_json)
-        result = scaffold_structure(_root(), structure)
+        result = scaffold_structure(
+            _root(), structure, course_type=course_type
+        )
         return json.dumps(result, indent=2)
     except (json.JSONDecodeError, CurikError) as e:
         return f"Error: {e}"

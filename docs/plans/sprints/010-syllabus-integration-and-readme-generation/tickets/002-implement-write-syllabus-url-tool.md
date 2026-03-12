@@ -23,6 +23,14 @@ Add a `write_syllabus_url(course_path, uid, url)` function to `curik/syllabus.py
 - [ ] `write_syllabus_url` MCP tool is registered in `server.py` with `course_path`, `uid`, and `url` parameters
 - [ ] MCP tool returns a success/failure JSON response
 
+## Implementation Notes
+
+`jtl-syllabus` is now a project dependency (in `pyproject.toml`). Use
+`Course.from_yaml(path)` to read `syllabus.yaml` into a Pydantic model, modify
+the target `Lesson` object's fields directly, then call `Course.to_yaml(path)`
+to write back. Pydantic handles the round-trip serialization, preserving
+structure without manual YAML manipulation.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/` to verify no regressions

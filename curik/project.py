@@ -41,7 +41,18 @@ def _default_spec() -> str:
     return "\n".join(blocks).rstrip() + "\n"
 
 
-def init_course(root: Path) -> dict[str, list[str]]:
+VALID_COURSE_TYPES = ("course", "resource-collection")
+"""Allowed values for the ``course_type`` parameter."""
+
+
+def init_course(
+    root: Path, course_type: str = "course"
+) -> dict[str, list[str]]:
+    if course_type not in VALID_COURSE_TYPES:
+        raise CurikError(
+            f"Invalid course_type: {course_type!r}. "
+            f"Must be one of {VALID_COURSE_TYPES}."
+        )
     root = root.resolve()
     created: list[str] = []
     existing: list[str] = []
@@ -65,10 +76,14 @@ def init_course(root: Path) -> dict[str, list[str]]:
         course_dir / "spec.md": _default_spec(),
         course_dir / "overview.md": "# Course Overview\n\nTBD\n",
         course_dir / "research.md": "# Research Findings\n\nTBD\n",
-        _state_file(root): json.dumps({"phase": "phase1"}, indent=2) + "\n",
+        _state_file(root): json.dumps(
+            {"phase": "phase1", "type": course_type}, indent=2
+        )
+        + "\n",
         root / "course.yml": (
             "title: TBD\n"
             "slug: TBD\n"
+            f"type: {course_type}\n"
             "tier: TBD\n"
             "grades: TBD\n"
             "category: TBD\n"
@@ -103,11 +118,21 @@ def _read_state(root: Path) -> dict[str, str]:
     return json.loads(state_path.read_text(encoding="utf-8"))
 
 
+RESOURCE_COLLECTION_SKIP_SECTIONS = {"pedagogical-model", "alignment-decision"}
+"""Spec sections skipped for resource-collection projects."""
+
+
 def get_phase(root: Path) -> dict[str, str | list[str]]:
     state = _read_state(root)
-    requirements = []
+    course_type = state.get("type", "course")
+    requirements: list[str] = []
     if state["phase"] == "phase1":
         requirements = list(SPEC_SECTION_HEADINGS.keys())
+        if course_type == "resource-collection":
+            requirements = [
+                r for r in requirements
+                if r not in RESOURCE_COLLECTION_SKIP_SECTIONS
+            ]
     return {"phase": state["phase"], "requirements": requirements}
 
 
@@ -153,9 +178,16 @@ def record_alignment(root: Path, content: str) -> None:
 def advance_phase(root: Path, target_phase: str) -> None:
     if target_phase != "phase2":
         raise CurikError("Only advancing to phase2 is supported in the initial version.")
+    state = _read_state(root)
+    course_type = state.get("type", "course")
     spec = get_spec(root)
     missing = []
     for section_key, heading in SPEC_SECTION_HEADINGS.items():
+        if (
+            course_type == "resource-collection"
+            and section_key in RESOURCE_COLLECTION_SKIP_SECTIONS
+        ):
+            continue
         marker = f"{heading}\n"
         if marker not in spec:
             missing.append(section_key)

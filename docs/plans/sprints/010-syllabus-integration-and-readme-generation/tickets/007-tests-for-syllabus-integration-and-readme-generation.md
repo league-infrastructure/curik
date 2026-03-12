@@ -27,6 +27,13 @@ Write comprehensive unit tests in `tests/test_syllabus.py` and `tests/test_readm
 - [ ] Integration tests verify `validate_syllabus_consistency` detects missing pages, missing entries, and UID mismatches
 - [ ] All tests pass: `uv run pytest tests/test_syllabus.py tests/test_readme.py -v`
 
+## Implementation Notes
+
+`jtl-syllabus` is installed in the project venv as a dependency (in
+`pyproject.toml`). Tests can use `Course.from_yaml()` and
+`syllabus.sync.compile_syllabus()` directly for building test fixtures and
+making assertions, rather than constructing raw YAML dicts by hand.
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/` to verify no regressions in existing test suite

@@ -33,6 +33,15 @@ Two public functions:
 - [ ] 10,000 sequential calls to `generate_unit_uid()` produce 10,000 distinct values
 - [ ] The module imports only from the Python standard library (`uuid`, `secrets`, `string`)
 
+## Implementation Notes
+
+`jtl-syllabus` (now a project dependency) provides `syllabus.util.rand62(n)`
+which generates n-character base62 random strings. This exists as a reference
+implementation, but curik should maintain its own UID module for independence and
+because curik has different requirements: UUID4 for courses (globally unique,
+cross-system references) and deterministic 8-character base62 for units (using
+`secrets.choice` for cryptographic randomness).
+
 ## Testing
 
 - **Existing tests to run**: `uv run pytest tests/` -- confirm no regressions from adding the new module
