@@ -10,7 +10,7 @@ The `hugo.toml` file in the project root configures Hugo:
 ```toml
 baseURL = "/"
 title = "Course Title"
-theme = "league-hugo-theme"
+theme = "curriculum-hugo-theme"
 
 [markup]
   [markup.highlight]
@@ -110,7 +110,7 @@ Used for generating `README.md` files in lesson mirror directories
 
 ## League Hugo Theme
 
-The `league-hugo-theme` provides:
+The `curriculum-hugo-theme` provides:
 - Base layout with League branding (orange/black/white)
 - Shortcode implementations (instructor-guide, callout, readme guards)
 - CSS for consistent styling across all curricula

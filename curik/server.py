@@ -88,7 +88,7 @@ mcp = FastMCP(
         "via tool_get_agent_definition('start-curik') for guided workflow.\n\n"
         "HUGO SSG: Content lives in content/ with _index.md branch bundles. "
         "Navigation order from numeric prefixes (01-, 02-). Config in hugo.toml. "
-        "The League Hugo Theme provides branding and shortcodes.\n\n"
+        "The Curriculum Hugo Theme provides branding and shortcodes.\n\n"
         "SHORTCODES (use these, NEVER raw HTML divs or comment guards):\n"
         "- {{< instructor-guide >}}...{{< /instructor-guide >}} — instructor-only content\n"
         "- {{< callout type=\"tip\" >}}...{{< /callout >}} — info/warning/tip boxes\n"

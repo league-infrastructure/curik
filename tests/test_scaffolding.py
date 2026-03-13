@@ -338,7 +338,7 @@ class HugoConfigTest(unittest.TestCase):
     def test_tier3_config_has_basics(self) -> None:
         toml = get_hugo_config("Test Course", 3)
         self.assertIn('title = "Test Course"', toml)
-        self.assertIn('theme = "league-hugo-theme"', toml)
+        self.assertIn('theme = "curriculum-hugo-theme"', toml)
         self.assertIn("codeFences = true", toml)
         self.assertIn("[params]", toml)
         self.assertNotIn("instructorGuide", toml)
@@ -346,7 +346,7 @@ class HugoConfigTest(unittest.TestCase):
     def test_tier1_config_has_instructor_guide(self) -> None:
         toml = get_hugo_config("Young Learners", 1)
         self.assertIn("instructorGuide = true", toml)
-        self.assertIn('theme = "league-hugo-theme"', toml)
+        self.assertIn('theme = "curriculum-hugo-theme"', toml)
 
     def test_tier2_config_has_instructor_guide(self) -> None:
         toml = get_hugo_config("Block Programming", 2)

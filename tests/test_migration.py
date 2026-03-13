@@ -94,8 +94,8 @@ class TestMigrateStructure(unittest.TestCase):
             self.assertTrue((root / "content" / "_index.md").is_file())
 
             # Theme should be copied into themes/
-            self.assertTrue((root / "themes" / "league-hugo-theme").is_dir())
-            self.assertTrue((root / "themes" / "league-hugo-theme" / "theme.toml").is_file())
+            self.assertTrue((root / "themes" / "curriculum-hugo-theme").is_dir())
+            self.assertTrue((root / "themes" / "curriculum-hugo-theme" / "theme.toml").is_file())
 
             # Each module should have a directory and _index.md
             for mod in modules:
@@ -106,14 +106,14 @@ class TestMigrateStructure(unittest.TestCase):
             self.assertIn("content", result["created"])
             self.assertIn("hugo.toml", result["created"])
             self.assertIn("content/_index.md", result["created"])
-            self.assertIn("themes/league-hugo-theme", result["created"])
+            self.assertIn("themes/curriculum-hugo-theme", result["created"])
 
     def test_hugo_config_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             migrate_structure(root, 3, ["01-intro"])
             content = (root / "hugo.toml").read_text()
-            self.assertIn("league-hugo-theme", content)
+            self.assertIn("curriculum-hugo-theme", content)
             self.assertIn("title =", content)
 
     def test_idempotent_on_existing(self) -> None:
@@ -124,7 +124,7 @@ class TestMigrateStructure(unittest.TestCase):
             # Run again — should not fail
             result2 = migrate_structure(root, 3, modules)
             # Theme is always refreshed; everything else is idempotent
-            self.assertEqual(result2["created"], ["themes/league-hugo-theme"])
+            self.assertEqual(result2["created"], ["themes/curriculum-hugo-theme"])
 
 
 class TestGetHugoConfig(unittest.TestCase):
@@ -133,7 +133,7 @@ class TestGetHugoConfig(unittest.TestCase):
     def test_tier3_has_league_theme(self) -> None:
         content = get_hugo_config("Test Course", 3)
         self.assertIn('title = "Test Course"', content)
-        self.assertIn('theme = "league-hugo-theme"', content)
+        self.assertIn('theme = "curriculum-hugo-theme"', content)
         self.assertNotIn("instructorGuide", content)
 
     def test_tier1_includes_instructor_guide(self) -> None:

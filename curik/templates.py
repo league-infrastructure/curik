@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Any
 
 # The theme source lives in the curik repo root. During scaffolding,
-# it gets copied into each course repo at themes/league-hugo-theme/.
+# it gets copied into each course repo at themes/curriculum-hugo-theme/.
 # Later this will become a git submodule in each course repo.
-THEME_NAME = "league-hugo-theme"
+THEME_NAME = "curriculum-hugo-theme"
 _THEME_SOURCE = Path(__file__).resolve().parent.parent / THEME_NAME
 
 
@@ -21,8 +21,8 @@ def get_theme_source() -> Path:
 def get_hugo_config(title: str, tier: int) -> str:
     """Return a tier-appropriate hugo.toml configuration string.
 
-    All tiers reference the league-hugo-theme (expected at
-    ``themes/league-hugo-theme/`` in the course repo). Tiers 1-2 include
+    All tiers reference the curriculum-hugo-theme (expected at
+    ``themes/curriculum-hugo-theme/`` in the course repo). Tiers 1-2 include
     an ``instructorGuide = true`` parameter.
     """
     lines = [

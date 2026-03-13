@@ -101,7 +101,7 @@ def migrate_structure(
         content_dir.mkdir(parents=True, exist_ok=True)
         created.append("content")
 
-    # Copy the Hugo theme into themes/league-hugo-theme/
+    # Copy the Hugo theme into themes/curriculum-hugo-theme/
     # (Later this becomes a git submodule; for now we copy from curik repo.)
     theme_dest = root / "themes" / THEME_NAME
     theme_source = get_theme_source()
