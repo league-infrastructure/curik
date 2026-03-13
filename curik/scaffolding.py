@@ -26,6 +26,8 @@ def scaffold_structure(
     course_type: str = "course",
     tier: int | None = None,
     language: str = "python",
+    *,
+    symlink_theme: bool = False,
 ) -> dict[str, list[str]]:
     """Create the directory tree and stub files described by *structure*.
 
@@ -37,6 +39,9 @@ def scaffold_structure(
 
     When *course_type* is ``"resource-collection"``, directories are created
     under ``resources/`` instead of directly under the project root.
+
+    If *symlink_theme* is True, the Hugo theme is symlinked instead of
+    copied, so edits to the theme source are reflected immediately.
 
     Returns ``{"created": [...], "existing": [...]}``.
     """
@@ -160,7 +165,7 @@ def scaffold_structure(
                     effective_tier = data.get("tier", effective_tier)
             except yaml.YAMLError:
                 pass
-        hugo_result = hugo_setup(root, title, effective_tier)
+        hugo_result = hugo_setup(root, title, effective_tier, symlink_theme=symlink_theme)
         created.extend(hugo_result["created"])
         existing.extend(hugo_result["existing"])
 

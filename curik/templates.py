@@ -52,11 +52,17 @@ def get_hugo_config(title: str, tier: int) -> str:
     return "\n".join(lines)
 
 
-def hugo_setup(root: Path, title: str, tier: int) -> dict[str, list[str]]:
-    """Generate hugo.toml and copy the theme into a course repo.
+def hugo_setup(
+    root: Path, title: str, tier: int, *, symlink_theme: bool = False,
+) -> dict[str, list[str]]:
+    """Generate hugo.toml and install the theme into a course repo.
 
-    Writes ``hugo.toml`` to *root* and copies the bundled
+    Writes ``hugo.toml`` to *root* and installs the bundled
     curriculum-hugo-theme into ``themes/curriculum-hugo-theme/``.
+
+    If *symlink_theme* is True, creates a symlink to the theme source
+    instead of copying it. This is useful during development so edits
+    to the theme are reflected immediately.
 
     Returns ``{"created": [...], "existing": [...]}``.
     """
@@ -73,15 +79,19 @@ def hugo_setup(root: Path, title: str, tier: int) -> dict[str, list[str]]:
         hugo_toml.write_text(get_hugo_config(title, tier), encoding="utf-8")
         created.append(rel_toml)
 
-    # Copy theme
+    # Install theme (symlink or copy)
     theme_dest = root / "themes" / THEME_NAME
     rel_theme = str(theme_dest.relative_to(root))
-    if theme_dest.exists():
+    if theme_dest.exists() or theme_dest.is_symlink():
         existing.append(rel_theme)
     else:
         theme_src = get_theme_source()
         if theme_src.is_dir():
-            shutil.copytree(theme_src, theme_dest)
+            theme_dest.parent.mkdir(parents=True, exist_ok=True)
+            if symlink_theme:
+                theme_dest.symlink_to(theme_src)
+            else:
+                shutil.copytree(theme_src, theme_dest)
             created.append(rel_theme)
 
     return {"created": created, "existing": existing}

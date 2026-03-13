@@ -52,7 +52,7 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.root = _copy_fixture(cls.FIXTURE)
-        cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2)
+        cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2, symlink_theme=True)
 
     def test_content_dir_created(self) -> None:
         self.assertTrue((self.root / "content").is_dir())
@@ -99,9 +99,10 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
         self.assertIn('theme = "curriculum-hugo-theme"', toml)
         self.assertIn("instructorGuide = true", toml)
 
-    def test_theme_copied(self) -> None:
+    def test_theme_symlinked(self) -> None:
         theme_dir = self.root / "themes" / "curriculum-hugo-theme"
         self.assertTrue(theme_dir.is_dir())
+        self.assertTrue(theme_dir.is_symlink(), "Theme should be a symlink for development")
         # Theme should have at least a theme.toml or config file
         has_config = (
             (theme_dir / "theme.toml").is_file()
@@ -152,7 +153,7 @@ class WebDevIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.root = _copy_fixture(cls.FIXTURE)
-        cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=3, language="python")
+        cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=3, language="python", symlink_theme=True)
 
     def test_content_dir_created(self) -> None:
         self.assertTrue((self.root / "content").is_dir())
@@ -178,10 +179,10 @@ class WebDevIntegrationTest(unittest.TestCase):
         # Tier 3 should NOT have instructorGuide param
         self.assertNotIn("instructorGuide", toml)
 
-    def test_theme_copied(self) -> None:
-        self.assertTrue(
-            (self.root / "themes" / "curriculum-hugo-theme").is_dir()
-        )
+    def test_theme_symlinked(self) -> None:
+        theme_dir = self.root / "themes" / "curriculum-hugo-theme"
+        self.assertTrue(theme_dir.is_dir())
+        self.assertTrue(theme_dir.is_symlink(), "Theme should be a symlink for development")
 
     def test_tier3_mirror_dirs_created(self) -> None:
         """Tier 3 should create lessons/ and projects/ mirror dirs."""
