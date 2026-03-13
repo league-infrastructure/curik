@@ -1,9 +1,12 @@
 ---
-id: "019"
-title: "Hugo Site Tools and MCP Guidance Enrichment"
-status: planning
+id: 019
+title: Hugo Site Tools and MCP Guidance Enrichment
+status: done
 branch: sprint/019-hugo-site-tools-and-mcp-guidance-enrichment
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 019: Hugo Site Tools and MCP Guidance Enrichment
