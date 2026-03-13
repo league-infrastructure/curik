@@ -46,6 +46,21 @@ class ScaffoldStructureTest(unittest.TestCase):
             self.assertTrue((root / "01-intro" / "01-hello.md").is_file())
             self.assertTrue((root / "02-loops" / "01-for.md").is_file())
 
+    def test_creates_index_md_branch_bundles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            structure = {
+                "modules": [
+                    {"name": "01-intro", "lessons": ["01-hello.md"]},
+                ]
+            }
+            result = scaffold_structure(root, structure)
+            index_path = root / "01-intro" / "_index.md"
+            self.assertTrue(index_path.is_file())
+            content = index_path.read_text()
+            self.assertIn("# Intro", content)
+            self.assertIn("01-intro/_index.md", result["created"])
+
     def test_stub_content_has_title_and_instructor_guide(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -302,7 +317,7 @@ class ScaffoldDevcontainerTest(unittest.TestCase):
 
 
 class GenerateNavTest(unittest.TestCase):
-    def test_produces_expected_nav_list(self) -> None:
+    def test_produces_weight_assignments(self) -> None:
         structure = {
             "modules": [
                 {"name": "01-intro", "lessons": ["01-hello.md", "02-vars.md"]},
@@ -311,12 +326,12 @@ class GenerateNavTest(unittest.TestCase):
         }
         nav = generate_nav(structure)
         self.assertEqual(len(nav), 2)
-        self.assertIn("Intro", nav[0])
-        self.assertEqual(
-            nav[0]["Intro"], ["01-intro/01-hello.md", "01-intro/02-vars.md"]
-        )
-        self.assertIn("Loops", nav[1])
-        self.assertEqual(nav[1]["Loops"], ["02-loops/01-for.md"])
+        self.assertEqual(nav[0]["path"], "01-intro")
+        self.assertEqual(nav[0]["title"], "Intro")
+        self.assertEqual(nav[0]["weight"], 10)
+        self.assertEqual(nav[1]["path"], "02-loops")
+        self.assertEqual(nav[1]["title"], "Loops")
+        self.assertEqual(nav[1]["weight"], 20)
 
 
 class HugoConfigTest(unittest.TestCase):
