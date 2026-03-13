@@ -1,8 +1,9 @@
 ---
-id: "001"
-title: "Fix scaffold_structure to place content under content/ and create content/_index.md"
-status: todo
-use-cases: [SUC-001]
+id: '001'
+title: Fix scaffold_structure to place content under content/ and create content/_index.md
+status: done
+use-cases:
+- SUC-001
 depends-on: []
 ---
 
