@@ -1,9 +1,15 @@
 ---
-id: "004"
-title: "Integration test module tests/test_integration_hugo.py"
-status: todo
-use-cases: [SUC-001, SUC-002, SUC-003]
-depends-on: ["001", "002", "003"]
+id: '004'
+title: Integration test module tests/test_integration_hugo.py
+status: done
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+depends-on:
+- '001'
+- '002'
+- '003'
 ---
 
 # Integration test module tests/test_integration_hugo.py
