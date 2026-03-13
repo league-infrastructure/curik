@@ -1,7 +1,7 @@
 ---
-id: "003"
-title: "Add tests for hugo.py and move TODOs to done"
-status: todo
+id: '003'
+title: Add tests for hugo.py and move TODOs to done
+status: done
 use-cases: []
 depends-on: []
 ---
