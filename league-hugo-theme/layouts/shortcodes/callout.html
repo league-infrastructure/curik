@@ -1,0 +1,17 @@
+{{- /*
+  Callout shortcode for info, warning, and tip boxes.
+
+  Usage:
+    {{</* callout type="tip" */>}}
+    Remember to save your work!
+    {{</* /callout */>}}
+
+  Supported types: info (default), warning, tip
+*/ -}}
+{{- $type := .Get "type" | default "info" -}}
+<div class="callout callout-{{ $type }}">
+  <div class="callout-title">{{ $type | title }}</div>
+  <div class="callout-content">
+    {{ .Inner | markdownify }}
+  </div>
+</div>

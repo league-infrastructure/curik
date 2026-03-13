@@ -1,0 +1,51 @@
+/* Instructor Guide — collapsible section */
+.instructor-guide {
+  margin: 2rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+}
+
+.instructor-guide summary {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+
+.instructor-guide[open] summary {
+  border-bottom: 1px solid #ddd;
+}
+
+.instructor-guide-content {
+  padding: 1rem;
+}
+
+/* Callout boxes */
+.callout {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-left: 4px solid #0969da;
+  border-radius: 4px;
+  background: #f6f8fa;
+}
+
+.callout-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.callout-info {
+  border-left-color: #0969da;
+}
+
+.callout-warning {
+  border-left-color: #d1242f;
+  background: #fff5f5;
+}
+
+.callout-tip {
+  border-left-color: #1a7f37;
+  background: #f0fff4;
+}
