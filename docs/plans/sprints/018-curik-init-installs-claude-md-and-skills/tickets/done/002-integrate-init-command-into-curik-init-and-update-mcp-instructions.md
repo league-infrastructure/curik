@@ -1,9 +1,12 @@
 ---
-id: "002"
-title: "Integrate init_command into curik init and update MCP instructions"
-status: todo
-use-cases: [SUC-001, SUC-002]
-depends-on: ["001"]
+id: '002'
+title: Integrate init_command into curik init and update MCP instructions
+status: done
+use-cases:
+- SUC-001
+- SUC-002
+depends-on:
+- '001'
 ---
 
 # Integrate init_command into curik init and update MCP instructions
