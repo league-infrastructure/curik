@@ -1,8 +1,10 @@
 ---
-id: "003"
-title: "Create test fixture directories in tests/content_source/"
-status: todo
-use-cases: [SUC-002, SUC-003]
+id: '003'
+title: Create test fixture directories in tests/content_source/
+status: done
+use-cases:
+- SUC-002
+- SUC-003
 depends-on: []
 ---
 
