@@ -1,9 +1,11 @@
 ---
-id: "022"
-title: "Missing Skills and CLAUDE.md Template Rewrite"
-status: planning
+id: '022'
+title: Missing Skills and CLAUDE.md Template Rewrite
+status: done
 branch: sprint/022-missing-skills-and-claude-md-template-rewrite
-use-cases: [SUC-001, SUC-002]
+use-cases:
+- SUC-001
+- SUC-002
 ---
 
 # Sprint 022: Missing Skills and CLAUDE.md Template Rewrite
