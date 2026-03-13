@@ -1,7 +1,7 @@
 ---
-id: "001"
-title: "Create hugo.py module with content page operations"
-status: todo
+id: '001'
+title: Create hugo.py module with content page operations
+status: done
 use-cases: []
 depends-on: []
 ---
