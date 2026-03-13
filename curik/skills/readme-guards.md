@@ -1,18 +1,18 @@
-# Skill: README Comment Guards
+# Skill: README Shortcode Guards
 
 ## Purpose
 
-Teach agents how to place HTML comment guards in MkDocs lesson pages so
+Teach agents how to place Hugo shortcode guards in lesson pages so
 that Curik can automatically generate README.md files for GitHub-visible
 lesson directories. This applies to Tier 3-4 courses where students
 browse lessons in the repository or Codespaces.
 
 ## Guard Types
 
-### `<!-- readme-shared -->`
+### `{{</* readme-shared */>}}`
 
-Content between `<!-- readme-shared -->` and `<!-- /readme-shared -->`
-appears in **both** the rendered MkDocs page and the generated README.
+Content between `{{< readme-shared >}}` and `{{< /readme-shared >}}`
+appears in **both** the rendered Hugo site page and the generated README.
 
 Use this for:
 - Lesson title and introduction
@@ -23,7 +23,7 @@ Use this for:
 Example:
 
 ```markdown
-<!-- readme-shared -->
+{{< readme-shared >}}
 # Introduction to Variables
 
 In this lesson you will learn how to create and use variables in Python.
@@ -32,14 +32,14 @@ In this lesson you will learn how to create and use variables in Python.
 
 - Define variables with meaningful names
 - Understand variable types: str, int, float, bool
-<!-- /readme-shared -->
+{{< /readme-shared >}}
 ```
 
-### `<!-- readme-only -->`
+### `{{</* readme-only */>}}`
 
-Content between `<!-- readme-only -->` and `<!-- /readme-only -->` appears
-**only** in the generated README. It is invisible in the rendered MkDocs
-page because HTML comments are not displayed.
+Content between `{{< readme-only >}}` and `{{< /readme-only >}}` appears
+**only** in the generated README. The Hugo shortcode renders this content
+as hidden on the site.
 
 Use this for:
 - Getting-started instructions specific to the repo/Codespaces context
@@ -50,7 +50,7 @@ Use this for:
 Example:
 
 ```markdown
-<!-- readme-only -->
+{{< readme-only >}}
 ## Getting Started
 
 Open `exercise.py` in this directory and follow the instructions in the
@@ -59,21 +59,21 @@ comments. Run your solution with:
 ```bash
 python exercise.py
 ```
-<!-- /readme-only -->
+{{< /readme-only >}}
 ```
 
 ## Placement Guidelines
 
-1. Place `<!-- readme-shared -->` guards around content that makes sense
+1. Place `{{< readme-shared >}}` guards around content that makes sense
    in both contexts (web page and repository README).
-2. Place `<!-- readme-only -->` guards around content that only makes
+2. Place `{{< readme-only >}}` guards around content that only makes
    sense when reading the README in the repository (file references,
    local run commands, Codespaces setup).
 3. Guards can appear multiple times in a single file. Each guarded
    section is extracted and concatenated in order.
 4. Do not nest guards inside each other.
-5. Always close guards with the matching closing tag
-   (`<!-- /readme-shared -->` or `<!-- /readme-only -->`).
+5. Always close guards with the matching closing shortcode
+   (`{{< /readme-shared >}}` or `{{< /readme-only >}}`).
 6. Place guards at the block level (around full paragraphs, headings,
    or sections), not inline within a sentence.
 
@@ -87,8 +87,8 @@ python exercise.py
 
 ## Workflow
 
-1. Author writes or edits an MkDocs lesson page in `docs/docs/`.
-2. Author adds `<!-- readme-shared -->` and/or `<!-- readme-only -->`
+1. Author writes or edits a Hugo lesson page in `content/`.
+2. Author adds `{{< readme-shared >}}` and/or `{{< readme-only >}}`
    guards around appropriate content.
 3. Run `tool_trigger_readme_generation` to generate READMEs from all
    guarded pages.

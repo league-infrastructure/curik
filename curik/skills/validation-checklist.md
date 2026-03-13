@@ -13,7 +13,7 @@ curriculum hierarchy.
 A lesson is **complete** when all of the following are true:
 
 - [ ] File exists as a `.md` file in its module directory
-- [ ] Contains an instructor guide div (`<div class="instructor-guide">`)
+- [ ] Contains an instructor guide shortcode (`{{< instructor-guide >}}`)
 - [ ] Instructor guide has all 7 required fields, each non-empty:
   1. **Objectives** — what the lesson aims to teach
   2. **Materials** — supplies, software, or resources needed

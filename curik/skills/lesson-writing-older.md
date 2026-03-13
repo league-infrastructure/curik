@@ -7,7 +7,7 @@ description: Lesson page format, notebook structure, inline instructor guide, an
 
 This skill covers how to write student-facing lesson pages and Jupyter
 notebooks for grades 6-12. Students read the content directly. Instructor
-guidance is embedded inline using a hidden div.
+guidance is embedded inline using a Hugo shortcode.
 
 ## Lesson Page Format
 
@@ -48,7 +48,7 @@ Continue building...
 
 Key takeaways in 3-5 bullet points.
 
-<div class="instructor-guide" markdown>
+{{< instructor-guide >}}
 
 ## Instructor Guide
 
@@ -60,7 +60,7 @@ Key takeaways in 3-5 bullet points.
 **Assessment Cues**: ...
 **Differentiation**: ...
 
-</div>
+{{< /instructor-guide >}}
 ```
 
 ## Jupyter Notebook Structure
@@ -76,7 +76,7 @@ Notebooks alternate between Markdown cells and code cells:
 5. **Solution cells** (Code): Tagged with `# SOLUTION` in the first line.
    These are stripped from student-facing notebooks.
 6. **Instructor guide cell** (Markdown): The last Markdown cell, containing
-   the instructor guide div.
+   the instructor guide shortcode.
 
 ### Notebook Rules
 
@@ -90,7 +90,7 @@ Notebooks alternate between Markdown cells and code cells:
 
 ## Inline Instructor Guide Sections
 
-The instructor guide is embedded in a `<div class="instructor-guide" markdown>`
+The instructor guide is embedded in a `{{< instructor-guide >}}` shortcode
 block. This is rendered hidden for students but visible for instructors.
 
 All 7 required fields must appear. See `instructor-guide-sections` for
@@ -152,5 +152,5 @@ after the summary. For notebooks, it goes in the final Markdown cell.
   link to it. Don't assume students remember.
 - **Untested code.** Run every example. A syntax error destroys student
   trust.
-- **Missing instructor guide.** The div is easy to forget in notebooks.
+- **Missing instructor guide.** The shortcode is easy to forget in notebooks.
   It is not optional.

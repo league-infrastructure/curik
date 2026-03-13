@@ -39,7 +39,7 @@ tier: 1
 
 # Lesson Title
 
-<div class="instructor-guide" markdown>
+{{< instructor-guide >}}
 
 ## Instructor Guide
 
@@ -71,7 +71,7 @@ student-friendly version the teacher can say aloud]
 - *Needs more support*: [Specific adjustment]
 - *Ready for more*: [Specific extension]
 
-</div>
+{{< /instructor-guide >}}
 
 ## Welcome / Warm-up
 
@@ -109,8 +109,8 @@ Every lesson must include all 7 required fields. See the
 `instructor-guide-sections` skill for detailed guidance on what good
 looks like for each field.
 
-The instructor guide div must appear near the top of the lesson, before
-the first content section, so the teacher reads it first during prep.
+The instructor guide shortcode must appear near the top of the lesson,
+before the first content section, so the teacher reads it first during prep.
 
 ## Common Pitfalls
 
