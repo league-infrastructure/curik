@@ -20,7 +20,7 @@ Present the options as a numbered menu:
 
 ### How will students interact with the material?
 
-1. **Website with lessons** — students read MkDocs pages, exercises are
+1. **Website with lessons** — students read Hugo site pages, exercises are
    separate files or embedded
 2. **Interactive lessons** — embedded code execution (Pyodide) so students
    run code right in the lesson

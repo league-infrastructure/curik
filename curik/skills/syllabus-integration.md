@@ -18,17 +18,17 @@ modules:
     lessons:
       - uid: "py-101-vars"
         name: "Introduction to Variables"
-        lesson: "docs/docs/01-variables/01-intro.md"
+        lesson: "content/01-variables/01-intro.md"
         exercise: "lessons/01-variables/01-intro/exercise.py"
       - uid: "py-101-types"
         name: "Data Types"
-        lesson: "docs/docs/01-variables/02-types.md"
+        lesson: "content/01-variables/02-types.md"
         exercise: "lessons/01-variables/02-types/exercise.py"
   - name: "Control Flow"
     lessons:
       - uid: "py-102-if"
         name: "Conditionals"
-        lesson: "docs/docs/02-control-flow/01-if.md"
+        lesson: "content/02-control-flow/01-if.md"
 ```
 
 ### Structure
@@ -39,7 +39,7 @@ modules:
 - **Lesson**: Individual entry with:
   - `uid` — Unique identifier for cross-referencing
   - `name` — Display name
-  - `lesson` — Path to the MkDocs lesson page
+  - `lesson` — Path to the Hugo content page
   - `exercise` — Path to the exercise file (optional)
   - `url` — External URL (optional, set via `write_syllabus_url`)
 
@@ -48,14 +48,14 @@ modules:
 Every lesson has a unique `uid` field that serves as the primary key
 for cross-referencing between systems:
 
-- **Syllabus to MkDocs**: Match syllabus UIDs to frontmatter `uid:`
-  fields in MkDocs pages under `docs/docs/`.
+- **Syllabus to Hugo content**: Match syllabus UIDs to frontmatter `uid:`
+  fields in Hugo pages under `content/`.
 - **Syllabus to Lesson Files**: The `lesson` path field points to the
   source Markdown file.
 - **Validation**: `validate_lesson` (tier 3-4) checks that the lesson
   file's frontmatter UID appears in the syllabus.
 - **Consistency Check**: `validate_syllabus_consistency` cross-references
-  all syllabus UIDs against all MkDocs page UIDs and reports mismatches.
+  all syllabus UIDs against all Hugo content page UIDs and reports mismatches.
 
 ## syl Compile Workflow
 
@@ -73,26 +73,26 @@ syllabus needs to be rebuilt from scratch.
 
 ## Bidirectional Sync
 
-The syllabus and MkDocs pages must stay in sync. Drift between them
+The syllabus and Hugo content pages must stay in sync. Drift between them
 causes broken navigation, missing lessons, and validation failures.
 
-### Syllabus to MkDocs Direction
+### Syllabus to Hugo Direction
 
-- Each syllabus lesson entry should have a corresponding MkDocs page
+- Each syllabus lesson entry should have a corresponding Hugo content page
   with a matching `uid` in its YAML frontmatter.
 - `validate_syllabus_consistency` reports `entries_without_pages` for
-  syllabus UIDs that have no matching MkDocs page.
+  syllabus UIDs that have no matching content page.
 
-### MkDocs to Syllabus Direction
+### Hugo to Syllabus Direction
 
-- Each MkDocs page with a `uid` frontmatter field should have a
+- Each Hugo content page with a `uid` frontmatter field should have a
   corresponding syllabus entry.
 - `validate_syllabus_consistency` reports `pages_without_entries` for
-  MkDocs page UIDs that have no matching syllabus entry.
+  content page UIDs that have no matching syllabus entry.
 
 ### Pages Without UIDs
 
-MkDocs pages that lack a `uid` frontmatter field are reported as
+Hugo content pages that lack a `uid` frontmatter field are reported as
 `pages_without_uid`. These pages cannot be cross-referenced and should
 have UIDs added.
 
@@ -102,4 +102,4 @@ have UIDs added.
 - `tool_write_syllabus_url(uid, url)` — Set the URL for a lesson by UID
 - `tool_regenerate_syllabus(lesson_dir)` — Rebuild syllabus from files
 - `tool_get_syllabus` — Return raw syllabus.yaml content
-- `tool_validate_syllabus_consistency` — Check syllabus vs MkDocs sync
+- `tool_validate_syllabus_consistency` — Check syllabus vs Hugo content sync

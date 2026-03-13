@@ -158,7 +158,7 @@ in the appropriate format:
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Tier | 3 | Grades 6-10, code-based |
-| Delivery | MkDocs site + GitHub repo | Standard League stack |
+| Delivery | Hugo site + GitHub repo | Standard League stack |
 | Platform | GitHub Codespaces | No local setup needed |
 | Content format | Markdown + .py exercises | Simple, version-controlled |
 | Lesson format | Sequential with progressive project | Matches pedagogical model |
