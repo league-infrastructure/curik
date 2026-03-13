@@ -41,6 +41,7 @@ from .changes import (
     create_issue,
     execute_change_plan,
     list_issues,
+    register_change_plan,
     review_change_plan,
 )
 from .hugo import (
@@ -461,6 +462,21 @@ def tool_create_change_plan(title: str, issue_numbers_json: str) -> str:
         result = create_change_plan(_root(), title, issue_numbers)
         return json.dumps(result, indent=2)
     except (json.JSONDecodeError, CurikError) as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_register_change_plan(plan_number: int) -> str:
+    """Register an agent-written change plan file.
+
+    Validates that the plan file exists in change-plan/active/ and has
+    correct frontmatter (title, status). Use this after writing a change
+    plan document directly, rather than using tool_create_change_plan.
+    """
+    try:
+        result = register_change_plan(_root(), plan_number)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
         return f"Error: {e}"
 
 

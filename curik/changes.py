@@ -206,6 +206,31 @@ def create_change_plan(root: Path, title: str, issue_numbers: list[int]) -> dict
     return {"path": str(path), "number": number}
 
 
+def register_change_plan(root: Path, plan_number: int) -> dict:
+    """Register an agent-written change plan file in change-plan/active/.
+
+    Validates that the file exists and has correct frontmatter (title, status).
+    Returns the plan's metadata. Raises CurikError if file is missing or invalid.
+    """
+    root = root.resolve()
+    path = _find_plan(root, plan_number)
+    fm, _ = _parse_frontmatter(path)
+
+    if "title" not in fm:
+        raise CurikError(f"Change plan #{plan_number} is missing 'title' in frontmatter.")
+
+    if "status" not in fm:
+        raise CurikError(f"Change plan #{plan_number} is missing 'status' in frontmatter.")
+
+    return {
+        "path": str(path),
+        "number": plan_number,
+        "title": fm.get("title", ""),
+        "status": fm.get("status", ""),
+        "issues": fm.get("issues", []),
+    }
+
+
 def approve_change_plan(root: Path, plan_number: int) -> dict:
     """Set a change plan's status to 'approved'. Must be in 'draft' status."""
     root = root.resolve()
