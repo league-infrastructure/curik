@@ -72,7 +72,7 @@ class ScaffoldStructureTest(unittest.TestCase):
             scaffold_structure(root, structure)
             content = (root / "mod" / "01-hello-world.md").read_text()
             self.assertIn("# Hello World", content)
-            self.assertIn('class="instructor-guide"', content)
+            self.assertIn("{{< instructor-guide >}}", content)
 
     def test_existing_dirs_reported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -108,7 +108,7 @@ class CreateLessonStubTest(unittest.TestCase):
             self.assertEqual(rel, "mod1/01-basics.md")
             content = (root / "mod1" / "01-basics.md").read_text()
             self.assertIn("# Basics", content)
-            self.assertIn('class="instructor-guide"', content)
+            self.assertIn("{{< instructor-guide >}}", content)
             self.assertNotIn("Student Content", content)
 
     def test_tier2_instructor_guide_primary(self) -> None:
@@ -124,7 +124,7 @@ class CreateLessonStubTest(unittest.TestCase):
             create_lesson_stub(root, "mod1", "01-basics.md", 3)
             content = (root / "mod1" / "01-basics.md").read_text()
             self.assertIn("## Student Content", content)
-            self.assertIn('class="instructor-guide"', content)
+            self.assertIn("{{< instructor-guide >}}", content)
 
     def test_tier4_has_student_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

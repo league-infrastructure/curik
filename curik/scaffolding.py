@@ -86,9 +86,9 @@ def scaffold_structure(
                 lesson_path.write_text(
                     f"---\nuid: {uid}\n---\n\n"
                     f"# {title}\n\n"
-                    '<div class="instructor-guide">\n\n'
+                    "{{< instructor-guide >}}\n\n"
                     "Instructor guide content goes here.\n\n"
-                    "</div>\n",
+                    "{{< /instructor-guide >}}\n",
                     encoding="utf-8",
                 )
                 created.append(rel)
@@ -177,18 +177,18 @@ def create_lesson_stub(
     if tier in (1, 2):
         content = (
             f"# {title}\n\n"
-            '<div class="instructor-guide">\n\n'
+            "{{< instructor-guide >}}\n\n"
             "Instructor guide content goes here.\n\n"
-            "</div>\n"
+            "{{< /instructor-guide >}}\n"
         )
     else:
         content = (
             f"# {title}\n\n"
             "## Student Content\n\n"
             "Student-facing content goes here.\n\n"
-            '<div class="instructor-guide">\n\n'
+            "{{< instructor-guide >}}\n\n"
             "Instructor guide content goes here.\n\n"
-            "</div>\n"
+            "{{< /instructor-guide >}}\n"
         )
 
     if uid is not None:
