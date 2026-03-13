@@ -1,9 +1,14 @@
 ---
-id: "003"
-title: "Add tests for init_command functions"
-status: todo
-use-cases: [SUC-001, SUC-002, SUC-003]
-depends-on: ["001", "002"]
+id: '003'
+title: Add tests for init_command functions
+status: done
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+depends-on:
+- '001'
+- '002'
 ---
 
 # Add tests for init_command functions
