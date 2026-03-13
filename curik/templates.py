@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,41 @@ def get_hugo_config(title: str, tier: int) -> str:
 
     lines.append("")
     return "\n".join(lines)
+
+
+def hugo_setup(root: Path, title: str, tier: int) -> dict[str, list[str]]:
+    """Generate hugo.toml and copy the theme into a course repo.
+
+    Writes ``hugo.toml`` to *root* and copies the bundled
+    curriculum-hugo-theme into ``themes/curriculum-hugo-theme/``.
+
+    Returns ``{"created": [...], "existing": [...]}``.
+    """
+    root = root.resolve()
+    created: list[str] = []
+    existing: list[str] = []
+
+    # Generate hugo.toml
+    hugo_toml = root / "hugo.toml"
+    rel_toml = str(hugo_toml.relative_to(root))
+    if hugo_toml.exists():
+        existing.append(rel_toml)
+    else:
+        hugo_toml.write_text(get_hugo_config(title, tier), encoding="utf-8")
+        created.append(rel_toml)
+
+    # Copy theme
+    theme_dest = root / "themes" / THEME_NAME
+    rel_theme = str(theme_dest.relative_to(root))
+    if theme_dest.exists():
+        existing.append(rel_theme)
+    else:
+        theme_src = get_theme_source()
+        if theme_src.is_dir():
+            shutil.copytree(theme_src, theme_dest)
+            created.append(rel_theme)
+
+    return {"created": created, "existing": existing}
 
 
 def get_devcontainer_json(language: str) -> str:

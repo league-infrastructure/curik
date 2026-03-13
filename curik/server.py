@@ -70,6 +70,7 @@ from .scaffolding import (
     get_outline,
     scaffold_structure,
 )
+from .templates import hugo_setup
 from .syllabus import (
     get_syllabus,
     read_syllabus_entries,
@@ -773,6 +774,45 @@ def tool_update_frontmatter(page_path: str, updates_json: str) -> str:
         result = update_frontmatter(_root(), page_path, updates)
         return json.dumps(result, indent=2)
     except (json.JSONDecodeError, CurikError) as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_hugo_setup(title: str = "", tier: int = 2) -> str:
+    """Generate hugo.toml and copy the curriculum theme into this course repo.
+
+    Creates ``hugo.toml`` with the given title and tier settings, and copies
+    the curriculum-hugo-theme into ``themes/curriculum-hugo-theme/``.
+
+    If *title* is empty, reads it from ``course.yml``. If *tier* is not
+    provided, defaults to 2 (or reads from ``course.yml``).
+
+    This is called automatically by ``tool_scaffold_structure()``, but can
+    also be used standalone to regenerate the Hugo config or re-copy the theme.
+    """
+    import yaml
+
+    root = _root()
+    effective_title = title
+    effective_tier = tier
+
+    if not effective_title:
+        course_yml = root / "course.yml"
+        if course_yml.is_file():
+            try:
+                data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    effective_title = data.get("title", "Course")
+                    effective_tier = data.get("tier", tier)
+            except yaml.YAMLError:
+                pass
+        if not effective_title:
+            effective_title = "Course"
+
+    try:
+        result = hugo_setup(root, effective_title, effective_tier)
+        return json.dumps(result, indent=2)
+    except Exception as e:
         return f"Error: {e}"
 
 

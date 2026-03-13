@@ -8,8 +8,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from .project import CurikError, _course_dir
-from .templates import get_devcontainer_json
+from .templates import get_devcontainer_json, hugo_setup
 from .uid import generate_unit_uid
 
 
@@ -132,6 +134,23 @@ def scaffold_structure(
             dc_dir.mkdir(parents=True, exist_ok=True)
             dc_file.write_text(get_devcontainer_json(language), encoding="utf-8")
             created.append(dc_rel)
+
+    # Hugo setup: generate hugo.toml and copy theme (standard courses only)
+    if course_type != "resource-collection":
+        course_yml = root / "course.yml"
+        title = "Course"
+        effective_tier = tier if tier is not None else 2
+        if course_yml.is_file():
+            try:
+                data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
+                if isinstance(data, dict):
+                    title = data.get("title", title)
+                    effective_tier = data.get("tier", effective_tier)
+            except yaml.YAMLError:
+                pass
+        hugo_result = hugo_setup(root, title, effective_tier)
+        created.extend(hugo_result["created"])
+        existing.extend(hugo_result["existing"])
 
     return {"created": sorted(created), "existing": sorted(existing)}
 

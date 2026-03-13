@@ -188,5 +188,54 @@ class HugoBuildTest(unittest.TestCase):
         self.assertIn("error", result)
 
 
+class HugoSetupTest(unittest.TestCase):
+    """Tests for hugo_setup() in templates.py."""
+
+    def setUp(self) -> None:
+        from curik.templates import hugo_setup, get_theme_source, THEME_NAME
+        self.hugo_setup = hugo_setup
+        self.theme_source = get_theme_source()
+        self.theme_name = THEME_NAME
+
+    def test_creates_hugo_toml(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = self.hugo_setup(root, "Test Course", 2)
+            self.assertIn("hugo.toml", result["created"])
+            toml = (root / "hugo.toml").read_text()
+            self.assertIn('title = "Test Course"', toml)
+            self.assertIn('theme = "curriculum-hugo-theme"', toml)
+            self.assertIn("instructorGuide = true", toml)
+
+    def test_copies_theme(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = self.hugo_setup(root, "Test", 3)
+            theme_dir = root / "themes" / self.theme_name
+            if self.theme_source.is_dir():
+                self.assertTrue(theme_dir.is_dir())
+                self.assertIn(f"themes/{self.theme_name}", result["created"])
+
+    def test_existing_hugo_toml_not_overwritten(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "hugo.toml").write_text("existing config\n")
+            result = self.hugo_setup(root, "Test", 2)
+            self.assertIn("hugo.toml", result["existing"])
+            self.assertEqual((root / "hugo.toml").read_text(), "existing config\n")
+
+    def test_existing_theme_not_overwritten(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            theme_dir = root / "themes" / self.theme_name
+            theme_dir.mkdir(parents=True)
+            (theme_dir / "marker.txt").write_text("original")
+            result = self.hugo_setup(root, "Test", 2)
+            self.assertIn(f"themes/{self.theme_name}", result["existing"])
+            self.assertEqual(
+                (theme_dir / "marker.txt").read_text(), "original"
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
