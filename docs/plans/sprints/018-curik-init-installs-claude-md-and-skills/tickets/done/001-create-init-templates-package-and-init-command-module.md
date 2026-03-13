@@ -1,8 +1,11 @@
 ---
-id: "001"
-title: "Create init templates package and init_command module"
-status: todo
-use-cases: [SUC-001, SUC-002, SUC-003]
+id: '001'
+title: Create init templates package and init_command module
+status: done
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 depends-on: []
 ---
 
