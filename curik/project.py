@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .init_command import run_init
 from .uid import generate_course_uid
 
 SPEC_SECTION_HEADINGS: dict[str, str] = {
@@ -110,6 +111,15 @@ def init_course(
             continue
         path.write_text(content, encoding="utf-8")
         created.append(str(path.relative_to(root)))
+
+    # Install CLAUDE.md section, /curik skill, and MCP permissions
+    init_result = run_init(root)
+    for path in init_result.get("created", []):
+        created.append(path)
+    for path in init_result.get("unchanged", []):
+        existing.append(path)
+    for path in init_result.get("updated", []):
+        created.append(path)
 
     return {"created": sorted(created), "existing": sorted(existing)}
 

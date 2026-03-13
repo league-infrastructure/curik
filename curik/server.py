@@ -66,7 +66,19 @@ from .syllabus import (
     write_syllabus_url,
 )
 
-mcp = FastMCP("curik", instructions="Curik curriculum development tool")
+mcp = FastMCP(
+    "curik",
+    instructions=(
+        "Curik is a curriculum development tool for the League of Amazing "
+        "Programmers. Curricula use Hugo as the static site generator with "
+        "content in the content/ directory. Lessons use Hugo shortcodes: "
+        "{{< instructor-guide >}}, {{< callout type=\"tip\" >}}, "
+        "{{< readme-shared >}}, and {{< readme-only >}}. "
+        "Do NOT use raw HTML divs or HTML comment guards in lesson files. "
+        "Use list_agents(), list_skills(), and list_references() to discover "
+        "available curriculum development agents, skills, and reference docs."
+    ),
+)
 
 # Resolved at server startup via run_server(path).
 _project_root: Path = Path(".")

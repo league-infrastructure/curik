@@ -136,6 +136,9 @@ _PROTECTED_NAMES = frozenset({
     CURIK_DIR,    # .course/
     ".git",
     ".mcp.json",
+    ".claude",
+    ".vscode",
+    "CLAUDE.md",
     "course.yml",
     "_old",
 })
