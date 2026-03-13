@@ -38,6 +38,12 @@ from .changes import (
     list_issues,
     review_change_plan,
 )
+from .hugo import (
+    create_content_page,
+    hugo_build,
+    list_content_pages,
+    update_frontmatter,
+)
 from .migrate import inventory_course, migrate_structure, sequester_content
 from .quiz import generate_quiz_stub, set_quiz_status, validate_quiz_alignment
 from .research import get_research_findings, save_research_findings
@@ -70,13 +76,25 @@ mcp = FastMCP(
     "curik",
     instructions=(
         "Curik is a curriculum development tool for the League of Amazing "
-        "Programmers. Curricula use Hugo as the static site generator with "
-        "content in the content/ directory. Lessons use Hugo shortcodes: "
-        "{{< instructor-guide >}}, {{< callout type=\"tip\" >}}, "
-        "{{< readme-shared >}}, and {{< readme-only >}}. "
-        "Do NOT use raw HTML divs or HTML comment guards in lesson files. "
-        "Use list_agents(), list_skills(), and list_references() to discover "
-        "available curriculum development agents, skills, and reference docs."
+        "Programmers.\n\n"
+        "GETTING STARTED: Call tool_get_course_status() to see current phase, "
+        "then tool_get_phase() for what to do next. Load the start-curik agent "
+        "via tool_get_agent_definition('start-curik') for guided workflow.\n\n"
+        "HUGO SSG: Content lives in content/ with _index.md branch bundles. "
+        "Navigation order from numeric prefixes (01-, 02-). Config in hugo.toml. "
+        "The League Hugo Theme provides branding and shortcodes.\n\n"
+        "SHORTCODES (use these, NEVER raw HTML divs or comment guards):\n"
+        "- {{< instructor-guide >}}...{{< /instructor-guide >}} — instructor-only content\n"
+        "- {{< callout type=\"tip\" >}}...{{< /callout >}} — info/warning/tip boxes\n"
+        "- {{< readme-shared >}}...{{< /readme-shared >}} — appears on site AND in README\n"
+        "- {{< readme-only >}}...{{< /readme-only >}} — README only, hidden from site\n\n"
+        "WORKFLOW: Phase 1 (course design) → Phase 2 (content authoring). "
+        "In Phase 1, use tool_update_spec() to fill spec sections and "
+        "tool_advance_sub_phase() to progress. In Phase 2, use "
+        "tool_scaffold_structure() for layout, tool_create_lesson_stub() for "
+        "lessons, tool_validate_lesson() to check work.\n\n"
+        "DISCOVERY: Use tool_list_agents(), tool_list_skills(), "
+        "tool_list_references() to find curriculum development resources."
     ),
 )
 
@@ -90,9 +108,11 @@ def _root() -> Path:
 
 @mcp.tool()
 def tool_init_course(course_type: str = "course") -> str:
-    """Initialize a new curriculum project with CURIK_DIR/ directory structure.
+    """Initialize a new curriculum project.
 
-    *course_type* must be ``"course"`` (default) or ``"resource-collection"``.
+    Creates .course/ directory, course.yml, .mcp.json, CLAUDE.md with Hugo
+    conventions, /curik skill, and MCP permissions.
+    *course_type*: ``"course"`` (default) or ``"resource-collection"``.
     """
     try:
         result = init_course(_root(), course_type=course_type)
@@ -281,14 +301,15 @@ def tool_scaffold_structure(
     tier: int = 0,
     language: str = "python",
 ) -> str:
-    """Create the directory tree and lesson stubs described by a JSON structure.
+    """Create the Hugo content/ directory tree and lesson stubs.
 
-    *structure_json* must be a JSON string with format:
-    {"modules": [{"name": "01-intro", "lessons": ["01-hello.md"]}]}
+    Generates module directories with _index.md branch bundles and lesson
+    stub files containing Hugo shortcodes (instructor-guide, readme guards).
 
-    *course_type* must be ``"course"`` (default) or ``"resource-collection"``.
-    *tier* (1-4) enables tier-specific features; 0 means unset.
-    *language* sets the devcontainer language for tier 3-4 projects.
+    *structure_json*: ``{"modules": [{"name": "01-intro", "lessons": ["01-hello.md"]}]}``
+    *course_type*: ``"course"`` (default) or ``"resource-collection"``.
+    *tier* (1-4): enables tier-specific features; 0 means unset.
+    *language*: devcontainer language for tier 3-4 projects.
     """
     try:
         structure = json.loads(structure_json)
@@ -304,8 +325,11 @@ def tool_scaffold_structure(
 
 @mcp.tool()
 def tool_create_lesson_stub(module: str, lesson: str, tier: int) -> str:
-    """Create a single lesson stub file. Tier 1-2: instructor-guide-primary.
-    Tier 3-4: student content + instructor guide (+ .ipynb companion if applicable)."""
+    """Create a single Hugo lesson stub in content/<module>/<lesson>.
+
+    Generated stubs include {{< instructor-guide >}} shortcode blocks.
+    Tier 1-2: instructor-guide-primary layout.
+    Tier 3-4: student content + instructor guide (+ .ipynb companion)."""
     try:
         rel = create_lesson_stub(_root(), module, lesson, tier)
         return f"Created: {rel}"
@@ -608,7 +632,7 @@ def tool_get_syllabus() -> str:
 
 @mcp.tool()
 def tool_trigger_readme_generation(docs_dir: str = "content") -> str:
-    """Generate README.md files from guarded sections in Hugo lesson pages."""
+    """Generate README.md files from {{< readme-shared >}} and {{< readme-only >}} shortcode guards in Hugo lesson pages."""
     try:
         result = generate_readmes(_root(), docs_dir)
         return json.dumps(result, indent=2)
@@ -621,6 +645,76 @@ def tool_validate_syllabus_consistency() -> str:
     """Check syllabus entries against Hugo content pages and report mismatches."""
     try:
         result = validate_syllabus_consistency(_root())
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+# -- Hugo site tools --
+
+
+@mcp.tool()
+def tool_list_content_pages(section: str | None = None) -> str:
+    """List all content pages under content/ with frontmatter metadata.
+
+    Returns path, title, weight, and draft status for each .md file.
+    Optional *section* (e.g. "01-intro") limits to a subdirectory.
+    """
+    try:
+        result = list_content_pages(_root(), section=section)
+        return json.dumps(result, indent=2)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_create_content_page(
+    page_path: str,
+    title: str,
+    content: str = "",
+    extra_frontmatter_json: str = "{}",
+) -> str:
+    """Create a new Hugo content page at content/<page_path>.
+
+    Use this for arbitrary pages (landing pages, resources, etc.) —
+    for lesson stubs with shortcode scaffolding, use tool_create_lesson_stub.
+    *extra_frontmatter_json*: JSON dict of additional frontmatter fields.
+    """
+    try:
+        extra = json.loads(extra_frontmatter_json)
+        rel = create_content_page(
+            _root(), page_path, title, content, extra_frontmatter=extra
+        )
+        return f"Created: {rel}"
+    except (json.JSONDecodeError, CurikError) as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_update_frontmatter(page_path: str, updates_json: str) -> str:
+    """Update YAML frontmatter on an existing content page.
+
+    Merges *updates_json* (a JSON dict) into the page's frontmatter.
+    Existing fields are preserved; matching keys are overwritten.
+    Body content is not modified.
+    """
+    try:
+        updates = json.loads(updates_json)
+        result = update_frontmatter(_root(), page_path, updates)
+        return json.dumps(result, indent=2)
+    except (json.JSONDecodeError, CurikError) as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_hugo_build() -> str:
+    """Build the Hugo site and return the result.
+
+    Returns success status, build output, and any errors.
+    If Hugo is not installed, returns an actionable error message.
+    """
+    try:
+        result = hugo_build(_root())
         return json.dumps(result, indent=2)
     except CurikError as e:
         return f"Error: {e}"
