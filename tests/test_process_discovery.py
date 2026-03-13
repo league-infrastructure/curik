@@ -82,10 +82,10 @@ class ActivityGuideTest(unittest.TestCase):
         self.assertIn("Unknown activity", str(ctx.exception))
         self.assertIn("spec-development", str(ctx.exception))
 
-    def test_missing_instruction_handled_gracefully(self) -> None:
-        # Instructions not yet written should show placeholder
-        guide = get_activity_guide("spec-development")
-        # curriculum-process and course-taxonomy don't exist yet
+    def test_missing_asset_handled_gracefully(self) -> None:
+        # Skills not yet written should show placeholder
+        guide = get_activity_guide("content-analysis")
+        # existing-content-analysis skill doesn't exist yet
         self.assertIn("not yet written", guide)
 
     def test_each_activity_returns_nonempty(self) -> None:
