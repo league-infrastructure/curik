@@ -1,9 +1,11 @@
 ---
-id: "023"
-title: "Change Cycle Tool Alignment"
-status: planning
+id: '023'
+title: Change Cycle Tool Alignment
+status: done
 branch: sprint/023-change-cycle-tool-alignment
-use-cases: [SUC-001, SUC-002]
+use-cases:
+- SUC-001
+- SUC-002
 ---
 
 # Sprint 023: Change Cycle Tool Alignment
