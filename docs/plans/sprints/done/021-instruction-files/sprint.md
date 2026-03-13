@@ -1,9 +1,10 @@
 ---
-id: "021"
-title: "Instruction Files"
-status: planning
+id: '021'
+title: Instruction Files
+status: done
 branch: sprint/021-instruction-files
-use-cases: [SUC-001]
+use-cases:
+- SUC-001
 ---
 
 # Sprint 021: Instruction Files
