@@ -46,6 +46,21 @@ def scaffold_structure(
     if not modules:
         raise CurikError("Structure must contain a non-empty 'modules' list.")
 
+    # Create content/_index.md landing page (standard courses only)
+    if course_type != "resource-collection":
+        content_dir = root / "content"
+        content_dir.mkdir(parents=True, exist_ok=True)
+        index_path = content_dir / "_index.md"
+        index_rel = str(index_path.relative_to(root))
+        if index_path.exists():
+            existing.append(index_rel)
+        else:
+            index_path.write_text(
+                "---\ntitle: Course Home\n---\n\nCourse overview.\n",
+                encoding="utf-8",
+            )
+            created.append(index_rel)
+
     for mod in modules:
         mod_name = mod.get("name")
         if not mod_name:
@@ -54,7 +69,7 @@ def scaffold_structure(
         if course_type == "resource-collection":
             mod_dir = root / "resources" / mod_name
         else:
-            mod_dir = root / mod_name
+            mod_dir = root / "content" / mod_name
         mod_rel = str(mod_dir.relative_to(root))
         if mod_dir.exists():
             existing.append(mod_rel)
@@ -169,7 +184,7 @@ def create_lesson_stub(
     if tier not in (1, 2, 3, 4):
         raise CurikError(f"Tier must be 1-4, got {tier}.")
 
-    mod_dir = root / module
+    mod_dir = root / "content" / module
     mod_dir.mkdir(parents=True, exist_ok=True)
     lesson_path = mod_dir / lesson
     title = _title_from_filename(lesson)

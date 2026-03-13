@@ -154,14 +154,14 @@ class ScaffoldResourceCollectionTest(unittest.TestCase):
                 "resources/how-to-guides/01-setup.md", result["created"]
             )
 
-    def test_default_creates_at_root(self) -> None:
+    def test_default_creates_under_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             result = scaffold_structure(root, self._structure)
             self.assertTrue(
-                (root / "how-to-guides" / "01-setup.md").is_file()
+                (root / "content" / "how-to-guides" / "01-setup.md").is_file()
             )
-            self.assertIn("how-to-guides", result["created"])
+            self.assertIn("content/how-to-guides", result["created"])
             self.assertNotIn("resources/how-to-guides", result["created"])
 
 
