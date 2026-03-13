@@ -1,9 +1,11 @@
 ---
-id: "017"
-title: "League Hugo Theme"
-status: planning
+id: '017'
+title: League Hugo Theme
+status: done
 branch: sprint/017-league-hugo-theme
-use-cases: [TUC-001, TUC-002]
+use-cases:
+- TUC-001
+- TUC-002
 ---
 
 # Sprint 017: League Hugo Theme
