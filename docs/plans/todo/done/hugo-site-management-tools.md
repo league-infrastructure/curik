@@ -6,7 +6,8 @@ tags:
 - mcp-server
 - website
 - scaffolding
-status: pending
+status: done
+sprint: 019
 ---
 
 # Hugo Site Management Tools
@@ -66,8 +67,6 @@ These are the minimum tools an agent needs to work with the Hugo site.
 - **`tool_hugo_build()`** — Run `hugo` and return build output (errors,
   warnings, page count). Detect if Hugo is installed; provide actionable
   error if not.
-- **`tool_hugo_serve()`** — Start `hugo server` in the background and
-  return the local URL for preview.
 - **`tool_list_content_pages(section: str | None)`** — Walk `content/`
   and return a list of pages with their frontmatter (title, weight, draft
   status, UID, section path).

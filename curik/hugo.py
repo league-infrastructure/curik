@@ -87,11 +87,11 @@ def create_content_page(
     Returns the relative path of the created file.
     Raises CurikError if the file already exists or path escapes content/.
     """
-    content_dir = root / "content"
+    content_dir = (root / "content").resolve()
     full_path = (content_dir / page_path).resolve()
 
     # Prevent path traversal
-    if not str(full_path).startswith(str(content_dir.resolve())):
+    if not str(full_path).startswith(str(content_dir)):
         raise CurikError(f"Path escapes content directory: {page_path}")
 
     if full_path.exists():
@@ -105,7 +105,7 @@ def create_content_page(
     text = render_frontmatter(fm) + "\n" + content
     full_path.write_text(text, encoding="utf-8")
 
-    return str(full_path.relative_to(root))
+    return str(full_path.relative_to(root.resolve()))
 
 
 def update_frontmatter(
