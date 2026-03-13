@@ -1,0 +1,13 @@
+title: Web Development
+slug: web-dev
+uid: test-web-dev
+tier: 3
+grades: "6-8"
+category: text-programming
+topics: [html, css, responsive-design]
+prerequisites: []
+lessons: 0
+estimated_weeks: 9
+curriculum_url: TBD
+repo_url: TBD
+description: Web development fundamentals for grades 6-8

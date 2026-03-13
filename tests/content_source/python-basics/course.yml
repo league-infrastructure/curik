@@ -1,0 +1,13 @@
+title: Python Basics
+slug: python-basics
+uid: test-python-basics
+tier: 2
+grades: "3-5"
+category: block-programming
+topics: [variables, control-flow, functions]
+prerequisites: []
+lessons: 0
+estimated_weeks: 6
+curriculum_url: TBD
+repo_url: TBD
+description: Introduction to Python programming for grades 3-5
