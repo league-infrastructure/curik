@@ -5,7 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .project import CurikError, _course_dir, init_course
+import shutil
+
+from .project import CURIK_DIR, CurikError, _course_dir, init_course
 from .templates import get_mkdocs_yml
 
 
@@ -117,3 +119,44 @@ def migrate_structure(
             created.append(f"docs/{mod_name}/index.md")
 
     return {"created": created}
+
+
+# Paths that sequester_content() will never move.
+_PROTECTED_NAMES = frozenset({
+    CURIK_DIR,    # .course/
+    ".git",
+    ".mcp.json",
+    "course.yml",
+    "_old",
+})
+
+
+def sequester_content(root: str | Path) -> dict[str, list[str]]:
+    """Move all non-Curik files in *root* into ``_old/``.
+
+    Protected paths (``.course/``, ``.git/``, ``.mcp.json``, ``course.yml``,
+    ``_old/``) are never moved.  Directory structure is preserved inside
+    ``_old/``.
+
+    Returns ``{"moved": [...], "protected": [...]}``.
+    """
+    root = Path(root).resolve()
+    if not root.is_dir():
+        raise CurikError(f"Path is not a directory: {root}")
+
+    old_dir = root / "_old"
+    moved: list[str] = []
+    protected: list[str] = []
+
+    for entry in sorted(root.iterdir()):
+        name = entry.name
+        if name in _PROTECTED_NAMES:
+            protected.append(name)
+            continue
+
+        dest = old_dir / name
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(entry), str(dest))
+        moved.append(name)
+
+    return {"moved": moved, "protected": sorted(protected)}

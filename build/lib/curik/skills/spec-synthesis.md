@@ -8,52 +8,181 @@ description: Assembling the complete course specification from prior phase outpu
 Assemble the full course specification from all prior sub-phase outputs.
 This is the final Phase 1 step before advancing to Phase 2.
 
-## Required Spec Sections
+## Opening
 
-All must be present and non-placeholder before `advance_phase("phase2")`
-will succeed:
+Show the section checklist:
 
-1. **Course Concept** (from Phase 1a) — already recorded
-2. **Pedagogical Model** (from Phase 1b) — already recorded
-3. **Research Summary** (from Phase 1c) — synthesize from research findings
-4. **Alignment Decision** (from Phase 1d) — already recorded
-5. **Course Structure Outline** — NEW, assembled in this phase
-6. **Assessment Plan** — NEW, assembled in this phase
-7. **Technical Decisions** — NEW, assembled in this phase
+```
+---
 
-## Course Structure Outline
+## Phase 1e: Spec Synthesis
 
-Varies by pedagogical structure:
-- **Sequential Lessons**: modules and lessons with title, topics, objectives
-- **Activity courses**: activities with materials, timing, instructions
-- **Challenge-Based**: challenges with problem summaries, objectives, difficulty
-- **Progressive Project**: modules with concepts, sessions, what gets built
-- **Hybrid**: combination with clear labeling
+### Specification Sections
 
-This is an outline, not content. Lesson pages are produced in Phase 2.
+| # | Section | Status | Source |
+|---|---------|--------|--------|
+| 1 | Course Concept | Done | Phase 1a |
+| 2 | Pedagogical Model | Done | Phase 1b |
+| 3 | Research Summary | Done | Phase 1c |
+| 4 | Alignment Decision | Done | Phase 1d |
+| 5 | Course Structure Outline | **To draft** | This phase |
+| 6 | Assessment Plan | **To draft** | This phase |
+| 7 | Technical Decisions | **To draft** | This phase |
 
-## Assessment Plan
+I need to draft sections 5-7 based on everything we've decided so far.
 
-- Quiz structure (if applicable)
-- Project milestones
-- Progress tracking approach
-- How completion is measured
+---
+```
 
-## Technical Decisions
+## Section 5: Course Structure Outline
 
-- Tier (1-4)
-- Delivery format
-- Platform (MkDocs, Codespaces, Code Server, external)
-- Content format (Markdown, notebooks, both)
-- Lesson format (sequential, challenge, project, hybrid)
-- Special requirements (hardware, accounts, software)
+Draft the outline based on pedagogical model and alignment. Present it
+in the appropriate format:
 
-## Process
+### For Sequential Lessons / Progressive Project:
 
-1. Read all existing spec sections
-2. Draft Course Structure Outline from concept + pedagogical model + alignment
-3. Draft Assessment Plan from pedagogical model + learning outcomes
-4. Draft Technical Decisions from all prior phases
-5. Use `update_spec` for each new section
-6. Review the complete spec with the designer
-7. When approved, call `advance_phase("phase2")`
+```
+---
+
+### Proposed Course Structure
+
+| Module | Lessons | Topics | Sessions |
+|--------|---------|--------|----------|
+| **Module 1: Getting Started** | | | |
+| | 01 - Hello Python | Variables, print, input | 1 |
+| | 02 - Data Types | Strings, ints, floats, type conversion | 1 |
+| **Module 2: Control Flow** | | | |
+| | 03 - Decisions | if/elif/else, boolean logic | 1 |
+| | 04 - Loops | for loops, while loops, range | 1-2 |
+| **Module 3: Functions** | | | |
+| | 05 - Writing Functions | def, parameters, return | 1 |
+| | 06 - Function Practice | Scope, multiple functions | 1 |
+| ... | | | |
+
+**Total**: 10 lessons across 4 modules, 10 sessions
+
+---
+
+**Does this structure work? Anything to add, move, or remove?**
+```
+
+### For Activity / Have Fun courses:
+
+```
+---
+
+### Proposed Activity Sequence
+
+| # | Activity | Materials | Duration | Key Concept |
+|---|----------|-----------|----------|-------------|
+| 1 | Binary Bracelets | Beads, string | 30 min | Binary encoding |
+| 2 | Robot Maze | Grid mat, cards | 45 min | Sequencing |
+| ... | | | | |
+
+---
+```
+
+### For Challenge-Based:
+
+```
+---
+
+### Proposed Challenge Sequence
+
+| # | Challenge | Difficulty | Concepts | Est. Time |
+|---|-----------|-----------|----------|-----------|
+| 1 | Number Guessing Game | Starter | Variables, input, loops | 1 session |
+| 2 | Password Validator | Intermediate | Strings, conditions | 1 session |
+| ... | | | | |
+
+---
+```
+
+## Section 6: Assessment Plan
+
+```
+---
+
+### Assessment Plan
+
+| Component | Description | When |
+|-----------|-------------|------|
+| Lesson quizzes | 5-question quiz per lesson | End of each lesson |
+| Exercises | Coding exercises with auto-check | During lab time |
+| Module projects | Mini-project per module | End of each module |
+| Final project | Student-chosen project | Sessions 9-10 |
+
+### Completion Criteria
+
+- [ ] 80% of quizzes passed (7/10 correct)
+- [ ] All required exercises submitted
+- [ ] Final project demonstrates 3+ learning outcomes
+
+---
+
+**Does this assessment approach work?**
+```
+
+## Section 7: Technical Decisions
+
+```
+---
+
+### Technical Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Tier | 3 | Grades 6-10, code-based |
+| Delivery | MkDocs site + GitHub repo | Standard League stack |
+| Platform | GitHub Codespaces | No local setup needed |
+| Content format | Markdown + .py exercises | Simple, version-controlled |
+| Lesson format | Sequential with progressive project | Matches pedagogical model |
+| Special requirements | None | Browser-only |
+
+---
+```
+
+## Final Review
+
+After drafting all three sections, present the complete spec summary:
+
+```
+---
+
+## Complete Specification — Review
+
+### Section Checklist
+
+| # | Section | Status |
+|---|---------|--------|
+| 1 | Course Concept | Done |
+| 2 | Pedagogical Model | Done |
+| 3 | Research Summary | Done |
+| 4 | Alignment Decision | Done |
+| 5 | Course Structure Outline | Done |
+| 6 | Assessment Plan | Done |
+| 7 | Technical Decisions | Done |
+
+### Quick Summary
+
+| Property | Value |
+|----------|-------|
+| Title | (from concept) |
+| Target | (grades, prerequisites) |
+| Format | (sessions, duration) |
+| Tier | (1-4) |
+| Alignment | (certification/standard) |
+| Modules | (count) |
+| Lessons | (count) |
+| Assessment | (approach) |
+
+---
+
+**The spec is complete. Ready to approve and move to Phase 2?**
+
+Phase 2 will scaffold the directory structure, create lesson stubs,
+and begin content authoring.
+```
+
+When the designer approves, use `update_spec` for each drafted section,
+then call `advance_phase("phase2")`.
