@@ -356,10 +356,6 @@ class HugoConfigTest(unittest.TestCase):
         toml = get_hugo_config("Advanced", 4)
         self.assertNotIn("instructorGuide", toml)
 
-    def test_custom_theme_path(self) -> None:
-        toml = get_hugo_config("Test", 3, theme_path="my-custom-theme")
-        self.assertIn('theme = "my-custom-theme"', toml)
-        self.assertNotIn("league-hugo-theme", toml)
 
 
 if __name__ == "__main__":

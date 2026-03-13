@@ -116,45 +116,39 @@ The basics are covered. A few things that will help shape the spec:
 
 ## Completion
 
-When all fields are captured, show the complete summary:
-
-```
----
-
-## Phase 1a Summary: Course Concept
-
-| Field | Value |
-|-------|-------|
-| Target students | Grades 6-8, no prior experience |
-| Educational goals | Write Python programs using variables, loops, functions |
-| Student/parent goals | Build confidence with technology, create portfolio pieces |
-| Learning outcomes | See list below |
-| Format | Semester course, 10 sessions x 90 min |
-| Scope | 10 sessions, fixed endpoint |
-
-### Learning Outcomes
-1. Write a Python program with variables and user input
-2. Use loops to process collections of data
-3. Define and call functions with parameters
-4. ...
+When all fields are captured, **write the course concept to the spec
+file** using `record_course_concept`. Then show a brief status in chat
+and point the user to the file:
 
 ---
 
-**Does this capture your vision?**
+## Phase 1a: Course Concept — Written
 
-### What would you like to do?
+I've written the course concept to `.course/spec.md`. Here's the summary:
 
-1. **Looks good — move on** — save this and proceed to Phase 1b
-   (Pedagogical Model)
-2. **Change something** — I want to adjust one or more fields
-3. **Add more detail** — there's something I didn't mention yet
+| Field | Status |
+|-------|--------|
+| Target students | Captured |
+| Educational goals | Captured |
+| Student/parent goals | Captured |
+| Learning outcomes | Captured (N items) |
+| Format | Captured |
+| Scope | Captured |
+
+**Please open `.course/spec.md` and review the Course Concept section.**
+Edit anything you want to change directly in the file.
+
+### When you're done reviewing:
+
+1. **Looks good — move on** — proceed to Phase 1b (Pedagogical Model)
+2. **I made changes** — I edited the file, take a look
+3. **Let's discuss** — I have questions before moving on
 4. **Start over** — I want to rethink the concept
 
 ---
-```
 
-When the designer confirms, call `record_course_concept` with the
-formatted content and `tool_advance_sub_phase()` to move to Phase 1b.
+When the designer confirms, call `tool_advance_sub_phase()` to move
+to Phase 1b.
 
 ## Guided Mode Rule
 

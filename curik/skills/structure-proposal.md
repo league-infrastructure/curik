@@ -33,73 +33,35 @@ Read all spec sections. Summarize what drives the structure:
 
 ### Step 2: Propose Directory Structure
 
-Present the full tree with descriptions:
+**Write the structure proposal to a file** — either as a change plan
+document or directly into `.course/spec.md` as an appendix. Include the
+full directory tree and lesson detail table.
 
-```
----
-
-### Proposed Directory Tree
-
-```
-content/
-  _index.md
-  01-getting-started/
-    _index.md
-    01-hello-python.md        # Variables, print, input
-    02-data-types.md          # Strings, ints, floats
-  02-control-flow/
-    _index.md
-    03-decisions.md           # if/elif/else
-    04-loops.md               # for, while, range
-  03-functions/
-    _index.md
-    05-writing-functions.md   # def, parameters, return
-    06-function-practice.md   # Scope, composition
-  04-data-and-projects/
-    _index.md
-    07-lists.md               # Lists, iteration
-    08-dictionaries.md        # Dicts, key-value
-    09-file-io.md             # Reading/writing files
-    10-final-project.md       # Student project
-```
-
-### Lesson Detail
-
-| # | Lesson | Module | Topics | Est. Duration |
-|---|--------|--------|--------|---------------|
-| 01 | Hello Python | Getting Started | Variables, print, input | 1 session |
-| 02 | Data Types | Getting Started | Strings, ints, type conversion | 1 session |
-| 03 | Decisions | Control Flow | if/elif/else, booleans | 1 session |
-| 04 | Loops | Control Flow | for, while, range | 1.5 sessions |
-| ... | | | | |
+Then show a brief summary in chat:
 
 ---
 
-**Does this structure look right? Any lessons to add, remove, split, or
-reorder?**
-```
+### Structure Proposal — Written
+
+I've written the proposed directory structure to `[file path]`.
+It includes N modules with M lessons total.
+
+**Please open the file and review the proposed structure.** You can
+edit module names, lesson order, and topics directly.
+
+### When you're done reviewing:
+
+1. **Looks good — scaffold it** — proceed to create the directory structure
+2. **I made changes** — I edited the file, take a look
+3. **Let's discuss** — I have questions about the structure
+4. **Start over** — rethink the structure from scratch
+
+---
 
 ### Step 3: Finalize
 
-When approved, present the action plan:
-
-```
----
-
-### Ready to Scaffold
-
-When you approve, I will:
-
-- [ ] Create 4 module directories
-- [ ] Create 10 lesson stub files with frontmatter
-- [ ] Generate Hugo nav weights
-- [ ] Set up .devcontainer (Tier 3)
-- [ ] Create mirror directories in lessons/ and projects/
-
-**Approve to proceed?**
-
----
-```
+When approved, present the action plan briefly in chat, then proceed
+with scaffolding.
 
 ## Naming Conventions
 

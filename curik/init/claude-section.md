@@ -11,6 +11,13 @@ This repository is a Curik-managed curriculum project for the League of Amazing 
 
 Do not write curriculum content, modify course structure, scaffold files, or make any substantive changes without first consulting the MCP server for the current phase and the applicable agent.
 
+## Hugo Theme
+
+The Hugo theme lives at `themes/league-hugo-theme/` in this repo. Curik
+copies it there during scaffolding. Do not modify it — changes go upstream
+in the curik package. Hugo finds it automatically via `theme = "league-hugo-theme"`
+in `hugo.toml`.
+
 ## Rules
 
 - **MCP-first**: For any operation that Curik has a tool for (creating issues, managing change plans, scaffolding, validation, syllabus operations), use the Curik MCP tool. Do not perform these operations by directly editing files.
@@ -18,6 +25,7 @@ Do not write curriculum content, modify course structure, scaffold files, or mak
 - **Skills are workflows**: When you load a skill via `get_skill()`, follow its steps in order. Do not skip steps.
 - **Gates are gates**: When `advance_phase()` fails, do not work around it. Address the unmet conditions.
 - **Designer approval**: Change plans, outlines, and phase transitions require designer approval. Do not self-approve.
+- **Theme is read-only**: Do not edit files in `themes/`. The theme is managed by the curik package.
 
 ## Available MCP Tools
 

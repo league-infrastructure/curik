@@ -166,38 +166,36 @@ Aligned to: **PCEP** + custom additions
 
 ## Completion
 
-Show the final alignment decision:
+When the alignment decision and topic list are finalized, **write them to
+the spec file** using `record_alignment`. Then show a brief status in
+chat and point the user to the file:
 
-```
 ---
 
-## Phase 1d Summary: Alignment Decision
+## Phase 1d: Alignment Decision — Written
+
+I've written the alignment decision and topic list to `.course/spec.md`.
 
 | Decision | Value |
 |----------|-------|
-| Primary alignment | PCEP certification |
-| Secondary alignment | None |
-| Custom additions | File I/O, final project |
-| Total topics | 8 |
-| Rationale | Industry-recognized credential, scope matches our session count |
+| Primary alignment | (chosen) |
+| Secondary alignment | (chosen or none) |
+| Custom additions | (if any) |
+| Total topics | N |
 
----
+**Please open `.course/spec.md` and review the Alignment Decision section.**
+Edit anything you want to change directly in the file.
 
-**Ready to move on?**
+### When you're done reviewing:
 
-### What would you like to do?
-
-1. **Looks good — move on** — save this and proceed to Phase 1e
-   (Spec Synthesis)
-2. **Change something** — I want to adjust the alignment or topic list
+1. **Looks good — move on** — proceed to Phase 1e (Spec Synthesis)
+2. **I made changes** — I edited the file, take a look
 3. **Go back to research** — I want more research before deciding
 4. **Start over** — rethink alignment from scratch
 
 ---
-```
 
-When confirmed, call `record_alignment` with the formatted content and
-`tool_advance_sub_phase()` to move to Phase 1e.
+When confirmed, call `tool_advance_sub_phase()` to move to Phase 1e.
 
 ## Guided Mode Rule
 

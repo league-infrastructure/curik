@@ -8,7 +8,7 @@ from typing import Any
 import shutil
 
 from .project import CURIK_DIR, CurikError, _course_dir, init_course
-from .templates import get_hugo_config
+from .templates import THEME_NAME, get_hugo_config, get_theme_source
 
 
 def inventory_course(repo_path: str | Path) -> dict[str, Any]:
@@ -101,6 +101,16 @@ def migrate_structure(
         content_dir.mkdir(parents=True, exist_ok=True)
         created.append("content")
 
+    # Copy the Hugo theme into themes/league-hugo-theme/
+    # (Later this becomes a git submodule; for now we copy from curik repo.)
+    theme_dest = root / "themes" / THEME_NAME
+    theme_source = get_theme_source()
+    if theme_source.is_dir():
+        if theme_dest.is_dir():
+            shutil.rmtree(theme_dest)
+        shutil.copytree(theme_source, theme_dest)
+        created.append(f"themes/{THEME_NAME}")
+
     # Create hugo.toml
     hugo_path = root / "hugo.toml"
     if not hugo_path.is_file():
@@ -140,6 +150,7 @@ _PROTECTED_NAMES = frozenset({
     ".vscode",
     "CLAUDE.md",
     "course.yml",
+    "themes",
     "_old",
 })
 

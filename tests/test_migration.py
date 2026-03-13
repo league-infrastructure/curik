@@ -93,6 +93,10 @@ class TestMigrateStructure(unittest.TestCase):
             self.assertTrue((root / "hugo.toml").is_file())
             self.assertTrue((root / "content" / "_index.md").is_file())
 
+            # Theme should be copied into themes/
+            self.assertTrue((root / "themes" / "league-hugo-theme").is_dir())
+            self.assertTrue((root / "themes" / "league-hugo-theme" / "theme.toml").is_file())
+
             # Each module should have a directory and _index.md
             for mod in modules:
                 self.assertTrue((root / "content" / mod).is_dir())
@@ -102,6 +106,7 @@ class TestMigrateStructure(unittest.TestCase):
             self.assertIn("content", result["created"])
             self.assertIn("hugo.toml", result["created"])
             self.assertIn("content/_index.md", result["created"])
+            self.assertIn("themes/league-hugo-theme", result["created"])
 
     def test_hugo_config_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -118,8 +123,8 @@ class TestMigrateStructure(unittest.TestCase):
             migrate_structure(root, 3, modules)
             # Run again — should not fail
             result2 = migrate_structure(root, 3, modules)
-            # Nothing new should be created on second run
-            self.assertEqual(result2["created"], [])
+            # Theme is always refreshed; everything else is idempotent
+            self.assertEqual(result2["created"], ["themes/league-hugo-theme"])
 
 
 class TestGetHugoConfig(unittest.TestCase):

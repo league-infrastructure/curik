@@ -207,38 +207,38 @@ Does tier 3 sound right?
 
 ## Completion
 
-Show the full pedagogical model summary:
+When all decisions are made, **write the pedagogical model to the spec
+file** using `record_pedagogical_model`. Then show a brief status in chat
+and point the user to the file:
 
-```
 ---
 
-## Phase 1b Summary: Pedagogical Model
+## Phase 1b: Pedagogical Model — Written
+
+I've written the pedagogical model to `.course/spec.md`. Here's what was captured:
 
 | Decision | Choice |
 |----------|--------|
-| Delivery format | Repository with code (Codespaces) |
-| Structure | Sequential Lessons + Progressive Project |
-| Session flow | Warm-up → Lesson → Lab → Wrap-up |
-| Assessment | Quizzes + completed exercises |
-| Differentiation | Extension challenges for advanced, scaffolded hints for struggling |
-| Tier | 3 |
+| Delivery format | (chosen) |
+| Structure | (chosen) |
+| Session flow | (chosen) |
+| Assessment | (chosen) |
+| Differentiation | (chosen) |
+| Tier | (determined) |
 
----
+**Please open `.course/spec.md` and review the Pedagogical Model section.**
+Edit anything you want to change directly in the file.
 
-**Does this look right?**
+### When you're done reviewing:
 
-### What would you like to do?
-
-1. **Looks good — move on** — save this and proceed to Phase 1c (Research)
-2. **Change something** — I want to adjust one or more decisions
-3. **Go back to a specific step** — revisit delivery format, structure, session flow, assessment, or differentiation
+1. **Looks good — move on** — proceed to Phase 1c (Research)
+2. **I made changes** — I edited the file, take a look
+3. **Go back to a specific step** — revisit a decision
 4. **Start over** — rethink the pedagogical model from scratch
 
 ---
-```
 
-When confirmed, call `record_pedagogical_model` with the formatted content
-and `tool_advance_sub_phase()` to move to Phase 1c.
+When confirmed, call `tool_advance_sub_phase()` to move to Phase 1c.
 
 ## Guided Mode Rule
 
