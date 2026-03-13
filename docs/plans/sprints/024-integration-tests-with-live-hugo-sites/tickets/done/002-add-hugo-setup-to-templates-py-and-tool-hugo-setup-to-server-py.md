@@ -1,9 +1,11 @@
 ---
-id: "002"
-title: "Add hugo_setup() to templates.py and tool_hugo_setup() to server.py"
-status: todo
-use-cases: [SUC-001]
-depends-on: ["001"]
+id: '002'
+title: Add hugo_setup() to templates.py and tool_hugo_setup() to server.py
+status: done
+use-cases:
+- SUC-001
+depends-on:
+- '001'
 ---
 
 # Add hugo_setup() to templates.py and tool_hugo_setup() to server.py
