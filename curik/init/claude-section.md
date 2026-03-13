@@ -1,88 +1,45 @@
 <!-- CURIK:START -->
-## Curik Curriculum Development
+# Curik Curriculum Project
 
-This project uses **Curik**, a curriculum development tool for the
-League of Amazing Programmers. Curik provides an MCP server that guides
-you through curriculum design and content authoring.
+This repository is a Curik-managed curriculum project for the League of Amazing Programmers.
 
-### Static Site Generator: Hugo
+## Before You Do Anything
 
-This curriculum uses **Hugo** as its static site generator.
+1. Call `get_course_status()` to determine where this project stands.
+2. Call `get_process_guide()` to understand what to do next.
+3. Follow the process guide's instructions for the current phase.
 
-- Content lives in the `content/` directory
-- Section indexes use `_index.md` (Hugo branch bundles)
-- Navigation order comes from numeric prefixes (`01-`, `02-`, etc.)
-- Configuration is in `hugo.toml`
-- The **League Hugo Theme** provides consistent branding and shortcodes
+Do not write curriculum content, modify course structure, scaffold files, or make any substantive changes without first consulting the MCP server for the current phase and the applicable agent.
 
-### Hugo Shortcodes
+## Rules
 
-Use these shortcodes in lesson markdown files. Do NOT use raw HTML divs
-or HTML comment guards.
+- **MCP-first**: For any operation that Curik has a tool for (creating issues, managing change plans, scaffolding, validation, syllabus operations), use the Curik MCP tool. Do not perform these operations by directly editing files.
+- **Agent boundaries**: When you load an agent definition via `get_agent()`, respect its boundaries. The Curriculum Architect does not write lesson content. The Lesson Author does not modify course structure.
+- **Skills are workflows**: When you load a skill via `get_skill()`, follow its steps in order. Do not skip steps.
+- **Gates are gates**: When `advance_phase()` fails, do not work around it. Address the unmet conditions.
+- **Designer approval**: Change plans, outlines, and phase transitions require designer approval. Do not self-approve.
 
-**Instructor guide** — content visible only to instructors (collapsed by default):
-```
-{{</* instructor-guide */>}}
-**Objectives**: Students will learn...
-**Common mistakes**: Watch for...
-{{</* /instructor-guide */>}}
-```
+## Available MCP Tools
 
-**Callout boxes** — info, warning, or tip highlights:
-```
-{{</* callout type="tip" */>}}
-Remember to save your work before running tests!
-{{</* /callout */>}}
-```
+### Process Discovery
+- `get_process_guide()` — full process overview and decision tree
+- `get_course_status()` — current project state
+- `get_phase()` — current phase and gate conditions
+- `advance_phase()` — gated phase transition
+- `get_activity_guide(activity)` — bundled agent + skills + instructions
 
-**README guards** — control what appears in generated README files:
-```
-{{</* readme-shared */>}}
-This content appears on the site AND in the README.
-{{</* /readme-shared */>}}
+### Agent and Skill Loading
+- `list_agents()` / `get_agent(name)` — agent definitions
+- `list_skills()` / `get_skill(name)` — skill workflows
+- `list_instructions()` / `get_instruction(name)` — reference documents
 
-{{</* readme-only */>}}
-This content appears ONLY in the README, not on the site.
-{{</* /readme-only */>}}
-```
-
-### Content Structure
-
-```
-content/
-  _index.md                  # Course landing page
-  01-module-name/
-    _index.md                # Module landing page
-    01-lesson-name.md        # Individual lesson
-    02-lesson-name.md
-  02-module-name/
-    _index.md
-    ...
-```
-
-### Curik MCP Tools
-
-Curik provides these MCP tools for curriculum development:
-
-- `tool_init_course` — Initialize a new curriculum project
-- `tool_get_phase` / `tool_advance_phase` — Track development phases
-- `tool_get_spec` / `tool_update_spec` — Read and update the course spec
-- `tool_advance_sub_phase` — Move through Phase 1 sub-phases
-- `tool_get_course_status` — Check project status
-- `tool_scaffold_structure` — Generate module/lesson file structure
-- `tool_create_lesson_stub` — Create a new lesson file with shortcodes
-- `tool_validate_lesson` — Validate lesson content and structure
-- `tool_validate_instructor_guide` — Check instructor guide sections
-- `tool_trigger_readme_generation` — Generate README files from guards
-- `tool_validate_syllabus_consistency` — Check syllabus vs content pages
-
-Use `list_agents()`, `list_skills()`, and `list_references()` to discover
-available curriculum development agents, skills, and reference documents.
-
-### Workflow
-
-1. **Phase 1** — Course design: concept, pedagogical model, research,
-   alignment, structure outline, assessment plan, technical decisions
-2. **Phase 2** — Content authoring: scaffold structure, write lessons,
-   add instructor guides, generate READMEs, validate content
+### State Management
+- Spec state: `record_course_concept`, `record_pedagogical_model`, `record_alignment`
+- Scaffolding: `scaffold_structure`, `create_lesson_stub`
+- Syllabus: `regenerate_syllabus`, `get_syllabus`, `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
+- Outlines: `approve_outline`
+- Issues and change plans: `create_issue`, `list_issues`, `approve_change_plan`, `close_change_plan`
+- Validation: `validate_lesson`, `validate_module`, `validate_course`, `get_validation_report`
+- Quiz: `generate_quiz_stub`, `validate_quiz_alignment`, `set_quiz_status`
+- Hugo: `list_content_pages`, `create_content_page`, `update_frontmatter`, `hugo_build`
 <!-- CURIK:END -->
