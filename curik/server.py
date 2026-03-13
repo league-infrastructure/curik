@@ -463,7 +463,7 @@ def tool_migrate_structure(tier: int, modules_json: str) -> str:
 def tool_validate_lesson(lesson_path: str, tier: int | None = None) -> str:
     """Validate a single lesson file for completeness (instructor guide, objectives).
 
-    When *tier* is 3 or 4, also checks for readme-shared comment guards
+    When *tier* is 3 or 4, also checks for ``{{</* readme-shared */>}}`` shortcode guards
     and verifies the lesson UID appears in syllabus.yaml.
     """
     try:

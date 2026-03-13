@@ -103,7 +103,7 @@ def get_syllabus(root: Path) -> str:
 
 
 def validate_syllabus_consistency(root: Path) -> dict:
-    """Check syllabus entries against MkDocs pages and report mismatches."""
+    """Check syllabus entries against Hugo content pages and report mismatches."""
     syllabus_path = root / "syllabus.yaml"
     if not syllabus_path.exists():
         raise CurikError(f"syllabus.yaml not found at {syllabus_path}")
@@ -114,8 +114,8 @@ def validate_syllabus_consistency(root: Path) -> dict:
     # Collect UIDs from syllabus
     syllabus_uids = {e["uid"] for e in entries if e.get("uid")}
 
-    # Scan docs/docs for .md files with uid in frontmatter
-    docs_dir = root / "docs" / "docs"
+    # Scan content/ for .md files with uid in frontmatter
+    docs_dir = root / "content"
     page_uids: set[str] = set()
     pages_without_uid: list[str] = []
 
