@@ -1,9 +1,11 @@
 ---
-id: "016"
-title: "Agent and Skill Documentation Update for Hugo"
-status: planning
+id: '016'
+title: Agent and Skill Documentation Update for Hugo
+status: done
 branch: sprint/016-agent-and-skill-documentation-update-for-hugo
-use-cases: [DUC-001, DUC-002]
+use-cases:
+- DUC-001
+- DUC-002
 ---
 
 # Sprint 016: Agent and Skill Documentation Update for Hugo
