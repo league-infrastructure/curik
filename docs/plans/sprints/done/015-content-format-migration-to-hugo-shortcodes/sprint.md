@@ -1,9 +1,12 @@
 ---
-id: "015"
-title: "Content Format Migration to Hugo Shortcodes"
-status: planning
+id: '015'
+title: Content Format Migration to Hugo Shortcodes
+status: done
 branch: sprint/015-content-format-migration-to-hugo-shortcodes
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 015: Content Format Migration to Hugo Shortcodes

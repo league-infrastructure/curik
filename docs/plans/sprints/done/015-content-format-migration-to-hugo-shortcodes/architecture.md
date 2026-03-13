@@ -1,0 +1,160 @@
+---
+status: draft
+---
+
+# Architecture
+
+## Architecture Overview
+
+Curik is a Python MCP server that guides AI agents through curriculum
+development. Sprint 014 replaced MkDocs config generation with Hugo.
+This sprint completes the migration by replacing HTML content patterns
+(divs, comment guards) with Hugo shortcode syntax in all content
+generation, validation, and parsing.
+
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────────────┐
+│ MCP Server   │────▶│ scaffolding  │────▶│ Lesson stubs with   │
+│ (server.py)  │     │  .py         │     │ Hugo shortcodes     │
+│              │     └──────────────┘     └─────────────────────┘
+│              │     ┌──────────────┐     ┌─────────────────────┐
+│              │────▶│ validation   │◀────│ Shortcode regex     │
+│              │     │  .py         │     │ patterns            │
+│              │     └──────────────┘     └─────────────────────┘
+│              │     ┌──────────────┐     ┌─────────────────────┐
+│              │────▶│ readme.py    │◀────│ Shortcode guard     │
+│              │     │              │     │ patterns            │
+│              │     └──────────────┘     └─────────────────────┘
+│              │     ┌──────────────┐
+│              │────▶│ quiz.py      │
+│              │     └──────────────┘
+│              │     ┌──────────────┐
+│              │────▶│ syllabus.py  │
+│              │     └──────────────┘
+└─────────────┘
+```
+
+## Technology Stack
+
+- **Python 3.10+** — existing project language
+- **Hugo shortcodes** — `{{</* name */>}}` / `{{</* /name */>}}` syntax
+- **Regular expressions** — updated to match shortcode delimiters
+
+## Component Design
+
+### Component: scaffolding (content generation)
+
+**Purpose**: Generate lesson stubs with Hugo shortcode syntax.
+
+**Use Cases**: SUC-001
+
+Changes (3 locations in scaffolding.py):
+- `scaffold_structure()` line ~89: lesson stub in module scaffolding
+- `create_lesson_stub()` lines ~170-184: tier 1-2 and tier 3-4 stubs
+
+Before:
+```python
+'<div class="instructor-guide">\n\n'
+"Instructor guide content goes here.\n\n"
+"</div>\n"
+```
+
+After:
+```python
+'{{</* instructor-guide */>}}\n\n'
+"Instructor guide content goes here.\n\n"
+'{{</* /instructor-guide */>}}\n'
+```
+
+### Component: validation (content checking)
+
+**Purpose**: Validate lesson content for required elements.
+
+**Use Cases**: SUC-002
+
+Changes (validation.py):
+- `_parse_instructor_guide()` regex: match shortcode instead of div
+- `validate_lesson()` presence check: look for shortcode
+- `validate_lesson()` removal regex: strip shortcode block
+- `validate_instructor_guide()` regex: match shortcode
+- Readme guard check: `{{</* readme-shared */>}}` instead of comment
+
+Before:
+```python
+r'<div\s+class=["\']instructor-guide["\']\s*>(.*?)</div>'
+```
+
+After:
+```python
+r'\{\{<\s*instructor-guide\s*>\}\}(.*?)\{\{<\s*/instructor-guide\s*>\}\}'
+```
+
+### Component: quiz (instructor guide removal)
+
+**Purpose**: Strip instructor guide content before extracting objectives.
+
+**Use Cases**: SUC-002
+
+Changes (quiz.py, 1 location):
+- Update regex to remove shortcode block instead of HTML div
+
+### Component: readme (guard parsing)
+
+**Purpose**: Extract readme-shared and readme-only content from lessons.
+
+**Use Cases**: SUC-003
+
+Changes (readme.py):
+- `_SHARED_RE`: match `{{</* readme-shared */>}}...{{</* /readme-shared */>}}`
+- `_ONLY_RE`: match `{{</* readme-only */>}}...{{</* /readme-only */>}}`
+- `generate_readmes()` default `docs_dir`: `"content"` instead of `"docs/docs"`
+
+### Component: syllabus (path update)
+
+**Purpose**: Validate syllabus consistency against content pages.
+
+**Use Cases**: SUC-002
+
+Changes (syllabus.py):
+- `validate_syllabus_consistency()`: scan `content/` instead of `docs/docs/`
+
+### Component: server (docstring)
+
+**Purpose**: MCP tool documentation.
+
+Changes: Update `tool_validate_lesson` docstring to reference shortcodes
+instead of comment guards.
+
+## Dependency Map
+
+```
+server.py
+  ├── scaffolding.py  (generates shortcode content)
+  ├── validation.py   (validates shortcode presence)
+  │     └── quiz.py   (strips shortcode for objective extraction)
+  ├── readme.py       (parses shortcode guards)
+  └── syllabus.py     (scans content/ directory)
+```
+
+## Data Model
+
+No data model changes. Only generated content format and regex patterns change.
+
+## Security Considerations
+
+None — regex pattern updates only. No new inputs or attack surface.
+
+## Sprint Changes
+
+### Changed Components
+
+- **scaffolding.py**: HTML div → Hugo shortcode in 3 stub generation sites
+- **validation.py**: 4 regex patterns + 1 string check → shortcode matching
+- **quiz.py**: 1 regex pattern → shortcode matching
+- **readme.py**: 2 regex patterns → shortcode matching, default path update
+- **syllabus.py**: `docs/docs` → `content/` path
+- **server.py**: docstring update
+
+### Migration Concerns
+
+None — no existing curricula use HTML div patterns generated by Curik.
