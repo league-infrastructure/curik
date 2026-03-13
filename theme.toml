@@ -1,0 +1,10 @@
+name = "League Hugo Theme"
+license = "MIT"
+licenselink = "https://github.com/league-projects/league-hugo-theme/blob/main/LICENSE"
+description = "Hugo theme for League of Amazing Programmers curricula"
+homepage = "https://github.com/league-projects/league-hugo-theme"
+min_version = "0.120.0"
+
+[author]
+  name = "League of Amazing Programmers"
+  homepage = "https://www.jointheleague.org"
