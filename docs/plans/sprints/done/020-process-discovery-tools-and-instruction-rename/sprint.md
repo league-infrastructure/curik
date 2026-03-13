@@ -1,9 +1,12 @@
 ---
-id: "020"
-title: "Process Discovery Tools and Instruction Rename"
-status: planning
+id: '020'
+title: Process Discovery Tools and Instruction Rename
+status: done
 branch: sprint/020-process-discovery-tools-and-instruction-rename
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 020: Process Discovery Tools and Instruction Rename
