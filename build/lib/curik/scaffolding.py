@@ -62,6 +62,18 @@ def scaffold_structure(
             mod_dir.mkdir(parents=True, exist_ok=True)
             created.append(mod_rel)
 
+        # Create _index.md branch bundle (Hugo section page)
+        index_path = mod_dir / "_index.md"
+        index_rel = str(index_path.relative_to(root))
+        if index_path.exists():
+            existing.append(index_rel)
+        else:
+            mod_title = _title_from_filename(mod_name)
+            index_path.write_text(
+                f"# {mod_title}\n\nModule overview.\n", encoding="utf-8"
+            )
+            created.append(index_rel)
+
         for lesson in mod.get("lessons", []):
             lesson_path = mod_dir / lesson
             rel = str(lesson_path.relative_to(root))
@@ -114,19 +126,27 @@ def scaffold_structure(
 # ---------------------------------------------------------------------------
 
 
-def generate_nav(structure: dict[str, Any]) -> list[dict[str, list[str]]]:
-    """Build a nav list from a structure dict.
+def generate_nav(structure: dict[str, Any]) -> list[dict[str, Any]]:
+    """Build Hugo weight assignments from a structure dict.
 
-    Returns a list of dicts mapping module display names to lesson paths::
+    Hugo derives navigation order from directory prefixes (``01-``, ``02-``,
+    etc.) and ``weight`` frontmatter.  This function returns a list of dicts
+    with sequential weights (10, 20, 30…) that can be injected into
+    ``_index.md`` frontmatter when explicit ordering is needed::
 
-        [{"Intro": ["01-intro/01-hello.md", "01-intro/02-variables.md"]}]
+        [
+            {"path": "01-intro", "title": "Intro", "weight": 10},
+            {"path": "02-loops", "title": "Loops", "weight": 20},
+        ]
     """
-    nav: list[dict[str, list[str]]] = []
-    for mod in structure.get("modules", []):
+    nav: list[dict[str, Any]] = []
+    for i, mod in enumerate(structure.get("modules", []), 1):
         mod_name = mod["name"]
-        display = _title_from_filename(mod_name)
-        lessons = [f"{mod_name}/{lesson}" for lesson in mod.get("lessons", [])]
-        nav.append({display: lessons})
+        nav.append({
+            "path": mod_name,
+            "title": _title_from_filename(mod_name),
+            "weight": i * 10,
+        })
     return nav
 
 

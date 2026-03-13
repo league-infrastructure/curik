@@ -59,6 +59,44 @@ Research findings should include:
 - **Resource recommendations**: what to link, what to adapt, what to skip
 - **Gaps**: topics not well covered by existing materials
 
+## Existing Content Research
+
+When the course has existing content (sequestered to `_old/` or still in
+place), frame your research around what already exists:
+
+1. **Analyze first**: Read through the existing content to identify topics,
+   structure, and pedagogical approach already in use.
+
+2. **Research in context**: Search for standards, certifications, and
+   established curricula that align with the existing topics. Frame your
+   search queries around what you found, not just the course concept.
+
+3. **Compare and contrast**: Present findings as a comparison to what
+   already exists:
+
+```
+---
+
+### Research: How Your Existing Content Compares
+
+| Topic in Old Content | External Coverage | Notes |
+|---------------------|-------------------|-------|
+| Variables & types | PCEP Section 1, freeCodeCamp Ch. 1 | Well-covered externally |
+| Loops | PCEP Section 2, CS50 Week 1 | Your approach is more gradual |
+| File I/O | Not in PCEP, freeCodeCamp Ch. 8 | Consider keeping your version |
+
+### Findings
+
+- **Alignment candidates**: [list with fit assessment]
+- **Gaps in your content**: [topics covered externally but missing here]
+- **Strengths of your content**: [things you do better than external sources]
+
+---
+```
+
+4. **Recommend**: Suggest whether to keep, adapt, or replace the existing
+   structure based on what external resources offer.
+
 ## Statelessness
 
 You are stateless between invocations. Each time the Curriculum Architect

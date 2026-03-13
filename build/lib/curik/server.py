@@ -10,8 +10,10 @@ from mcp.server.fastmcp import FastMCP
 
 from .assets import (
     get_agent_definition,
+    get_reference,
     get_skill_definition,
     list_agents,
+    list_references,
     list_skills,
 )
 from .project import (
@@ -213,6 +215,24 @@ def tool_get_skill_definition(name: str) -> str:
     """Get the full markdown content of a named skill definition."""
     try:
         return get_skill_definition(name)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_list_references() -> str:
+    """List all available reference documents (e.g. brand guides, style guides)."""
+    try:
+        return json.dumps(list_references())
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_reference(name: str) -> str:
+    """Get the full markdown content of a named reference document."""
+    try:
+        return get_reference(name)
     except CurikError as e:
         return f"Error: {e}"
 
@@ -575,8 +595,8 @@ def tool_get_syllabus() -> str:
 
 
 @mcp.tool()
-def tool_trigger_readme_generation(docs_dir: str = "docs/docs") -> str:
-    """Generate README.md files from guarded sections in MkDocs lesson pages."""
+def tool_trigger_readme_generation(docs_dir: str = "content") -> str:
+    """Generate README.md files from guarded sections in Hugo lesson pages."""
     try:
         result = generate_readmes(_root(), docs_dir)
         return json.dumps(result, indent=2)
@@ -586,7 +606,7 @@ def tool_trigger_readme_generation(docs_dir: str = "docs/docs") -> str:
 
 @mcp.tool()
 def tool_validate_syllabus_consistency() -> str:
-    """Check syllabus entries against MkDocs pages and report mismatches."""
+    """Check syllabus entries against Hugo content pages and report mismatches."""
     try:
         result = validate_syllabus_consistency(_root())
         return json.dumps(result, indent=2)

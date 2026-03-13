@@ -1,4 +1,4 @@
-"""Load bundled agent definitions and skill files from the package."""
+"""Load bundled agent definitions, skill files, and reference docs from the package."""
 
 from __future__ import annotations
 
@@ -43,5 +43,20 @@ def list_skills() -> list[str]:
     return sorted(
         f.name.removesuffix(".md")
         for f in skills_dir.iterdir()
+        if f.name.endswith(".md")
+    )
+
+
+def get_reference(name: str) -> str:
+    """Return the markdown content of a named reference document."""
+    return _read_asset("curik.references", name)
+
+
+def list_references() -> list[str]:
+    """Return names of all bundled reference documents."""
+    refs_dir = importlib.resources.files("curik.references")
+    return sorted(
+        f.name.removesuffix(".md")
+        for f in refs_dir.iterdir()
         if f.name.endswith(".md")
     )

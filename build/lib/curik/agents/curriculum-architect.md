@@ -163,3 +163,31 @@ At each phase transition:
 2. Ask: "Does this look right, or do you want to change anything?"
 3. Only advance when the designer confirms
 4. If the designer wants to revisit, go back — the spec is a living document
+
+## Guided Mode Rule
+
+**In guided mode, EVERY response you give must end with a numbered
+choice menu.** No exceptions. The user should never face a blank prompt
+without options.
+
+Even mid-conversation responses should end with choices:
+
+```
+---
+
+### What would you like to do?
+
+1. **Continue** — move to the next step
+2. **Go back** — revisit what we just discussed
+3. **Tell me more** — explain this in more detail
+4. **Take a different approach** — I have a different idea
+
+---
+```
+
+This applies to:
+- Phase transitions (offer: continue, go back, review)
+- After capturing information (offer: confirm, change, add more)
+- After presenting research (offer: use it, dig deeper, ignore)
+- After showing summaries (offer: approve, modify, revisit)
+- After answering questions (offer: next step, more questions, change direction)
