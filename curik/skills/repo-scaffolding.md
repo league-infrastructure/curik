@@ -8,29 +8,29 @@ repositories consistently.
 
 ## Directory Structures
 
-### MkDocs Content Tree (`docs/docs/`)
+### Hugo Content Tree (`content/`)
 
-All rendered course content lives under `docs/docs/`. This is the
-MkDocs source directory and contains the `mkdocs.yml` configuration
-alongside the Markdown pages:
+All rendered course content lives under `content/`. This is the
+Hugo content directory. The site configuration is in `hugo.toml`
+at the repository root:
 
 ```
-docs/
-  docs/
-    mkdocs.yml
-    index.md
-    01-module-name/
-      index.md
-      01-lesson-name.md
-      02-lesson-name.md
-    02-module-name/
-      index.md
-      01-lesson-name.md
+content/
+  _index.md
+  01-module-name/
+    _index.md
+    01-lesson-name.md
+    02-lesson-name.md
+  02-module-name/
+    _index.md
+    01-lesson-name.md
+hugo.toml
 ```
 
 Module and lesson directories use numbered prefixes (`01-`, `02-`) for
-ordering. Each module directory has an `index.md` that serves as the
-module overview page.
+ordering. Hugo derives navigation order from these prefixes. Each module
+directory has an `_index.md` branch bundle that serves as the module
+overview page.
 
 ### Repo-Root Lessons and Projects (Tier 3-4)
 
@@ -59,7 +59,7 @@ projects/
 ```
 
 Each lesson directory contains a `README.md` generated from guarded
-sections in the corresponding MkDocs page (see the `readme-guards`
+sections in the corresponding Hugo content page (see the `readme-guards`
 skill). Exercise and starter code files live alongside the README.
 
 ### DevContainer Setup
@@ -97,7 +97,7 @@ and a `CURIK_DIR/` directory (default `.curik/`) for internal state.
   `01-intro-to-variables.md`, not `01_IntroToVariables.md`.
 - Module directories: `01-module-name/`
 - Lesson files: `01-lesson-name.md`
-- Overview files: `index.md` (MkDocs) or `README.md` (repo-root)
+- Overview files: `_index.md` (Hugo branch bundle) or `README.md` (repo-root)
 - Exercise files: `exercise.py`, `exercise.java`, etc. (language
   appropriate, no numbered prefix)
 

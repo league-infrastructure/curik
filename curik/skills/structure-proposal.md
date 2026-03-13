@@ -25,7 +25,7 @@ Read all spec sections. Summarize what drives the structure:
 |--------|--------------|
 | Course Structure Outline | 4 modules, 10 lessons |
 | Pedagogical Model | Sequential + progressive project |
-| Technical Decisions | Tier 3, MkDocs + Codespaces |
+| Technical Decisions | Tier 3, Hugo + Codespaces |
 | Alignment | PCEP topics in order |
 
 ---
@@ -41,17 +41,22 @@ Present the full tree with descriptions:
 ### Proposed Directory Tree
 
 ```
-docs/
+content/
+  _index.md
   01-getting-started/
+    _index.md
     01-hello-python.md        # Variables, print, input
     02-data-types.md          # Strings, ints, floats
   02-control-flow/
+    _index.md
     03-decisions.md           # if/elif/else
     04-loops.md               # for, while, range
   03-functions/
+    _index.md
     05-writing-functions.md   # def, parameters, return
     06-function-practice.md   # Scope, composition
   04-data-and-projects/
+    _index.md
     07-lists.md               # Lists, iteration
     08-dictionaries.md        # Dicts, key-value
     09-file-io.md             # Reading/writing files
@@ -87,7 +92,7 @@ When you approve, I will:
 
 - [ ] Create 4 module directories
 - [ ] Create 10 lesson stub files with frontmatter
-- [ ] Generate MkDocs nav configuration
+- [ ] Generate Hugo nav weights
 - [ ] Set up .devcontainer (Tier 3)
 - [ ] Create mirror directories in lessons/ and projects/
 
