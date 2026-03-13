@@ -9,10 +9,15 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from .assets import (
+    ACTIVITY_MAPPINGS,
+    get_activity_guide,
     get_agent_definition,
+    get_instruction,
+    get_process_guide,
     get_reference,
     get_skill_definition,
     list_agents,
+    list_instructions,
     list_references,
     list_skills,
 )
@@ -93,8 +98,10 @@ mcp = FastMCP(
         "tool_advance_sub_phase() to progress. In Phase 2, use "
         "tool_scaffold_structure() for layout, tool_create_lesson_stub() for "
         "lessons, tool_validate_lesson() to check work.\n\n"
-        "DISCOVERY: Use tool_list_agents(), tool_list_skills(), "
-        "tool_list_references() to find curriculum development resources."
+        "DISCOVERY: Use tool_get_process_guide() for the full process decision "
+        "tree. Use tool_get_activity_guide(activity) to load bundled context "
+        "for a named activity. Use tool_list_agents(), tool_list_skills(), "
+        "tool_list_instructions() to find curriculum development resources."
     ),
 )
 
@@ -252,19 +259,66 @@ def tool_get_skill_definition(name: str) -> str:
 
 
 @mcp.tool()
-def tool_list_references() -> str:
-    """List all available reference documents (e.g. brand guides, style guides)."""
+def tool_list_instructions() -> str:
+    """List all available instruction documents (process refs, conventions, templates)."""
     try:
-        return json.dumps(list_references())
+        return json.dumps(list_instructions())
     except CurikError as e:
         return f"Error: {e}"
 
 
 @mcp.tool()
-def tool_get_reference(name: str) -> str:
-    """Get the full markdown content of a named reference document."""
+def tool_get_instruction(name: str) -> str:
+    """Get the full markdown content of a named instruction document."""
     try:
-        return get_reference(name)
+        return get_instruction(name)
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+# Backward-compatible aliases
+@mcp.tool()
+def tool_list_references() -> str:
+    """List all available reference documents. Alias for tool_list_instructions."""
+    return tool_list_instructions()
+
+
+@mcp.tool()
+def tool_get_reference(name: str) -> str:
+    """Get a reference document by name. Alias for tool_get_instruction."""
+    return tool_get_instruction(name)
+
+
+# -- Process discovery tools --
+
+
+@mcp.tool()
+def tool_get_process_guide() -> str:
+    """Get the full curriculum development process guide.
+
+    Returns a decision-tree document describing all 3 macro-phases,
+    which agents to use at each stage, which skills apply, and gate
+    conditions. Call this at session start and whenever uncertain about
+    what to do next.
+    """
+    try:
+        return get_process_guide()
+    except CurikError as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_get_activity_guide(activity: str) -> str:
+    """Get bundled context for a named activity: agent + skills + instructions.
+
+    Combines the agent definition, all applicable skills, and all applicable
+    instructions into a single document. Valid activities:
+    spec-development, research, content-analysis, scaffolding,
+    lesson-writing-young, lesson-writing-older, quiz-authoring,
+    content-conversion, change-management, validation.
+    """
+    try:
+        return get_activity_guide(activity)
     except CurikError as e:
         return f"Error: {e}"
 
