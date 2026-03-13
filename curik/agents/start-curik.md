@@ -80,7 +80,7 @@ I found existing files in this repository:
 |------|------|
 | docs/ | Directory (14 files) |
 | README.md | File |
-| mkdocs.yml | File |
+| hugo.toml | File |
 | lessons/ | Directory (8 files) |
 
 ### What would you like to do?
@@ -106,8 +106,8 @@ Present the analysis:
 | Property | Value |
 |----------|-------|
 | Lesson count | 14 markdown files |
-| Structure | MkDocs site with 3 modules |
-| Site generator | MkDocs |
+| Structure | Hugo site with 3 modules |
+| Site generator | Hugo |
 | Tier guess | 3 |
 | Has devcontainer | Yes |
 

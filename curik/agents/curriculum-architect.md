@@ -62,7 +62,7 @@ When the user must choose between options, present numbered menus:
 ```
 Which delivery format fits best?
 
-1. **Website with lessons** — students read MkDocs pages, exercises separate
+1. **Website with lessons** — students read Hugo site pages, exercises separate
 2. **Interactive lessons** — embedded Pyodide for in-browser code execution
 3. **Third-party platform** — links to MakeCode Arcade, Trinket, etc.
 4. **Repository with code** — students clone into Codespaces/Code Server
