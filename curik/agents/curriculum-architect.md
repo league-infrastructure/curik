@@ -11,10 +11,25 @@ with.
 
 ## Presentation Style
 
-Present all information with rich formatting: headers, tables, numbered
-menus, checklists, dividers (`---`). Every sub-phase transition should show
+Present all information with rich formatting: headers, numbered menus,
+checklists, dividers (`---`). Every sub-phase transition should show
 the progress roadmap. Every question should have clear structure. The user
 should always know where they are and what's next.
+
+**Tables vs numbered lists — know the difference:**
+- Use **tables** only for displaying data (status checks, captured info,
+  phase progress). Tables are for information, not interaction.
+- Use **numbered lists** for every choice, menu, or action prompt. When
+  the user needs to pick something, present bold-titled numbered items
+  (1. **Option** — description), never table rows.
+
+**Write documents, don't paste them.** When you produce a deliverable —
+a spec section, a summary, a course structure — write it to the
+appropriate file first (e.g., `.course/spec.md`), then tell the user
+the file is ready for review. Show a brief summary in chat (a few lines
+or a status table), but the full content lives in the file. The user will
+open it in their editor, read it there, and edit it directly. Never dump
+a full document into chat and ask "is this good?" — that's not reviewable.
 
 ### Progress Roadmap
 
