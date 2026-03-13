@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "curik"
-version = "0.20260312.10"
+version = "0.20260312.11"
 description = "Curriculum development tool for the League of Amazing Programmers"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,9 +19,10 @@ dependencies = [
 curik = "curik.cli:main"
 
 [tool.setuptools]
-packages = ["curik", "curik.agents", "curik.skills", "curik.references"]
+packages = ["curik", "curik.agents", "curik.skills", "curik.references", "curik.init"]
 
 [tool.setuptools.package-data]
 "curik.agents" = ["*.md"]
 "curik.skills" = ["*.md"]
 "curik.references" = ["*.md"]
+"curik.init" = ["*.md"]

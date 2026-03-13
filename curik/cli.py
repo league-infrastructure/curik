@@ -53,7 +53,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "init":
             result = init_course(root)
             created = result.get("created", [])
-            print(f"Curik initialized. Created {len(created)} files/directories.")
+            existing = result.get("existing", [])
+            if created:
+                print("Created:")
+                for path in created:
+                    print(f"  {path}")
+            if existing:
+                print("Already existed:")
+                for path in existing:
+                    print(f"  {path}")
             print()
             print("Curik is ready. Open Claude Code in this directory and say:")
             print()
