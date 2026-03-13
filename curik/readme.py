@@ -1,4 +1,4 @@
-"""README generation from MkDocs comment guards."""
+"""README generation from Hugo shortcode guards."""
 
 from __future__ import annotations
 
@@ -8,17 +8,17 @@ from pathlib import Path
 from .project import CurikError
 
 _SHARED_RE = re.compile(
-    r"<!-- readme-shared -->\s*\n(.*?)<!-- /readme-shared -->",
+    r"\{\{<\s*readme-shared\s*>\}\}\s*\n(.*?)\{\{<\s*/readme-shared\s*>\}\}",
     re.DOTALL,
 )
 _ONLY_RE = re.compile(
-    r"<!-- readme-only -->\s*\n(.*?)<!-- /readme-only -->",
+    r"\{\{<\s*readme-only\s*>\}\}\s*\n(.*?)\{\{<\s*/readme-only\s*>\}\}",
     re.DOTALL,
 )
 
 
 def parse_guards(content: str) -> dict[str, list[str]]:
-    """Parse <!-- readme-shared --> and <!-- readme-only --> guards from markdown.
+    """Parse ``{{</* readme-shared */>}}`` and ``{{</* readme-only */>}}`` guards from markdown.
 
     Returns {"shared": [...sections...], "only": [...sections...]}.
     """
@@ -36,7 +36,7 @@ def generate_readme(content: str) -> str | None:
     return "\n\n".join(parts).strip() + "\n"
 
 
-def generate_readmes(root: Path, docs_dir: str = "docs/docs") -> dict:
+def generate_readmes(root: Path, docs_dir: str = "content") -> dict:
     """Generate READMEs for all lessons in docs_dir that have guards.
 
     Writes README.md files to corresponding paths under root/lessons/.
@@ -59,7 +59,7 @@ def generate_readmes(root: Path, docs_dir: str = "docs/docs") -> dict:
             skipped.append(str(rel))
             continue
 
-        # Map docs/docs/module/lesson.md -> lessons/module/lesson/README.md
+        # Map content/module/lesson.md -> lessons/module/lesson/README.md
         # The lesson dir is the stem of the md file
         lesson_dir = root / "lessons" / rel.parent / rel.stem
         lesson_dir.mkdir(parents=True, exist_ok=True)
