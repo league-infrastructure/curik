@@ -24,7 +24,7 @@ COMPLETE_LESSON = """\
 - Define a variable in Python
 - Assign values to variables
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variable declaration and assignment
 
@@ -40,7 +40,7 @@ COMPLETE_LESSON = """\
 
 **Differentiation**: Advanced students explore type conversion
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 
@@ -51,16 +51,16 @@ COMPLETE_LESSON_WITH_GUARD = """\
 ---
 uid: test-uid-001
 ---
-<!-- readme-shared -->
+{{< readme-shared >}}
 # Lesson: Variables
 
 ## Learning Objectives
 
 - Define a variable in Python
 - Assign values to variables
-<!-- /readme-shared -->
+{{< /readme-shared >}}
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variable declaration and assignment
 
@@ -76,7 +76,7 @@ uid: test-uid-001
 
 **Differentiation**: Advanced students explore type conversion
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 
@@ -87,14 +87,14 @@ COMPLETE_LESSON_WITH_GUARD_BAD_UID = """\
 ---
 uid: nonexistent-uid-999
 ---
-<!-- readme-shared -->
+{{< readme-shared >}}
 # Lesson: Variables
 
 ## Learning Objectives
 
 - Define a variable in Python
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variable declaration and assignment
 
@@ -110,7 +110,7 @@ uid: nonexistent-uid-999
 
 **Differentiation**: Advanced students explore type conversion
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 
@@ -130,7 +130,7 @@ class ValidateLessonTierTest(unittest.TestCase):
         self._tmp.cleanup()
 
     def test_tier3_missing_guard_is_error(self) -> None:
-        """Tier 3 lesson without <!-- readme-shared --> guard produces error."""
+        """Tier 3 lesson without {{< readme-shared >}} guard produces error."""
         lesson = self.root / "modules" / "mod1" / "01-variables.md"
         lesson.parent.mkdir(parents=True)
         lesson.write_text(COMPLETE_LESSON, encoding="utf-8")
@@ -142,7 +142,7 @@ class ValidateLessonTierTest(unittest.TestCase):
         )
 
     def test_tier3_with_guard_no_guard_error(self) -> None:
-        """Tier 3 lesson with <!-- readme-shared --> guard has no guard error."""
+        """Tier 3 lesson with {{< readme-shared >}} guard has no guard error."""
         lesson = self.root / "modules" / "mod1" / "01-variables.md"
         lesson.parent.mkdir(parents=True)
         lesson.write_text(COMPLETE_LESSON_WITH_GUARD, encoding="utf-8")

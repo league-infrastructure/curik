@@ -32,7 +32,7 @@ COMPLETE_LESSON = """\
 - Define a variable in Python
 - Assign values to variables
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variable declaration and assignment
 
@@ -48,7 +48,7 @@ COMPLETE_LESSON = """\
 
 **Differentiation**: Advanced students explore type conversion
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 
@@ -74,13 +74,13 @@ INCOMPLETE_LESSON_MISSING_FIELDS = """\
 
 - Define a variable in Python
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variable declaration
 
 **Materials**: Python interpreter
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 
@@ -90,7 +90,7 @@ Variables store data...
 LESSON_NO_OBJECTIVES = """\
 # Lesson: Variables
 
-<div class="instructor-guide">
+{{< instructor-guide >}}
 
 **Objectives**: Teach variables
 **Materials**: Python
@@ -100,7 +100,7 @@ LESSON_NO_OBJECTIVES = """\
 **Assessment cues**: Can declare vars
 **Differentiation**: N/A
 
-</div>
+{{< /instructor-guide >}}
 
 ## Content
 

@@ -64,7 +64,7 @@ COMPLETE_GUIDE = """\
 
 Some intro text.
 
-<div class="instructor-guide" markdown>
+{{< instructor-guide >}}
 
 ## Instructor Guide
 
@@ -92,11 +92,11 @@ Some intro text.
 - *Needs more support*: Provide syntax reference card.
 - *Ready for more*: Nested loop challenge.
 
-</div>
+{{< /instructor-guide >}}
 """
 
 MISSING_FIELDS_GUIDE = """\
-<div class="instructor-guide" markdown>
+{{< instructor-guide >}}
 
 ## Instructor Guide
 
@@ -106,11 +106,11 @@ MISSING_FIELDS_GUIDE = """\
 
 **Timing**: 50 minutes total.
 
-</div>
+{{< /instructor-guide >}}
 """
 
 EMPTY_FIELD_GUIDE = """\
-<div class="instructor-guide" markdown>
+{{< instructor-guide >}}
 
 ## Instructor Guide
 
@@ -128,7 +128,7 @@ EMPTY_FIELD_GUIDE = """\
 
 **Differentiation**: Pair struggling students.
 
-</div>
+{{< /instructor-guide >}}
 """
 
 

@@ -22,10 +22,10 @@ INSTRUCTOR_GUIDE_FIELDS = [
 
 
 def _parse_instructor_guide(text: str) -> dict[str, str]:
-    """Extract field values from an instructor guide div block."""
-    # Match <div class="instructor-guide"> ... </div>
+    """Extract field values from an instructor guide shortcode block."""
+    # Match {{< instructor-guide >}} ... {{< /instructor-guide >}}
     m = re.search(
-        r'<div\s+class=["\']instructor-guide["\']\s*>(.*?)</div>',
+        r'\{\{<\s*instructor-guide\s*>\}\}(.*?)\{\{<\s*/instructor-guide\s*>\}\}',
         text,
         re.DOTALL,
     )
@@ -64,11 +64,11 @@ def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) ->
 
     Checks:
     - File exists
-    - Has instructor guide div with all 7 required fields non-empty
+    - Has instructor guide shortcode with all 7 required fields non-empty
     - Has learning objectives outside the instructor guide
 
     When *tier* is 3 or 4, additionally checks:
-    - ``<!-- readme-shared -->`` comment guard is present
+    - ``{{</* readme-shared */>}}`` shortcode guard is present
     - Lesson UID appears in syllabus.yaml (if the file exists)
     """
     root = root.resolve()
@@ -80,13 +80,13 @@ def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) ->
 
     text = full_path.read_text(encoding="utf-8")
 
-    # Check for instructor guide div
+    # Check for instructor guide shortcode
     guide_match = re.search(
-        r'<div\s+class=["\']instructor-guide["\']\s*>',
+        r'\{\{<\s*instructor-guide\s*>\}\}',
         text,
     )
     if not guide_match:
-        errors.append("Missing instructor guide div")
+        errors.append("Missing instructor guide shortcode")
     else:
         fields = _parse_instructor_guide(text)
         for field in INSTRUCTOR_GUIDE_FIELDS:
@@ -98,7 +98,7 @@ def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) ->
     # Check for learning objectives outside the instructor guide
     # Remove the instructor guide block and check for objectives heading
     text_no_guide = re.sub(
-        r'<div\s+class=["\']instructor-guide["\']\s*>.*?</div>',
+        r'\{\{<\s*instructor-guide\s*>\}\}.*?\{\{<\s*/instructor-guide\s*>\}\}',
         "",
         text,
         flags=re.DOTALL,
@@ -108,10 +108,10 @@ def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) ->
 
     # Tier 3-4 specific checks
     if tier is not None and tier >= 3:
-        # Check for <!-- readme-shared --> comment guard
-        if "<!-- readme-shared -->" not in text:
+        # Check for {{< readme-shared >}} shortcode guard
+        if "{{< readme-shared >}}" not in text:
             errors.append(
-                "Tier 3-4 lesson missing <!-- readme-shared --> comment guard"
+                "Tier 3-4 lesson missing {{< readme-shared >}} shortcode guard"
             )
 
         # Check lesson UID against syllabus.yaml if it exists
@@ -188,7 +188,7 @@ def validate_course(root: Path, *, tier: int | None = None) -> dict:
     - All module directories pass validate_module
 
     When *tier* is 3 or 4, additionally checks:
-    - Syllabus consistency (entries vs MkDocs pages)
+    - Syllabus consistency (entries vs Hugo content pages)
     - README.md exists in ``lessons/<mod_name>/`` mirror directories
     """
     root = root.resolve()
@@ -230,11 +230,11 @@ def validate_course(root: Path, *, tier: int | None = None) -> dict:
                 consistency = validate_syllabus_consistency(root)
                 for uid in consistency.get("entries_without_pages", []):
                     errors.append(
-                        f"Syllabus entry UID '{uid}' has no matching MkDocs page"
+                        f"Syllabus entry UID '{uid}' has no matching content page"
                     )
                 for uid in consistency.get("pages_without_entries", []):
                     errors.append(
-                        f"MkDocs page UID '{uid}' has no matching syllabus entry"
+                        f"Content page UID '{uid}' has no matching syllabus entry"
                     )
             except Exception:
                 pass
@@ -295,15 +295,15 @@ REQUIRED_GUIDE_FIELDS = [
 def validate_instructor_guide(content: str) -> dict:
     """Parse markdown *content* and check for required instructor guide fields.
 
-    Looks for ``<div class="instructor-guide"`` sections and verifies that
-    all 7 required fields are present and non-empty.
+    Looks for ``{{< instructor-guide >}}`` shortcode sections and verifies
+    that all 7 required fields are present and non-empty.
 
     Returns::
 
         {"valid": bool, "missing": [str, ...], "empty": [str, ...]}
     """
     guide_pattern = re.compile(
-        r'<div\s+class="instructor-guide"[^>]*>(.+?)</div>',
+        r'\{\{<\s*instructor-guide\s*>\}\}(.+?)\{\{<\s*/instructor-guide\s*>\}\}',
         re.DOTALL,
     )
     guide_blocks = guide_pattern.findall(content)
@@ -325,7 +325,7 @@ def validate_instructor_guide(content: str) -> dict:
 
     for field in REQUIRED_GUIDE_FIELDS:
         pattern = re.compile(
-            rf'\*\*{re.escape(field)}\*\*\s*:\s*(.*?)(?=\*\*(?:{_field_alt})\*\*\s*:|</div>|\Z)',
+            rf'\*\*{re.escape(field)}\*\*\s*:\s*(.*?)(?=\*\*(?:{_field_alt})\*\*\s*:|\{{\{{<\s*/instructor-guide\s*>\}}\}}|\Z)',
             re.DOTALL,
         )
         match = pattern.search(combined)

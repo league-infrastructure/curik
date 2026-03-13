@@ -46,7 +46,7 @@ def _extract_lesson_objectives(text: str) -> list[str]:
     """Extract learning objectives from lesson markdown text."""
     # Remove instructor guide block
     text_no_guide = re.sub(
-        r'<div\s+class=["\']instructor-guide["\']\s*>.*?</div>',
+        r'\{\{<\s*instructor-guide\s*>\}\}.*?\{\{<\s*/instructor-guide\s*>\}\}',
         "",
         text,
         flags=re.DOTALL,
