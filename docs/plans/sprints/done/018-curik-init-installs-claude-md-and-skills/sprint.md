@@ -1,9 +1,12 @@
 ---
-id: "018"
-title: "Curik Init Installs CLAUDE.md and Skills"
-status: planning
+id: 018
+title: Curik Init Installs CLAUDE.md and Skills
+status: done
 branch: sprint/018-curik-init-installs-claude-md-and-skills
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 <!-- CLASI: Before changing code or making plans, review the SE process in CLAUDE.md -->
 
