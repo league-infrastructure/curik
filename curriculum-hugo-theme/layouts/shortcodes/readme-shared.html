@@ -1,12 +1,2 @@
-{{- /*
-  Readme-shared shortcode.
-  Content appears both on the rendered Hugo site AND in generated READMEs.
-  On the site, it renders normally with no wrapper.
-
-  Usage:
-    {{</* readme-shared */>}}
-    # Getting Started
-    This content appears on the site and in the README.
-    {{</* /readme-shared */>}}
-*/ -}}
+{{- /* Readme-shared: renders on site and extracted for README. */ -}}
 {{ .Inner | markdownify }}

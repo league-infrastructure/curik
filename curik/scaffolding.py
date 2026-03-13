@@ -100,12 +100,24 @@ def scaffold_structure(
                 lesson_path.parent.mkdir(parents=True, exist_ok=True)
                 title = _title_from_filename(lesson)
                 uid = generate_unit_uid()
+                if tier in (3, 4):
+                    stub_body = (
+                        f"# {title}\n\n"
+                        "## Student Content\n\n"
+                        "Student-facing content goes here.\n\n"
+                        "{{< instructor-guide >}}\n\n"
+                        "Instructor guide content goes here.\n\n"
+                        "{{< /instructor-guide >}}\n"
+                    )
+                else:
+                    stub_body = (
+                        f"# {title}\n\n"
+                        "{{< instructor-guide >}}\n\n"
+                        "Instructor guide content goes here.\n\n"
+                        "{{< /instructor-guide >}}\n"
+                    )
                 lesson_path.write_text(
-                    f"---\nuid: {uid}\n---\n\n"
-                    f"# {title}\n\n"
-                    "{{< instructor-guide >}}\n\n"
-                    "Instructor guide content goes here.\n\n"
-                    "{{< /instructor-guide >}}\n",
+                    f"---\nuid: {uid}\n---\n\n{stub_body}",
                     encoding="utf-8",
                 )
                 created.append(rel)
