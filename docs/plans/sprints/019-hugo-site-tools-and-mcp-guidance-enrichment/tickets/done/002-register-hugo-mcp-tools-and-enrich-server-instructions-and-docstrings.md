@@ -1,7 +1,7 @@
 ---
-id: "002"
-title: "Register Hugo MCP tools and enrich server instructions and docstrings"
-status: todo
+id: '002'
+title: Register Hugo MCP tools and enrich server instructions and docstrings
+status: done
 use-cases: []
 depends-on: []
 ---
