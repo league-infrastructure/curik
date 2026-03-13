@@ -37,7 +37,8 @@ and uses `docs/docs/` as the content directory. This must change to Hugo's
 - `scaffold_structure()` creates `content/` with `_index.md` branch bundles
 - Brand guide is accessible via MCP tool at runtime
 - All existing tests updated and passing
-- No remaining references to `mkdocs` in Python source files
+- No remaining references to `mkdocs` in Python source files modified by
+  this sprint (`templates.py`, `migrate.py`, `scaffolding.py`, `server.py`)
 
 ## Scope
 
@@ -88,4 +89,8 @@ Before tickets can be created, all of the following must be true:
 
 ## Tickets
 
-(To be created after sprint approval.)
+1. **001** — Replace get_mkdocs_yml with get_hugo_config in templates.py
+2. **002** — Update migrate.py for Hugo detection and config generation (depends: 001)
+3. **003** — Update scaffolding.py for _index.md and nav weight assignments (depends: 001)
+4. **004** — Add brand guide as packaged MCP reference resource
+5. **005** — Update server.py docstrings and add get_reference tool (depends: 001-004)

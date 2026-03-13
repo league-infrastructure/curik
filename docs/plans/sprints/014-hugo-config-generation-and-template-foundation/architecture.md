@@ -79,12 +79,18 @@ Changes:
 **Use Cases**: SUC-001
 
 Changes:
-- `scaffold_structure()`: no directory changes needed (modules already go
-  under root or `resources/`). The MkDocs `docs/docs/` convention was only
-  in `migrate_structure()`.
-- `generate_nav()`: simplify or deprecate. Hugo auto-generates navigation
-  from directory structure using `01-` prefixes. If kept, it could generate
-  `weight` frontmatter values instead of MkDocs nav entries.
+- `scaffold_structure()`: no structural changes to module/lesson placement
+  (modules already go under root or `resources/`). The MkDocs `docs/docs/`
+  convention was only in `migrate_structure()`. However, `scaffold_structure()`
+  must now create `_index.md` branch bundle files in each module directory
+  (Hugo requires these for section pages). The lesson stubs already get
+  created by `scaffold_structure()` — only the module-level index files change
+  from `index.md` to `_index.md`.
+- `generate_nav()`: remove MkDocs-specific output format. Hugo auto-generates
+  navigation from directory structure using `01-` prefixes, so this function
+  is no longer needed for nav config. Keep the function but change its output
+  to return weight assignments (integer ordering values) that callers can
+  inject into frontmatter. Update tests accordingly.
 
 ### Component: references (NEW)
 
@@ -97,9 +103,11 @@ server tools.
 
 Implementation:
 - Copy `docs/league-web-brand-guide.md` to `curik/references/league-web-brand-guide.md`
-- Add `curik/references/` to `package_data` in `pyproject.toml`
-- Add `get_reference(name)` function in a new `curik/references.py` or
-  in `curik/assets.py` (which already handles agents/skills loading)
+- Create `curik/references/__init__.py` (empty, required for package discovery)
+- Add `"curik.references"` to the `packages` list in `pyproject.toml`
+- Add `curik/references/*.md` to `package_data` in `pyproject.toml`
+- Add `get_reference(name)` function in `curik/assets.py` (which already
+  handles agents/skills loading via `importlib.resources`)
 
 ### Component: server
 
@@ -149,10 +157,11 @@ are simple key-value structures. Manual string building avoids adding a
 dependency (`tomli_w`) for a trivial output format. The same pattern is
 used for `get_mkdocs_yml()` today (manual YAML string building).
 
-**Why keep `generate_nav()`?** Hugo handles nav natively, but
-`generate_nav()` is tested and may be useful for generating `weight`
-frontmatter or for contexts where explicit nav ordering is needed.
-Decision: keep but simplify. Can be removed in a future sprint if unused.
+**Why keep `generate_nav()` as weight assignments?** Hugo handles nav
+natively from directory structure, so the MkDocs nav-list output format is
+no longer needed. However, the function is useful for generating `weight`
+frontmatter values from a structure dict, giving explicit ordering control.
+Decision: keep the function, change output to weight assignments.
 
 ## Sprint Changes
 
@@ -163,7 +172,8 @@ Decision: keep but simplify. Can be removed in a future sprint if unused.
 - **scaffolding.py**: `_index.md` files, simplified nav generation
 - **server.py**: updated docstrings, new `tool_get_reference()` tool
 - **references/** (NEW): brand guide markdown file, packaged with curik
-- **pyproject.toml**: `package_data` includes `curik/references/*.md`
+- **pyproject.toml**: `packages` adds `curik.references`, `package_data`
+  includes `curik/references/*.md`
 
 ### Migration Concerns
 
