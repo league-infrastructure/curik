@@ -41,6 +41,30 @@ The full curriculum development lifecycle has three macro-phases, each with dist
 
 The MCP server's top-level process guide describes all three. Within each, specific agents, skills, and instructions apply.
 
+### What the MCP Server Owns vs. What the Agent Owns
+
+The MCP server manages structured data, directory structure, numbering, state tracking, and gates. The agent writes all prose content (Markdown lesson pages, spec sections, outlines, research findings) directly to the filesystem.
+
+**MCP server owns:**
+
+- Structured data files: `.syllabus`, `course.yml`, `quiz.yml`, `.course/` state metadata (YAML/JSON)
+- Directory creation and numbering (scaffold, stub files with correct frontmatter)
+- Phase state and gate enforcement
+- Validation (checking structured conditions across files)
+- File moves between state directories (`issues/open/` → `issues/done/`)
+- Running external tools (`syl compile`, README build, MkDocs build check)
+
+**Agent writes directly:**
+
+- `.course/spec.md` — all prose sections
+- `.course/outlines/*.md` — outline documents
+- Lesson pages in `docs/docs/`
+- Issue descriptions in `.course/issues/open/`
+- Change plan content in `.course/change-plan/active/`
+- Any other Markdown or code file
+
+The MCP server never needs to write or read prose on the agent's behalf. If a tool would just be a wrapper around "write this string to this file," the agent should write the file itself.
+
 ---
 
 ## Artifacts Installed by `curik init`
@@ -246,19 +270,17 @@ Activity mappings:
 | `change-management` | curriculum-architect | status-tracking, change-plan-execution | curriculum-process |
 | `validation` | reviewer | validation-checklist, syllabus-integration | mkdocs-conventions, instructor-guide-requirements |
 
-### Category 3: Spec Development (Phase 1)
+### Category 3: Spec State (Phase 1)
 
-These tools manage the `.course/spec.md` document and enforce the spec development process.
+The agent writes `.course/spec.md` directly — it's a Markdown file and prose authoring is the agent's job. These tools manage the structured metadata that `get_course_status()` reads back: tier, grade range, delivery format, pedagogical structure, alignment targets. They also update the phase-tracking state so `advance_phase()` knows which sections are complete.
 
 | Tool | Description |
 |------|-------------|
-| `update_spec(section, content)` | Write or update a named section of the spec document |
-| `get_spec(section?)` | Read the current spec, optionally a specific section |
-| `record_course_concept(data)` | Structured save of Phase 1a output |
-| `record_pedagogical_model(data)` | Saves delivery format and structural choices |
-| `record_alignment(data)` | Saves alignment decision and topic list |
-| `save_research_findings(data)` | Persists structured research output |
-| `get_research_findings()` | Read back findings for alignment decisions |
+| `record_course_concept(data)` | Records structured fields from Phase 1a: tier, grade range, format, course type, scope. Updates phase state to mark 1a complete. |
+| `record_pedagogical_model(data)` | Records delivery format and pedagogical structure choices. Updates phase state to mark 1b complete. |
+| `record_alignment(data)` | Records alignment target(s) and topic list. Updates phase state to mark 1d complete. |
+
+The agent writes the prose for each sub-phase into `spec.md` itself. The `record_*` tools extract and store the structured decisions that other tools depend on — `scaffold_structure()` needs to know the tier, `get_course_status()` needs to report which sub-phases are done, and `advance_phase()` needs to check completeness.
 
 ### Category 4: Scaffolding and Structure
 
@@ -272,31 +294,33 @@ These tools manage the `.course/spec.md` document and enforce the spec developme
 
 | Tool | Description |
 |------|-------------|
-| `regenerate_syllabus()` | Runs `syl compile` to rebuild `.syllabus` |
-| `get_syllabus()` | Reads `.syllabus` entries |
-| `read_syllabus_entries()` | Reads entries with UIDs, paths, and `url` fields |
-| `write_syllabus_url(uid, url)` | Writes the `url` field for a lesson entry after creating its MkDocs page |
+| `regenerate_syllabus()` | Runs `syl compile` to rebuild `.syllabus` from the current directory state |
+| `get_syllabus()` | Reads `.syllabus` and returns structured entries: UIDs, paths, titles, and `url` fields |
+| `write_syllabus_url(uid, url)` | Writes the `url` field for a lesson entry after the agent creates the corresponding MkDocs page |
 | `trigger_readme_generation()` | Runs the README build tool |
-| `validate_syllabus_consistency()` | Checks `.syllabus` ↔ MkDocs page linkage |
+| `validate_syllabus_consistency()` | Checks that every `.syllabus` entry has a corresponding MkDocs page, UIDs match, Tier 3–4 entries have `url` fields |
 
 ### Category 6: Outlines
 
+The agent writes outline documents to `.course/outlines/` directly — they're Markdown prose. The MCP server handles the approval gate.
+
 | Tool | Description |
 |------|-------------|
-| `create_outline(scope, content)` | Writes a module or course outline to `.course/outlines/` |
-| `approve_outline(outline_id)` | Human-gated; records approval, enables drafting |
+| `approve_outline(outline_id)` | Human-gated; records outline approval in state metadata, enables drafting for that module |
 
 ### Category 7: Issue and Change Plan Management
 
+The agent writes issue descriptions and change plan content as Markdown. The MCP server handles numbering, directory placement, state metadata, and file moves between `open/`/`active/` and `done/`.
+
 | Tool | Description |
 |------|-------------|
-| `create_issue(description)` | Writes a numbered file to `issues/open/` |
-| `list_issues(filter?)` | Returns open issues, optionally filtered |
-| `create_change_plan()` | Synthesizes open issues into a plan in `change-plan/active/` |
-| `approve_change_plan(plan_id)` | Records approval; enables execution |
-| `execute_change_plan(plan_id)` | Agent works through the plan |
-| `review_change_plan(plan_id)` | Checks completion, flags gaps |
-| `close_change_plan(plan_id)` | Moves plan and resolved issues to `done/` |
+| `create_issue(description)` | Creates a numbered file in `issues/open/` with correct sequence number and frontmatter. The agent provides the description text. |
+| `list_issues(filter?)` | Reads frontmatter from issue files and returns a filtered, structured list |
+| `register_change_plan(plan_id)` | Registers a change plan the agent has written in `change-plan/active/`. Validates the file exists, indexes its items, records it in state metadata. |
+| `approve_change_plan(plan_id)` | Records designer approval in the plan's frontmatter; updates state to allow execution |
+| `close_change_plan(plan_id)` | Moves plan to `change-plan/done/`, moves resolved issues to `issues/done/` |
+
+The agent synthesizes issues into a change plan (that's a language model task — reading issues and writing a coherent plan document). The agent also executes the plan by making the file edits and content changes directly. The MCP server tracks which plans exist, whether they're approved, and handles the directory moves at close time.
 
 ### Category 8: Validation
 
@@ -327,17 +351,17 @@ This section describes the full process from the agent's perspective — what ha
 flowchart TD
     A[Agent session starts] --> B[Read CLAUDE.md]
     B --> C["get_course_status()"]
-    C --> D{"Project state?"}
-    
-    D -->|"not started + no content"| E[Begin Phase 1a\nCourse Concept]
-    D -->|"not started + has content"| F[Sequester to _old/\nAnalyze existing content]
-    D -->|"spec-development"| G[Resume spec development\nat current sub-phase]
-    D -->|"first-version"| H[Resume content production]
-    D -->|"ongoing-changes"| I[Enter change cycle]
-    
-    F --> J{Designer reviews\nanalysis report}
+    C --> D{Project state?}
+
+    D -->|not started, no content| E[Begin Phase 1a]
+    D -->|not started, has content| F["Sequester to _old/<br/>Analyze content"]
+    D -->|spec-development| G[Resume spec at current sub-phase]
+    D -->|first-version| H[Resume content production]
+    D -->|ongoing-changes| I[Enter change cycle]
+
+    F --> J{Designer reviews analysis?}
     J -->|approved| E
-    
+
     E --> K[Phase 1: Spec Development]
     G --> K
     H --> L[Phase 2: First Version]
@@ -358,20 +382,15 @@ The agent's session begins. It reads `CLAUDE.md`, which instructs it to call `ge
 
 ```mermaid
 flowchart TD
-    A["1a: Course Concept\n─────────────────\nAgent: curriculum-architect\nSkill: course-concept\nMCP: record_course_concept()"] --> B["1b: Pedagogical Model\n─────────────────\nAgent: curriculum-architect\nSkill: pedagogical-model\nMCP: record_pedagogical_model()"]
-    
-    B --> C["1c: Research\n─────────────────\nAgent: research-agent\nSkill: web search\nMCP: save_research_findings()"]
-    
-    C --> D["1d: Alignment Decision\n─────────────────\nAgent: curriculum-architect\nSkill: alignment-decision\nMCP: record_alignment()"]
-    
-    D --> E["1e: Spec Synthesis\n─────────────────\nAgent: curriculum-architect\nSkill: spec-synthesis\nMCP: update_spec()"]
-    
-    E --> F{"advance_phase()\n─────────────\nAll spec sections\nnon-empty?"}
-    
-    F -->|"fail: sections missing"| G[Agent reports\nunmet conditions]
+    A["1a: Course Concept<br/>curriculum-architect"] --> B["1b: Pedagogical Model<br/>curriculum-architect"]
+    B --> C["1c: Research<br/>research-agent"]
+    C --> D["1d: Alignment Decision<br/>curriculum-architect"]
+    D --> E["1e: Spec Synthesis<br/>curriculum-architect"]
+    E --> F{"advance_phase()<br/>All sections non-empty?"}
+    F -->|fail| G[Report unmet conditions]
     G --> A
-    F -->|"pass"| H[Produce initial change plan\n001-initial-build.md]
-    H --> I{Designer approves\nchange plan?}
+    F -->|pass| H["Produce initial change plan<br/>001-initial-build.md"]
+    H --> I{Designer approves?}
     I -->|yes| J[Phase 2: First Version]
     I -->|revise| H
 ```
@@ -380,9 +399,9 @@ flowchart TD
 2. Agent begins Phase 1a (Course Concept) using `get_skill("course-concept")`
 3. Agent has a structured conversation with the designer, recording answers via `record_course_concept()`
 4. Agent proceeds through 1b (Pedagogical Model) → `get_skill("pedagogical-model")` → `record_pedagogical_model()`
-5. Agent delegates to Research Agent for 1c → `get_agent("research-agent")` → web search → `save_research_findings()`
+5. Agent delegates to Research Agent for 1c → `get_agent("research-agent")` → web search → agent writes findings into `spec.md` directly
 6. Agent returns to Curriculum Architect for 1d (Alignment) → `get_skill("alignment-decision")` → `record_alignment()`
-7. Agent synthesizes the spec in 1e → `get_skill("spec-synthesis")` → `update_spec()` for each section
+7. Agent synthesizes the spec in 1e → `get_skill("spec-synthesis")` → agent writes each section of `spec.md` directly
 8. Agent calls `advance_phase()` — fails if any spec section is empty, succeeds if all are complete
 
 **Path: Existing Content**
@@ -407,31 +426,29 @@ The agent then asks the designer which path to follow if existing content was se
 
 ```mermaid
 flowchart TD
-    A{Existing content\nsequestered?} -->|"no (Path A)"| B[Scaffold from scratch]
-    A -->|"yes"| C{"Designer choice:\nConvert or Rebuild?"}
-    C -->|"Path B: Convert"| D[AI-driven conversion]
-    C -->|"Path C: Rebuild"| B
-    
-    subgraph "Path A / Path C: Build from Spec"
-        B["Scaffold\n─────────────────\nAgent: curriculum-architect\nSkills: repo-scaffolding,\nsyllabus-integration\nMCP: scaffold_structure(),\nregenerate_syllabus(),\ngenerate_mkdocs_nav()"]
-        B --> E["Create outlines\nMCP: create_outline()"]
-        E --> F{"approve_outline()\n──────────────\nDesigner approves\neach outline?"}
+    A{Existing content?} -->|no - Path A| B[Scaffold from scratch]
+    A -->|yes| C{Convert or Rebuild?}
+    C -->|Path B: Convert| D[AI-driven conversion]
+    C -->|Path C: Rebuild| B
+
+    subgraph "Path A / C: Build from Spec"
+        B["Scaffold<br/>curriculum-architect"] --> E["Create outlines"]
+        E --> F{"approve_outline()<br/>Designer approves?"}
         F -->|revise| E
-        F -->|approved| G{"Course tier?"}
-        G -->|"Tier 1–2"| H["Draft lessons\n─────────────────\nAgent: lesson-author-young\nSkills: lesson-writing-young,\ninstructor-guide-sections"]
-        G -->|"Tier 3–4"| I["Draft lessons\n─────────────────\nAgent: lesson-author-older\nSkills: lesson-writing-older,\ninstructor-guide-sections,\nreadme-guards\nMCP: write_syllabus_url(),\ntrigger_readme_generation()"]
-        H --> J["Quiz configuration\n─────────────────\nAgent: quiz-author\nSkill: quiz-authoring\nMCP: generate_quiz_stub(),\nvalidate_quiz_alignment()"]
+        F -->|approved| G{Course tier?}
+        G -->|Tier 1-2| H["Draft lessons<br/>lesson-author-young"]
+        G -->|Tier 3-4| I["Draft lessons<br/>lesson-author-older"]
+        H --> J["Quiz config<br/>quiz-author"]
         I --> J
-        J --> K["Validation\n─────────────────\nAgent: reviewer\nSkill: validation-checklist\nMCP: validate_course()"]
+        J --> K["Validation<br/>reviewer"]
     end
-    
+
     subgraph "Path B: Convert Existing"
-        D["Convert from _old/\n─────────────────\nAgent: lesson-author\nSkills: content-conversion,\ninstructor-guide-sections\nMCP: scaffold_structure(),\nregenerate_syllabus()"]
-        D --> L{Designer reviews\nconversion}
-        L --> M["Enter Phase 3\nOngoing Changes"]
+        D["Convert from _old/<br/>lesson-author"] --> L{Designer reviews}
+        L --> M[Enter Phase 3]
     end
-    
-    K --> N["Course ready\nor enter Phase 3"]
+
+    K --> N[Course ready or enter Phase 3]
 ```
 
 **Path A: From Scratch (no existing content, or existing content used only as reference)**
@@ -470,24 +487,20 @@ This is the steady-state cycle. The project stays here for its lifetime.
 
 ```mermaid
 flowchart TD
-    A["1. Comment / File Issues\n─────────────────\nAgent: curriculum-architect\nSkill: status-tracking\nMCP: create_issue()"] --> B["2. Collect into Change Plan\n─────────────────\nAgent: curriculum-architect\nMCP: create_change_plan()\nStructural moves first,\ncontent changes second"]
-    
-    B --> C{"3. approve_change_plan()\n──────────────────\nDesigner approves?"}
+    A["1. File issues<br/>curriculum-architect"] --> B["2. Collect into change plan<br/>curriculum-architect"]
+    B --> C{"3. approve_change_plan()<br/>Designer approves?"}
     C -->|revise| B
-    C -->|approved| D["4. Execute\n─────────────────\nAgent: curriculum-architect\nSkill: change-plan-execution\n──────────────────\n4a. Create git branch\n4b. Structural moves first\n4c. Content edits second\n4d. regenerate_syllabus()\n4e. trigger_readme_generation()\n4f. validate affected areas"]
-    
-    D --> E["5. Review\n─────────────────\nAgent: reviewer\nSkill: validation-checklist\nMCP: review_change_plan(),\nvalidate_lesson(),\nvalidate_module()"]
-    
-    E --> F{"Gaps found?"}
-    F -->|"yes"| G["New issues created\nMCP: create_issue()"]
-    F -->|"no"| H["6. Close\n─────────────────\nMCP: close_change_plan()\nPlan → done/\nIssues → done/\nMerge branch"]
-    
+    C -->|approved| D["4. Execute<br/>curriculum-architect<br/>Branch → moves → edits → syl → validate"]
+    D --> E["5. Review<br/>reviewer"]
+    E --> F{Gaps found?}
+    F -->|yes| G[New issues filed]
+    F -->|no| H["6. Close<br/>Plan and issues → done/<br/>Merge branch"]
     G --> H
     H --> A
 ```
 
 1. **Comment**: Designer reviews lessons, uses the site, works through exercises. Tells the agent what needs to change. Agent records each comment via `create_issue()`.
-2. **Collect**: At intervals, the designer asks the agent to collect issues. Agent calls `create_change_plan()`, which reads open issues and synthesizes them into a plan. Structural moves listed first, content changes second.
+2. **Collect**: At intervals, the designer asks the agent to collect issues. The agent reads all open issues (via `list_issues()`) and writes a change plan document in `change-plan/active/`, then calls `register_change_plan()` to index it. Structural moves listed first, content changes second.
 3. **Approve**: Designer reviews the plan. Agent calls `approve_change_plan()` when the designer confirms.
 4. **Execute**: Agent loads `get_skill("change-plan-execution")`. This skill defines the execution order:
    - Create a git branch for the change set
@@ -545,8 +558,10 @@ sequenceDiagram
     Note over Agent: Follows skill workflow...
     
     Agent->>MCP: record_course_concept(data)
-    MCP->>Files: Write to .course/spec.md
+    MCP->>Files: Write to .course/state metadata
     MCP-->>Agent: Confirmed
+    
+    Note over Agent: Agent writes prose to .course/spec.md directly
     
     Agent->>MCP: advance_phase()
     MCP->>Files: Check spec completeness
@@ -577,21 +592,14 @@ The shortcut: `get_activity_guide(activity)` bundles steps 4–7 into one call w
 ```mermaid
 flowchart LR
     subgraph "get_activity_guide(activity)"
-        A1["spec-development"] --> B1["Agent: curriculum-architect\nSkills: course-concept, pedagogical-model,\nalignment-decision, spec-synthesis\nInstructions: curriculum-process, course-taxonomy"]
-        
-        A2["research"] --> B2["Agent: research-agent\nSkills: none\nInstructions: curriculum-process"]
-        
-        A3["content-analysis"] --> B3["Agent: curriculum-architect\nSkills: existing-content-analysis\nInstructions: curriculum-process, course-taxonomy"]
-        
-        A4["scaffolding"] --> B4["Agent: curriculum-architect\nSkills: repo-scaffolding, structure-proposal,\nsyllabus-integration\nInstructions: mkdocs-conventions"]
-        
-        A5["lesson-writing-young"] --> B5["Agent: lesson-author-young\nSkills: lesson-writing-young,\ninstructor-guide-sections\nInstructions: lesson-page-template,\ninstructor-guide-requirements"]
-        
-        A6["lesson-writing-older"] --> B6["Agent: lesson-author-older\nSkills: lesson-writing-older,\ninstructor-guide-sections, readme-guards\nInstructions: lesson-page-template,\nmkdocs-conventions"]
-        
-        A7["change-management"] --> B7["Agent: curriculum-architect\nSkills: status-tracking,\nchange-plan-execution\nInstructions: curriculum-process"]
-        
-        A8["validation"] --> B8["Agent: reviewer\nSkills: validation-checklist,\nsyllabus-integration\nInstructions: mkdocs-conventions,\ninstructor-guide-requirements"]
+        A1[spec-development] --> B1["curriculum-architect<br/>+ spec skills + taxonomy"]
+        A2[research] --> B2["research-agent<br/>+ curriculum-process"]
+        A3[content-analysis] --> B3["curriculum-architect<br/>+ existing-content-analysis"]
+        A4[scaffolding] --> B4["curriculum-architect<br/>+ repo-scaffolding + mkdocs"]
+        A5[lesson-writing-young] --> B5["lesson-author-young<br/>+ writing + guide skills"]
+        A6[lesson-writing-older] --> B6["lesson-author-older<br/>+ writing + guards + guide"]
+        A7[change-management] --> B7["curriculum-architect<br/>+ status + change-plan"]
+        A8[validation] --> B8["reviewer<br/>+ validation + syllabus"]
     end
 ```
 
@@ -667,12 +675,11 @@ Do not write curriculum content, modify course structure, scaffold files, or mak
 - `get_activity_guide(activity)` — bundled agent + skills + instructions
 
 ### State Management
-- Spec tools: `update_spec`, `get_spec`, `record_course_concept`, `record_pedagogical_model`, `record_alignment`
-- Research: `save_research_findings`, `get_research_findings`
+- Spec state: `record_course_concept`, `record_pedagogical_model`, `record_alignment`
 - Scaffolding: `scaffold_structure`, `create_lesson_stub`, `generate_mkdocs_nav`
-- Syllabus: `regenerate_syllabus`, `get_syllabus`, `read_syllabus_entries`, `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
-- Outlines: `create_outline`, `approve_outline`
-- Issues and change plans: `create_issue`, `list_issues`, `create_change_plan`, `approve_change_plan`, `execute_change_plan`, `review_change_plan`, `close_change_plan`
+- Syllabus: `regenerate_syllabus`, `get_syllabus`, `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
+- Outlines: `approve_outline`
+- Issues and change plans: `create_issue`, `list_issues`, `register_change_plan`, `approve_change_plan`, `close_change_plan`
 - Validation: `validate_lesson`, `validate_module`, `validate_course`, `get_validation_report`
 - Quiz: `generate_quiz_stub`, `validate_quiz_alignment`, `set_quiz_status`
 ```
