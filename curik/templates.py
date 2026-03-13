@@ -1,4 +1,4 @@
-"""Reusable templates for course scaffolding: mkdocs, devcontainer, course.yml."""
+"""Reusable templates for course scaffolding: hugo, devcontainer, course.yml."""
 
 from __future__ import annotations
 
@@ -6,49 +6,37 @@ import json
 from typing import Any
 
 
-def get_mkdocs_yml(title: str, tier: int, nav: list[dict[str, Any]] | None = None) -> str:
-    """Return a tier-appropriate mkdocs.yml configuration string.
+def get_hugo_config(
+    title: str, tier: int, theme_path: str | None = None
+) -> str:
+    """Return a tier-appropriate hugo.toml configuration string.
 
-    All tiers use MkDocs Material theme. Tiers 1-2 include instructor guide
-    CSS/JS for the instructor-guide-primary layout.
+    All tiers reference the league-hugo-theme. Tiers 1-2 include an
+    ``instructorGuide = true`` parameter for the instructor-guide-primary
+    layout.
     """
+    theme = theme_path or "league-hugo-theme"
     lines = [
-        f"site_name: {title}",
+        'baseURL = "/"',
+        f'title = "{title}"',
+        f'theme = "{theme}"',
         "",
-        "theme:",
-        "  name: material",
-        "  features:",
-        "    - navigation.tabs",
-        "    - navigation.sections",
-        "    - content.code.copy",
+        "[markup]",
+        "  [markup.highlight]",
+        "    codeFences = true",
+        "    guessSyntax = true",
+        "    lineNos = false",
+        "  [markup.tableOfContents]",
+        "    startLevel = 2",
+        "    endLevel = 4",
         "",
-        "plugins:",
-        "  - search",
-        "",
-        "markdown_extensions:",
-        "  - admonition",
-        "  - pymdownx.highlight",
-        "  - pymdownx.superfences",
+        "[params]",
+        '  copyright = "The League of Amazing Programmers"',
+        '  license = "CC BY-NC 4.0"',
     ]
 
     if tier in (1, 2):
-        lines.extend([
-            "",
-            "extra_css:",
-            "  - css/instructor-guide.css",
-            "",
-            "extra_javascript:",
-            "  - js/instructor-guide.js",
-        ])
-
-    if nav is not None:
-        lines.append("")
-        lines.append("nav:")
-        for entry in nav:
-            for section_title, pages in entry.items():
-                lines.append(f"  - {section_title}:")
-                for page in pages:
-                    lines.append(f"    - {page}")
+        lines.append("  instructorGuide = true")
 
     lines.append("")
     return "\n".join(lines)

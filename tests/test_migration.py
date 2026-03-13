@@ -7,10 +7,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import yaml
-
 from curik.migrate import inventory_course, migrate_structure
-from curik.templates import get_course_yml_template, get_devcontainer_json, get_mkdocs_yml
+from curik.templates import get_course_yml_template, get_devcontainer_json, get_hugo_config
 
 
 class TestInventoryCourseEmpty(unittest.TestCase):
@@ -47,12 +45,28 @@ class TestInventoryCoursePopulated(unittest.TestCase):
             self.assertEqual(result["tier_guess"], 3)
             self.assertEqual(result["lesson_count"], 2)
 
+    def test_detects_hugo_generator(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "hugo.toml").write_text('title = "test"\n')
+            result = inventory_course(tmp)
+            self.assertEqual(result["generator_guess"], "hugo")
+
     def test_detects_mkdocs_generator(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "mkdocs.yml").write_text("site_name: test\n")
             result = inventory_course(tmp)
             self.assertEqual(result["generator_guess"], "mkdocs")
+
+    def test_hugo_takes_precedence_over_mkdocs(self) -> None:
+        """If both hugo.toml and mkdocs.yml exist, Hugo wins."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "hugo.toml").write_text('title = "test"\n')
+            (root / "mkdocs.yml").write_text("site_name: test\n")
+            result = inventory_course(tmp)
+            self.assertEqual(result["generator_guess"], "hugo")
 
     def test_detects_devcontainer(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -74,18 +88,28 @@ class TestMigrateStructure(unittest.TestCase):
             # .course/ should be initialized
             self.assertTrue((root / ".course" / "state.json").is_file())
 
-            # docs/ and mkdocs.yml should exist
-            self.assertTrue((root / "docs").is_dir())
-            self.assertTrue((root / "mkdocs.yml").is_file())
+            # content/ and hugo.toml should exist
+            self.assertTrue((root / "content").is_dir())
+            self.assertTrue((root / "hugo.toml").is_file())
+            self.assertTrue((root / "content" / "_index.md").is_file())
 
-            # Each module should have a directory and index.md
+            # Each module should have a directory and _index.md
             for mod in modules:
-                self.assertTrue((root / "docs" / mod).is_dir())
-                self.assertTrue((root / "docs" / mod / "index.md").is_file())
+                self.assertTrue((root / "content" / mod).is_dir())
+                self.assertTrue((root / "content" / mod / "_index.md").is_file())
 
             # created list should contain relevant paths
-            self.assertIn("docs", result["created"])
-            self.assertIn("mkdocs.yml", result["created"])
+            self.assertIn("content", result["created"])
+            self.assertIn("hugo.toml", result["created"])
+            self.assertIn("content/_index.md", result["created"])
+
+    def test_hugo_config_content(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            migrate_structure(root, 3, ["01-intro"])
+            content = (root / "hugo.toml").read_text()
+            self.assertIn("league-hugo-theme", content)
+            self.assertIn("title =", content)
 
     def test_idempotent_on_existing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -98,25 +122,22 @@ class TestMigrateStructure(unittest.TestCase):
             self.assertEqual(result2["created"], [])
 
 
-class TestGetMkdocsYml(unittest.TestCase):
-    """get_mkdocs_yml returns valid YAML with Material theme."""
+class TestGetHugoConfig(unittest.TestCase):
+    """get_hugo_config returns valid TOML with league theme."""
 
-    def test_tier3_has_material_theme(self) -> None:
-        content = get_mkdocs_yml("Test Course", 3)
-        parsed = yaml.safe_load(content)
-        self.assertEqual(parsed["theme"]["name"], "material")
-        self.assertEqual(parsed["site_name"], "Test Course")
+    def test_tier3_has_league_theme(self) -> None:
+        content = get_hugo_config("Test Course", 3)
+        self.assertIn('title = "Test Course"', content)
+        self.assertIn('theme = "league-hugo-theme"', content)
+        self.assertNotIn("instructorGuide", content)
 
-    def test_tier1_includes_instructor_css(self) -> None:
-        content = get_mkdocs_yml("Tier 1 Course", 1)
-        parsed = yaml.safe_load(content)
-        self.assertIn("css/instructor-guide.css", parsed["extra_css"])
-        self.assertIn("js/instructor-guide.js", parsed["extra_javascript"])
+    def test_tier1_includes_instructor_guide(self) -> None:
+        content = get_hugo_config("Tier 1 Course", 1)
+        self.assertIn("instructorGuide = true", content)
 
-    def test_tier3_no_instructor_css(self) -> None:
-        content = get_mkdocs_yml("Tier 3 Course", 3)
-        parsed = yaml.safe_load(content)
-        self.assertNotIn("extra_css", parsed)
+    def test_tier3_no_instructor_guide(self) -> None:
+        content = get_hugo_config("Tier 3 Course", 3)
+        self.assertNotIn("instructorGuide", content)
 
 
 class TestGetDevcontainerJson(unittest.TestCase):

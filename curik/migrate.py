@@ -8,7 +8,7 @@ from typing import Any
 import shutil
 
 from .project import CURIK_DIR, CurikError, _course_dir, init_course
-from .templates import get_mkdocs_yml
+from .templates import get_hugo_config
 
 
 def inventory_course(repo_path: str | Path) -> dict[str, Any]:
@@ -27,7 +27,9 @@ def inventory_course(repo_path: str | Path) -> dict[str, Any]:
 
     # Detect static-site generator
     generator_guess = "unknown"
-    if (root / "mkdocs.yml").is_file():
+    if (root / "hugo.toml").is_file():
+        generator_guess = "hugo"
+    elif (root / "mkdocs.yml").is_file():
         generator_guess = "mkdocs"
     elif (root / "conf.py").is_file() or (root / "docs" / "conf.py").is_file():
         generator_guess = "sphinx"
@@ -76,8 +78,8 @@ def migrate_structure(
 ) -> dict[str, list[str]]:
     """Create the standard Curik directory structure for a course repository.
 
-    Calls init_course first if CURIK_DIR/ does not exist. Creates docs/ with
-    an mkdocs.yml stub and module directories with lesson stubs.
+    Calls init_course first if CURIK_DIR/ does not exist. Creates content/
+    with a hugo.toml config and module directories with _index.md stubs.
 
     Returns {"created": [list of created paths]}.
     """
@@ -93,30 +95,38 @@ def migrate_structure(
         result = init_course(root)
         created.extend(result["created"])
 
-    # Create docs/ with mkdocs.yml
-    docs_dir = root / "docs"
-    if not docs_dir.is_dir():
-        docs_dir.mkdir(parents=True, exist_ok=True)
-        created.append("docs")
+    # Create content/ directory
+    content_dir = root / "content"
+    if not content_dir.is_dir():
+        content_dir.mkdir(parents=True, exist_ok=True)
+        created.append("content")
 
-    mkdocs_path = root / "mkdocs.yml"
-    if not mkdocs_path.is_file():
+    # Create hugo.toml
+    hugo_path = root / "hugo.toml"
+    if not hugo_path.is_file():
         title = root.name.replace("-", " ").replace("_", " ").title()
-        mkdocs_path.write_text(get_mkdocs_yml(title, tier), encoding="utf-8")
-        created.append("mkdocs.yml")
+        hugo_path.write_text(get_hugo_config(title, tier), encoding="utf-8")
+        created.append("hugo.toml")
 
-    # Create module directories with lesson stubs
+    # Create root _index.md
+    root_index = content_dir / "_index.md"
+    if not root_index.is_file():
+        title = root.name.replace("-", " ").replace("_", " ").title()
+        root_index.write_text(f"# {title}\n\nCourse overview.\n", encoding="utf-8")
+        created.append("content/_index.md")
+
+    # Create module directories with _index.md stubs
     for mod_name in modules:
-        mod_dir = docs_dir / mod_name
+        mod_dir = content_dir / mod_name
         if not mod_dir.is_dir():
             mod_dir.mkdir(parents=True, exist_ok=True)
-            created.append(f"docs/{mod_name}")
+            created.append(f"content/{mod_name}")
 
-        index_path = mod_dir / "index.md"
+        index_path = mod_dir / "_index.md"
         if not index_path.is_file():
             title = mod_name.replace("-", " ").replace("_", " ").title()
             index_path.write_text(f"# {title}\n\nModule overview.\n", encoding="utf-8")
-            created.append(f"docs/{mod_name}/index.md")
+            created.append(f"content/{mod_name}/_index.md")
 
     return {"created": created}
 

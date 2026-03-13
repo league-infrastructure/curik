@@ -15,7 +15,7 @@ from curik.scaffolding import (
     get_outline,
     scaffold_structure,
 )
-from curik.templates import get_mkdocs_yml
+from curik.templates import get_hugo_config
 
 
 class ScaffoldStructureTest(unittest.TestCase):
@@ -319,17 +319,32 @@ class GenerateNavTest(unittest.TestCase):
         self.assertEqual(nav[1]["Loops"], ["02-loops/01-for.md"])
 
 
-class MkdocsNavTest(unittest.TestCase):
-    def test_with_nav_includes_nav_section(self) -> None:
-        nav = [{"Intro": ["01-intro/01-hello.md"]}]
-        yml = get_mkdocs_yml("Test", 3, nav=nav)
-        self.assertIn("nav:", yml)
-        self.assertIn("Intro:", yml)
-        self.assertIn("01-intro/01-hello.md", yml)
+class HugoConfigTest(unittest.TestCase):
+    def test_tier3_config_has_basics(self) -> None:
+        toml = get_hugo_config("Test Course", 3)
+        self.assertIn('title = "Test Course"', toml)
+        self.assertIn('theme = "league-hugo-theme"', toml)
+        self.assertIn("codeFences = true", toml)
+        self.assertIn("[params]", toml)
+        self.assertNotIn("instructorGuide", toml)
 
-    def test_without_nav_omits_nav_section(self) -> None:
-        yml = get_mkdocs_yml("Test", 3)
-        self.assertNotIn("nav:", yml)
+    def test_tier1_config_has_instructor_guide(self) -> None:
+        toml = get_hugo_config("Young Learners", 1)
+        self.assertIn("instructorGuide = true", toml)
+        self.assertIn('theme = "league-hugo-theme"', toml)
+
+    def test_tier2_config_has_instructor_guide(self) -> None:
+        toml = get_hugo_config("Block Programming", 2)
+        self.assertIn("instructorGuide = true", toml)
+
+    def test_tier4_no_instructor_guide(self) -> None:
+        toml = get_hugo_config("Advanced", 4)
+        self.assertNotIn("instructorGuide", toml)
+
+    def test_custom_theme_path(self) -> None:
+        toml = get_hugo_config("Test", 3, theme_path="my-custom-theme")
+        self.assertIn('theme = "my-custom-theme"', toml)
+        self.assertNotIn("league-hugo-theme", toml)
 
 
 if __name__ == "__main__":

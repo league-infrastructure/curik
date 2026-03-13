@@ -19,8 +19,9 @@ dependencies = [
 curik = "curik.cli:main"
 
 [tool.setuptools]
-packages = ["curik", "curik.agents", "curik.skills"]
+packages = ["curik", "curik.agents", "curik.skills", "curik.references"]
 
 [tool.setuptools.package-data]
 "curik.agents" = ["*.md"]
 "curik.skills" = ["*.md"]
+"curik.references" = ["*.md"]
