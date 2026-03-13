@@ -1,9 +1,12 @@
 ---
-id: "014"
-title: "Hugo Config Generation and Template Foundation"
-status: planning
+id: '014'
+title: Hugo Config Generation and Template Foundation
+status: done
 branch: sprint/014-hugo-config-generation-and-template-foundation
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 014: Hugo Config Generation and Template Foundation
