@@ -1,7 +1,7 @@
 ---
 id: "004"
 title: "Add brand guide as packaged MCP reference resource"
-status: todo
+status: done
 use-cases: [SUC-003]
 depends-on: []
 ---
@@ -17,13 +17,13 @@ as a proper Python package.
 
 ## Acceptance Criteria
 
-- [ ] `curik/references/__init__.py` exists (empty)
-- [ ] `curik/references/league-web-brand-guide.md` has full brand guide content
-- [ ] `list_references()` returns `["league-web-brand-guide"]`
-- [ ] `get_reference("league-web-brand-guide")` returns markdown content
-- [ ] `get_reference("nonexistent")` raises appropriate error
-- [ ] `pyproject.toml` includes `curik.references` in packages
-- [ ] Tests pass
+- [x] `curik/references/__init__.py` exists (empty)
+- [x] `curik/references/league-web-brand-guide.md` has full brand guide content
+- [x] `list_references()` returns `["league-web-brand-guide"]`
+- [x] `get_reference("league-web-brand-guide")` returns markdown content
+- [x] `get_reference("nonexistent")` raises appropriate error
+- [x] `pyproject.toml` includes `curik.references` in packages
+- [x] Tests pass
 
 ## Testing
 

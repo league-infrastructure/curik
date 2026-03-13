@@ -1,7 +1,7 @@
 ---
 id: "001"
 title: "Replace get_mkdocs_yml with get_hugo_config in templates.py"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: []
 ---
@@ -17,12 +17,12 @@ enable syntax highlighting and code copy.
 
 ## Acceptance Criteria
 
-- [ ] `get_mkdocs_yml()` removed from `templates.py`
-- [ ] `get_hugo_config()` returns valid TOML for tiers 1-4
-- [ ] Tier 1-2 config includes `instructorGuide = true` in `[params]`
-- [ ] Tier 3-4 config omits `instructorGuide`
-- [ ] All tiers reference `league-hugo-theme`
-- [ ] Tests updated and passing
+- [x] `get_mkdocs_yml()` removed from `templates.py`
+- [x] `get_hugo_config()` returns valid TOML for tiers 1-4
+- [x] Tier 1-2 config includes `instructorGuide = true` in `[params]`
+- [x] Tier 3-4 config omits `instructorGuide`
+- [x] All tiers reference `league-hugo-theme`
+- [x] Tests updated and passing
 
 ## Testing
 

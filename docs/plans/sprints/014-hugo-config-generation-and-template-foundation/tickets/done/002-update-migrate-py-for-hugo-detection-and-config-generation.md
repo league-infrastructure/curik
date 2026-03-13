@@ -1,7 +1,7 @@
 ---
 id: "002"
 title: "Update migrate.py for Hugo detection and config generation"
-status: todo
+status: done
 use-cases: [SUC-002]
 depends-on: ["001"]
 ---
@@ -16,13 +16,13 @@ with `_index.md` files instead of MkDocs config and `docs/`.
 
 ## Acceptance Criteria
 
-- [ ] `inventory_course()` detects `hugo.toml` → `"hugo"`
-- [ ] Legacy `mkdocs.yml` → `"mkdocs"` detection preserved
-- [ ] `migrate_structure()` creates `hugo.toml` (not `mkdocs.yml`)
-- [ ] `migrate_structure()` creates `content/` (not `docs/`)
-- [ ] Module directories get `_index.md` (not `index.md`)
-- [ ] Import updated from `get_mkdocs_yml` to `get_hugo_config`
-- [ ] Tests updated and passing
+- [x] `inventory_course()` detects `hugo.toml` → `"hugo"`
+- [x] Legacy `mkdocs.yml` → `"mkdocs"` detection preserved
+- [x] `migrate_structure()` creates `hugo.toml` (not `mkdocs.yml`)
+- [x] `migrate_structure()` creates `content/` (not `docs/`)
+- [x] Module directories get `_index.md` (not `index.md`)
+- [x] Import updated from `get_mkdocs_yml` to `get_hugo_config`
+- [x] Tests updated and passing
 
 ## Testing
 

@@ -1,7 +1,7 @@
 ---
 id: "005"
 title: "Update server.py docstrings and add get_reference tool"
-status: todo
+status: done
 use-cases: [SUC-001, SUC-002, SUC-003]
 depends-on: ["001", "002", "003", "004"]
 ---
@@ -16,12 +16,12 @@ Update imports for the new Hugo config function.
 
 ## Acceptance Criteria
 
-- [ ] No references to "mkdocs"/"MkDocs" in `server.py` docstrings
-- [ ] `tool_list_references()` MCP tool works
-- [ ] `tool_get_reference(name)` MCP tool returns content
-- [ ] Imports updated (no `get_mkdocs_yml`)
-- [ ] All existing MCP tools still work
-- [ ] Tests pass
+- [x] No references to "mkdocs"/"MkDocs" in `server.py` docstrings
+- [x] `tool_list_references()` MCP tool works
+- [x] `tool_get_reference(name)` MCP tool returns content
+- [x] Imports updated (no `get_mkdocs_yml`)
+- [x] All existing MCP tools still work
+- [x] Tests pass
 
 ## Testing
 

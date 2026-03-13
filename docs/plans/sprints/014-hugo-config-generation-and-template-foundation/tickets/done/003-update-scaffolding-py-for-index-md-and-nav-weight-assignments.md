@@ -1,7 +1,7 @@
 ---
 id: "003"
 title: "Update scaffolding.py for _index.md and nav weight assignments"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: ["001"]
 ---
@@ -16,11 +16,11 @@ in module directories (Hugo requires these for section pages). Update
 
 ## Acceptance Criteria
 
-- [ ] `scaffold_structure()` creates `_index.md` in each module directory
-- [ ] `_index.md` contains module title as H1 heading
-- [ ] `generate_nav()` returns weight assignment dicts (not MkDocs nav)
-- [ ] Weight values are sequential (10, 20, 30...) for reordering room
-- [ ] Tests updated and passing
+- [x] `scaffold_structure()` creates `_index.md` in each module directory
+- [x] `_index.md` contains module title as H1 heading
+- [x] `generate_nav()` returns weight assignment dicts (not MkDocs nav)
+- [x] Weight values are sequential (10, 20, 30...) for reordering room
+- [x] Tests updated and passing
 
 ## Testing
 
