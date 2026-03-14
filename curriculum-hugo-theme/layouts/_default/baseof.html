@@ -54,9 +54,19 @@
               <a href="{{ .URL }}">{{ .Name }}</a>
             </li>
             {{ else }}
-            {{ range $allPages }}
-            <li{{ if eq $.RelPermalink .RelPermalink }} class="current"{{ end }}>
-              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+            {{ range $sections }}
+            <li class="sidebar-module{{ if eq $.RelPermalink .RelPermalink }} current{{ end }}">
+              <a href="{{ .RelPermalink }}" class="sidebar-module-link">{{ .Title }}</a>
+              {{ $pages := sort .Pages "File.Path" }}
+              {{ if $pages }}
+              <ul class="sidebar-lessons">
+                {{ range $pages }}
+                <li{{ if eq $.RelPermalink .RelPermalink }} class="current"{{ end }}>
+                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </li>
+                {{ end }}
+              </ul>
+              {{ end }}
             </li>
             {{ end }}
             {{ end }}

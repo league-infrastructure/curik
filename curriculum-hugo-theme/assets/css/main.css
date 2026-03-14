@@ -141,6 +141,18 @@ body {
   padding-left: var(--sidebar-item-spacing-horizontal);
 }
 
+/* Module-level nav items (bold, section headers) */
+.sidebar-module-link {
+  font-weight: 800;
+  color: var(--color-foreground-primary) !important;
+  font-size: 0.95rem;
+}
+
+.sidebar-lessons a {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
 /* ── Main content area ───────────────────────────────────────── */
 .main {
   flex: 1;
@@ -343,6 +355,10 @@ body {
   text-decoration: none;
 }
 
+.sidebar-nav-next {
+  margin-left: auto;
+}
+
 .sidebar-nav-prev:hover,
 .sidebar-nav-next:hover {
   text-decoration: underline;
@@ -367,6 +383,11 @@ body {
   color: var(--color-brand-content);
   text-decoration: none;
   font-size: var(--font-size--small);
+}
+
+.prev-next div:last-child {
+  margin-left: auto;
+  text-align: right;
 }
 
 .prev-next a:hover {
