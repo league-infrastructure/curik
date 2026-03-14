@@ -4,7 +4,7 @@ licenselink = "https://github.com/league-infrastructure/curriculum-hugo-theme/bl
 description = "Hugo theme for League of Amazing Programmers curricula"
 homepage = "https://github.com/league-infrastructure/curriculum-hugo-theme"
 min_version = "0.120.0"
-version = "0.20260314.2"
+version = "0.20260314.3"
 
 [author]
   name = "League of Amazing Programmers"
