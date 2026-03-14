@@ -1,9 +1,12 @@
 ---
-id: "024"
-title: "Integration Tests with Live Hugo Sites"
-status: active
+id: '024'
+title: Integration Tests with Live Hugo Sites
+status: done
 branch: sprint/024-integration-tests-with-live-hugo-sites
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 ---
 
 # Sprint 024: Integration Tests with Live Hugo Sites
