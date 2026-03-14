@@ -1,7 +1,7 @@
 ---
 id: "003"
 title: "Next/previous navigation in sidebar and content"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: ["002"]
 ---

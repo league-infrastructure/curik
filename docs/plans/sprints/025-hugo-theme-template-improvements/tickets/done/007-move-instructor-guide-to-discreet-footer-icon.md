@@ -1,7 +1,7 @@
 ---
 id: "007"
 title: "Move instructor guide to discreet footer icon"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: []
 ---

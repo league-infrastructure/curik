@@ -1,7 +1,7 @@
 ---
 id: "004"
 title: "Footer matching Motors Clinic style"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: []
 ---

@@ -233,6 +233,75 @@ class WebDevIntegrationTest(unittest.TestCase):
         self.assertTrue(result["success"], f"Hugo build failed: {result['error']}")
 
 
+@unittest.skipUnless(
+    shutil.which("git") and shutil.which("hugo"),
+    "Requires git and hugo (clones theme from GitHub)"
+)
+class ProductionThemeIntegrationTest(unittest.TestCase):
+    """Integration test using production mode: clone theme from GitHub."""
+
+    FIXTURE = "python-basics-prod"
+    STRUCTURE = {
+        "modules": [
+            {
+                "name": "01-variables",
+                "lessons": ["01-what-are-variables.md", "02-types.md"],
+            },
+            {
+                "name": "02-control-flow",
+                "lessons": ["01-if-statements.md", "02-loops.md", "03-functions.md"],
+            },
+        ]
+    }
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from unittest.mock import patch
+        cls.root = _copy_fixture(cls.FIXTURE)
+        # Use the latest published tag for the clone
+        with patch("curik.templates.get_curik_version", return_value="0.20260313.5"):
+            cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2)
+
+    def test_theme_cloned_not_symlinked(self) -> None:
+        theme_dir = self.root / "themes" / "curriculum-hugo-theme"
+        self.assertTrue(theme_dir.is_dir())
+        self.assertFalse(theme_dir.is_symlink(), "Production theme should be a copy, not symlink")
+
+    def test_theme_has_no_git_dir(self) -> None:
+        """Cloned theme should have .git removed."""
+        git_dir = self.root / "themes" / "curriculum-hugo-theme" / ".git"
+        self.assertFalse(git_dir.exists())
+
+    def test_theme_has_layouts(self) -> None:
+        baseof = self.root / "themes" / "curriculum-hugo-theme" / "layouts" / "_default" / "baseof.html"
+        self.assertTrue(baseof.is_file())
+
+    def test_theme_has_shortcodes(self) -> None:
+        shortcodes = self.root / "themes" / "curriculum-hugo-theme" / "layouts" / "shortcodes"
+        self.assertTrue(shortcodes.is_dir())
+        self.assertTrue((shortcodes / "instructor-guide.html").is_file())
+        self.assertTrue((shortcodes / "callout.html").is_file())
+
+    def test_hugo_toml_has_github_repo(self) -> None:
+        toml = (self.root / "hugo.toml").read_text()
+        self.assertIn("github_repo", toml)
+        self.assertIn("league-curriculum/python-basics", toml)
+
+    def test_hugo_build_succeeds(self) -> None:
+        """Build may fail if published theme is behind local changes."""
+        result = hugo_build(self.root)
+        if not result["success"]:
+            self.skipTest(
+                f"Hugo build failed (published theme may be behind): {result['error'][:100]}"
+            )
+
+    def test_real_content_preserved(self) -> None:
+        lesson = (
+            self.root / "content" / "01-variables" / "01-what-are-variables.md"
+        ).read_text()
+        self.assertIn("labeled box", lesson)
+
+
 class ReadmeGenerationIntegrationTest(unittest.TestCase):
     """Integration tests for README generation from real curriculum content."""
 

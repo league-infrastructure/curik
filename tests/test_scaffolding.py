@@ -391,6 +391,17 @@ class HugoConfigTest(unittest.TestCase):
         toml = get_hugo_config("Advanced", 4)
         self.assertNotIn("instructorGuide", toml)
 
+    def test_github_repo_included(self) -> None:
+        toml = get_hugo_config("Test", 3, github_repo="https://github.com/org/repo")
+        self.assertIn('github_repo = "https://github.com/org/repo"', toml)
+
+    def test_github_repo_omitted_when_empty(self) -> None:
+        toml = get_hugo_config("Test", 3)
+        self.assertNotIn("github_repo", toml)
+
+    def test_github_repo_omitted_when_tbd(self) -> None:
+        toml = get_hugo_config("Test", 3, github_repo="TBD")
+        self.assertNotIn("github_repo", toml)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 ---
 id: "001"
 title: "Full-width sidebar logo with site title below"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: []
 ---

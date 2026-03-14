@@ -1,7 +1,7 @@
 ---
 id: "005"
 title: "CSS polish — spacing, typography, and link styling"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: ["001", "002", "003", "004"]
 ---

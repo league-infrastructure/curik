@@ -1,7 +1,7 @@
 ---
 id: "002"
 title: "Flat sidebar navigation matching Motors Clinic"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: ["001"]
 ---
