@@ -70,7 +70,7 @@ from .scaffolding import (
     get_outline,
     scaffold_structure,
 )
-from .templates import hugo_setup
+from .templates import bump_curriculum_version, hugo_setup
 from .syllabus import (
     get_syllabus,
     read_syllabus_entries,
@@ -885,6 +885,23 @@ def tool_hugo_setup(title: str = "", tier: int = 2) -> str:
         result = hugo_setup(root, effective_title, effective_tier, slug=slug)
         return json.dumps(result, indent=2)
     except Exception as e:
+        return f"Error: {e}"
+
+
+@mcp.tool()
+def tool_bump_curriculum_version() -> str:
+    """Bump the curriculum version in hugo.toml.
+
+    Uses the format ``0.YYYYMMDD.revision``. If today's date matches the
+    current version, increments the revision. Otherwise resets to ``.1``
+    with today's date.
+
+    Returns the new version string. Call this before publishing.
+    """
+    try:
+        new_version = bump_curriculum_version(_root())
+        return json.dumps({"version": new_version}, indent=2)
+    except (FileNotFoundError, ValueError) as e:
         return f"Error: {e}"
 
 

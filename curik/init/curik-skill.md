@@ -41,11 +41,13 @@ When the user runs `/curik publish`, execute these steps in order:
    - Wrong `baseURL` → run `tool_hugo_setup()`.
    - Hugo build fails → investigate and fix the build errors.
 3. **Re-check**: Run `tool_check_publish_ready()` again to confirm all green.
-4. **Commit**: Stage and commit any changes from step 2.
-5. **Push**: Run `git push` to deploy. The GitHub Actions workflow handles
+4. **Bump version**: Call `tool_bump_curriculum_version()` to update the
+   curriculum version in `hugo.toml`. This uses the format `0.YYYYMMDD.revision`.
+5. **Commit**: Stage and commit all changes including the version bump.
+6. **Push**: Run `git push` to deploy. The GitHub Actions workflow handles
    the rest (build + deploy to GitHub Pages).
-6. **Report**: Show the user the target URL and remind them to check the
-   post-publish checklist from `tool_get_publish_guide()`.
+7. **Report**: Show the user the target URL, the new version number, and
+   remind them to check the post-publish checklist from `tool_get_publish_guide()`.
 
 If a check fails that you cannot fix (e.g., no content, GitHub Pages not
 enabled), use `AskUserQuestion` to tell the user what's needed.

@@ -256,6 +256,11 @@ class HugoSetupTest(unittest.TestCase):
             theme_dir = root / "themes" / self.theme_name
             theme_dir.mkdir(parents=True)
             (theme_dir / "marker.txt").write_text("original")
+            # Write a theme.toml with matching version so it's not updated
+            from curik.templates import get_curik_version
+            (theme_dir / "theme.toml").write_text(
+                f'version = "{get_curik_version()}"\n'
+            )
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)
             self.assertIn(f"themes/{self.theme_name}", result["existing"])
