@@ -7,7 +7,7 @@ Hugo theme for League of Amazing Programmers curricula.
 The version in `theme.toml` must stay in sync with the parent project's
 `pyproject.toml` version. Both use the format `0.YYYYMMDD.revision`.
 
-**Do not bump the version manually.** Use `just publish` from the parent
+**Do not bump the version manually.** Use `just bump-push` from the parent
 curik repo — it updates both files, tags both repos, and pushes.
 
 ## This is a subdirectory of curik
