@@ -1,11 +1,12 @@
-# Curik — build and publish automation
+# Curik — build and push automation
 #
 # Targets:
-#   just publish         — bump version, publish curik + theme
-#   just publish-curik   — tag and push curik (pyproject.toml)
-#   just publish-theme   — push curriculum-hugo-theme subtree to its repo
+#   just push            — tag and push curik + theme (current version)
+#   just push-curik      — tag and push curik (pyproject.toml)
+#   just push-theme      — push curriculum-hugo-theme subtree to its repo
+#   just bump-push       — bump version, commit, then push everything
 #   just version         — show current version
-#   just bump            — bump version without publishing
+#   just bump            — bump version without pushing
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
@@ -24,8 +25,23 @@ bump:
 bump-dry:
     @./scripts/bump-version.sh --dry
 
-# Full publish: bump version, publish curik, publish theme
-publish: _ensure-clean-master
+# Push curik and theme (current version, no bump)
+push: _ensure-clean-master
+    #!/usr/bin/env bash
+    set -euo pipefail
+    VERSION=$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
+    echo "Pushing v${VERSION}"
+
+    just push-curik "$VERSION"
+    just push-theme "$VERSION"
+
+    echo ""
+    echo "Pushed v${VERSION}"
+    echo "  curik:  tagged and pushed"
+    echo "  theme:  tagged and pushed"
+
+# Bump version, commit, then push everything
+bump-push: _ensure-clean-master
     #!/usr/bin/env bash
     set -euo pipefail
     NEW_VERSION=$(./scripts/bump-version.sh)
@@ -35,17 +51,17 @@ publish: _ensure-clean-master
     git add pyproject.toml {{ theme_dir }}/theme.toml
     git commit -m "chore: bump version to v${NEW_VERSION}"
 
-    # Publish both
-    just publish-curik "$NEW_VERSION"
-    just publish-theme "$NEW_VERSION"
+    # Push both
+    just push-curik "$NEW_VERSION"
+    just push-theme "$NEW_VERSION"
 
     echo ""
-    echo "Published v${NEW_VERSION}"
+    echo "Pushed v${NEW_VERSION}"
     echo "  curik:  tagged and pushed"
     echo "  theme:  tagged and pushed"
 
 # Tag and push curik
-publish-curik version="":
+push-curik version="":
     #!/usr/bin/env bash
     set -euo pipefail
     VERSION="{{ version }}"
@@ -65,7 +81,7 @@ publish-curik version="":
     echo "curik v${VERSION} tagged, pushed, and installed"
 
 # Push the theme subdirectory to its standalone repo and tag it
-publish-theme version="":
+push-theme version="":
     #!/usr/bin/env bash
     set -euo pipefail
     VERSION="{{ version }}"

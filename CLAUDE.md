@@ -137,15 +137,16 @@ until the file is in `tickets/done/` and committed.
 **Never merge a sprint branch without archiving the sprint directory.**
 **Never leave a sprint branch dangling after the sprint is closed.**
 
-### Publishing and Versioning
+### Pushing and Versioning
 
-This project uses a `justfile` for publishing. **Always use the justfile
-targets — never manually tag, push, or bump versions.**
+This project uses a `justfile` for pushing releases. **Always use the
+justfile targets — never manually tag, push, or bump versions.**
 
-- `just publish` — bump version, tag, push curik and theme together
-- `just publish-curik` — tag and push curik only
-- `just publish-theme` — push curriculum-hugo-theme subtree to its repo
-- `just bump` — bump version without publishing
+- `just bump-push` — bump version, commit, tag, push curik and theme
+- `just push` — tag and push curik and theme (current version, no bump)
+- `just push-curik` — tag and push curik only
+- `just push-theme` — push curriculum-hugo-theme subtree to its repo
+- `just bump` — bump version without pushing
 - `just version` — show current version
 
 Version format: `0.YYYYMMDD.revision` (e.g., `0.20260313.6`). The bump
@@ -153,7 +154,7 @@ script increments the revision if the date matches today, otherwise
 resets to `.1` with today's date. Versions are kept in sync between
 `pyproject.toml` and `curriculum-hugo-theme/theme.toml`.
 
-**After closing a sprint**, use `just publish` to bump, tag, and push
+**After closing a sprint**, use `just bump-push` to bump, tag, and push
 everything in one step. Do not manually edit version numbers.
 
 ### Stakeholder Corrections
