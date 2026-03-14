@@ -1,7 +1,9 @@
 ---
 title: curriculum-hugo-theme sidebar nav is flat, not hierarchical
-status: open
+status: done
 created: 2026-03-13
+source: https://github.com/league-infrastructure/curik/issues/3
+github_issue: 3
 ---
 
 ## Bug Report — upstream for league-infrastructure/curriculum-hugo-theme
