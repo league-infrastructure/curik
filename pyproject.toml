@@ -25,4 +25,4 @@ packages = ["curik", "curik.agents", "curik.skills", "curik.references", "curik.
 "curik.agents" = ["*.md"]
 "curik.skills" = ["*.md"]
 "curik.references" = ["*.md"]
-"curik.init" = ["*.md"]
+"curik.init" = ["*.md", "*.yml", "gitignore"]
