@@ -111,8 +111,10 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
         self.assertTrue(has_config, "Theme directory should contain theme.toml or hugo.toml")
 
     def test_scaffold_result_lists(self) -> None:
-        self.assertIn("content/_index.md", self.result["created"])
-        self.assertIn("content/01-variables", self.result["created"])
+        # Pre-existing content files go to "existing", generated ones to "created"
+        all_tracked = self.result["created"] + self.result["existing"]
+        self.assertIn("content/_index.md", all_tracked)
+        self.assertIn("content/01-variables", all_tracked)
         self.assertIn("hugo.toml", self.result["created"])
 
     def test_no_modules_at_repo_root(self) -> None:
@@ -121,11 +123,18 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
         self.assertFalse((self.root / "02-control-flow").exists())
 
     def test_source_fixture_not_modified(self) -> None:
-        """The source fixture must never have content/ or hugo.toml."""
+        """The source fixture must never have hugo.toml or themes/."""
         src = CONTENT_SOURCE / self.FIXTURE
-        self.assertFalse((src / "content").exists())
         self.assertFalse((src / "hugo.toml").exists())
         self.assertFalse((src / "themes").exists())
+
+    def test_real_content_preserved(self) -> None:
+        """Pre-existing lesson content from the fixture must not be overwritten."""
+        lesson = (
+            self.root / "content" / "01-variables" / "01-what-are-variables.md"
+        ).read_text()
+        # Real content has detailed explanations, not just stub placeholders
+        self.assertIn("labeled box", lesson)
 
     @unittest.skipUnless(shutil.which("hugo"), "Hugo not installed")
     def test_hugo_build_succeeds(self) -> None:
@@ -196,8 +205,8 @@ class WebDevIntegrationTest(unittest.TestCase):
 
     def test_source_fixture_not_modified(self) -> None:
         src = CONTENT_SOURCE / self.FIXTURE
-        self.assertFalse((src / "content").exists())
         self.assertFalse((src / "hugo.toml").exists())
+        self.assertFalse((src / "themes").exists())
 
     @unittest.skipUnless(shutil.which("hugo"), "Hugo not installed")
     def test_hugo_build_succeeds(self) -> None:

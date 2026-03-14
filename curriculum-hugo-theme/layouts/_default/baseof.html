@@ -4,25 +4,58 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ block "title" . }}{{ .Title }} — {{ .Site.Title }}{{ end }}</title>
-  {{ $css := resources.Get "css/instructor-guide.css" }}
-  {{ if $css }}
-  <style>{{ $css.Content | safeCSS }}</style>
-  {{ end }}
+  {{ $main := resources.Get "css/main.css" }}
+  {{ if $main }}<style>{{ $main.Content | safeCSS }}</style>{{ end }}
+  {{ $ig := resources.Get "css/instructor-guide.css" }}
+  {{ if $ig }}<style>{{ $ig.Content | safeCSS }}</style>{{ end }}
   {{ block "head" . }}{{ end }}
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a>
-    </nav>
-  </header>
-  <main>
-    {{ block "main" . }}
-      {{ .Content }}
-    {{ end }}
-  </main>
-  <footer>
-    <p>&copy; {{ now.Year }} {{ .Site.Title }}</p>
-  </footer>
+  <div class="page">
+    <aside class="sidebar-drawer">
+      <div class="sidebar-container">
+        <div class="sidebar-brand">
+          <a href="{{ .Site.BaseURL }}" class="sidebar-brand">
+            <img src="https://images.jointheleague.org/logos/logo4.png" alt="League logo">
+            <span class="sidebar-brand-text">{{ .Site.Title }}</span>
+          </a>
+        </div>
+        <nav class="sidebar-tree">
+          <ul>
+            {{ range .Site.Menus.main }}
+            <li{{ if $.IsMenuCurrent "main" . }} class="current"{{ end }}>
+              <a href="{{ .URL }}">{{ .Name }}</a>
+            </li>
+            {{ else }}
+            {{ range where .Site.Pages "Kind" "section" }}
+            <li>
+              <p class="caption">{{ .Title }}</p>
+              <ul>
+                {{ range .Pages }}
+                <li{{ if eq $.RelPermalink .RelPermalink }} class="current"{{ end }}>
+                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </li>
+                {{ end }}
+              </ul>
+            </li>
+            {{ end }}
+            {{ end }}
+          </ul>
+        </nav>
+      </div>
+    </aside>
+    <div class="main">
+      <div class="content">
+        {{ block "main" . }}
+          {{ .Content }}
+        {{ end }}
+      </div>
+      <footer class="bottom-of-page">
+        <div class="copyright">
+          &copy; {{ now.Year }} {{ .Site.Params.copyright | default .Site.Title }}
+        </div>
+      </footer>
+    </div>
+  </div>
 </body>
 </html>
