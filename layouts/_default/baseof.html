@@ -11,11 +11,12 @@
   {{ block "head" . }}{{ end }}
 </head>
 <body>
-  {{/* Build flat page sequence: section → its pages, repeat */}}
+  {{/* Build flat page sequence: section → its pages, repeat (sorted by file path for 01- prefixes) */}}
   {{ $allPages := slice }}
-  {{ range where .Site.Pages "Kind" "section" }}
+  {{ $sections := sort (where .Site.Pages "Kind" "section") "File.Path" }}
+  {{ range $sections }}
     {{ $allPages = $allPages | append . }}
-    {{ range .Pages }}
+    {{ range sort .Pages "File.Path" }}
       {{ $allPages = $allPages | append . }}
     {{ end }}
   {{ end }}
@@ -33,6 +34,10 @@
         {{ $next = index $allPages (add $i 1) }}
       {{ end }}
     {{ end }}
+  {{ end }}
+  {{/* Home page: next goes to first section/lesson */}}
+  {{ if and (not $found) (gt (len $allPages) 0) }}
+    {{ $next = index $allPages 0 }}
   {{ end }}
 
   <div class="page">
@@ -78,11 +83,10 @@
         {{ end }}
         <div class="footer-bottom">
           <div class="copyright">
-            &copy; {{ now.Year }} {{ .Site.Params.copyright | default .Site.Title }}
+            &copy; {{ now.Year }} <a href="https://www.jointheleague.org">{{ .Site.Params.copyright | default .Site.Title }}</a>
           </div>
           <div class="footer-credits">
-            Made with <a href="https://gohugo.io">Hugo</a> and
-            <a href="https://github.com/league-infrastructure/curriculum-hugo-theme">curriculum-hugo-theme</a>
+            Igniting Young Minds Through Coding
           </div>
           {{ with .Site.Params.github_repo }}
           <div class="footer-github">
