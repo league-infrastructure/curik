@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 from .init_command import run_init
 from .uid import generate_course_uid
@@ -48,6 +51,109 @@ VALID_COURSE_TYPES = ("course", "resource-collection")
 """Allowed values for the ``course_type`` parameter."""
 
 
+def _course_yml_template(course_type: str, uid: str) -> dict[str, Any]:
+    """Return the canonical course.yml fields with defaults."""
+    return {
+        "title": "TBD",
+        "slug": "TBD",
+        "uid": uid,
+        "type": course_type,
+        "tier": "TBD",
+        "grades": "TBD",
+        "category": "TBD",
+        "topics": [],
+        "prerequisites": [],
+        "lessons": 0,
+        "estimated_weeks": 0,
+        "curriculum_url": "TBD",
+        "repo_url": "TBD",
+        "description": "TBD",
+    }
+
+
+def _merge_course_yml(root: Path, course_type: str) -> tuple[str, str]:
+    """Create or merge course.yml. Returns (content, status).
+
+    If course.yml doesn't exist, creates it with defaults.
+    If it exists, merges: known fields are updated (old values kept if not TBD),
+    unknown fields from the old file go into an ``old:`` subsection.
+    Status is "created", "updated", or "unchanged".
+    """
+    course_yml = root / "course.yml"
+    uid = generate_course_uid()
+    template = _course_yml_template(course_type, uid)
+    template_keys = set(template.keys())
+
+    if not course_yml.exists():
+        lines = []
+        for key, value in template.items():
+            if isinstance(value, list):
+                lines.append(f"{key}: {json.dumps(value)}")
+            else:
+                lines.append(f"{key}: {value}")
+        lines.append("")
+        content = "\n".join(lines)
+        return content, "created"
+
+    # Read existing
+    old_text = course_yml.read_text(encoding="utf-8")
+    try:
+        old_data = yaml.safe_load(old_text)
+        if not isinstance(old_data, dict):
+            old_data = {}
+    except yaml.YAMLError:
+        old_data = {}
+
+    # Merge: template fields first, preserving old non-TBD values
+    merged: dict[str, Any] = {}
+    for key, default in template.items():
+        old_val = old_data.get(key)
+        if old_val is not None and old_val != "TBD":
+            merged[key] = old_val
+        elif key == "uid" and "uid" in old_data:
+            # Always keep existing uid
+            merged[key] = old_data["uid"]
+        elif key == "type" and "type" in old_data:
+            merged[key] = old_data["type"]
+        else:
+            merged[key] = default
+
+    # Collect unknown keys into "old" subsection
+    unknown = {k: v for k, v in old_data.items() if k not in template_keys and k != "old"}
+
+    # Build output
+    lines = []
+    for key, value in merged.items():
+        if isinstance(value, list):
+            lines.append(f"{key}: {json.dumps(value)}")
+        elif isinstance(value, bool):
+            lines.append(f"{key}: {'true' if value else 'false'}")
+        else:
+            lines.append(f"{key}: {value}")
+
+    if unknown:
+        lines.append("")
+        lines.append("# Fields from previous course.yml not in the current template.")
+        lines.append("# Move these to the appropriate place or delete if no longer needed.")
+        lines.append("old:")
+        for key, value in unknown.items():
+            if isinstance(value, list):
+                lines.append(f"  {key}: {json.dumps(value)}")
+            elif isinstance(value, dict):
+                lines.append(f"  {key}:")
+                for k2, v2 in value.items():
+                    lines.append(f"    {k2}: {v2}")
+            else:
+                lines.append(f"  {key}: {value}")
+
+    lines.append("")
+    content = "\n".join(lines)
+
+    if content == old_text:
+        return content, "unchanged"
+    return content, "updated"
+
+
 def init_course(
     root: Path, course_type: str = "course"
 ) -> dict[str, list[str]]:
@@ -58,6 +164,7 @@ def init_course(
         )
     root = root.resolve()
     created: list[str] = []
+    updated: list[str] = []
     existing: list[str] = []
     course_dir = _course_dir(root)
     dirs = [
@@ -83,22 +190,6 @@ def init_course(
             {"phase": "phase1", "sub_phase": "1a", "type": course_type}, indent=2
         )
         + "\n",
-        root / "course.yml": (
-            "title: TBD\n"
-            "slug: TBD\n"
-            f"uid: {generate_course_uid()}\n"
-            f"type: {course_type}\n"
-            "tier: TBD\n"
-            "grades: TBD\n"
-            "category: TBD\n"
-            "topics: []\n"
-            "prerequisites: []\n"
-            "lessons: 0\n"
-            "estimated_weeks: 0\n"
-            "curriculum_url: TBD\n"
-            "repo_url: TBD\n"
-            "description: TBD\n"
-        ),
     }
     for path, content in defaults.items():
         if path.exists():
@@ -106,6 +197,18 @@ def init_course(
             continue
         path.write_text(content, encoding="utf-8")
         created.append(str(path.relative_to(root)))
+
+    # course.yml: create or merge (preserves old values, collects unknowns)
+    course_yml_path = root / "course.yml"
+    course_yml_content, course_yml_status = _merge_course_yml(root, course_type)
+    if course_yml_status == "created":
+        course_yml_path.write_text(course_yml_content, encoding="utf-8")
+        created.append("course.yml")
+    elif course_yml_status == "updated":
+        course_yml_path.write_text(course_yml_content, encoding="utf-8")
+        updated.append("course.yml")
+    else:
+        existing.append("course.yml")
 
     # .mcp.json is curik-owned — always update to latest config
     mcp_json_path = root / ".mcp.json"
@@ -125,7 +228,6 @@ def init_course(
         created.append(rel_mcp)
 
     # Install CLAUDE.md section, /curik skill, and MCP permissions
-    updated: list[str] = []
     init_result = run_init(root)
     for path in init_result.get("created", []):
         created.append(path)

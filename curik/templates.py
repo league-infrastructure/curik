@@ -183,17 +183,29 @@ def hugo_setup(
     created: list[str] = []
     existing: list[str] = []
 
-    # Generate hugo.toml
+    # Generate or update hugo.toml
     hugo_toml = root / "hugo.toml"
     rel_toml = str(hugo_toml.relative_to(root))
+    new_config = get_hugo_config(
+        title, tier, slug=slug, github_repo=github_repo,
+        description=description,
+    )
     if hugo_toml.exists():
-        existing.append(rel_toml)
+        old_config = hugo_toml.read_text(encoding="utf-8")
+        if old_config == new_config:
+            existing.append(rel_toml)
+        else:
+            # Preserve curriculum_version if it exists in the old config
+            old_match = _VERSION_RE.search(old_config)
+            if old_match:
+                new_config = _VERSION_RE.sub(
+                    f'{old_match.group(1)} = "{old_match.group(2)}"',
+                    new_config,
+                )
+            hugo_toml.write_text(new_config, encoding="utf-8")
+            created.append(rel_toml)
     else:
-        hugo_toml.write_text(
-            get_hugo_config(title, tier, slug=slug, github_repo=github_repo,
-                           description=description),
-            encoding="utf-8",
-        )
+        hugo_toml.write_text(new_config, encoding="utf-8")
         created.append(rel_toml)
 
     # Install or update theme

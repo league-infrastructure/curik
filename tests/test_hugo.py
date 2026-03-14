@@ -241,14 +241,28 @@ class HugoSetupTest(unittest.TestCase):
             if self.theme_source.is_dir():
                 self.assertTrue(theme_dir.is_symlink())
 
-    def test_existing_hugo_toml_not_overwritten(self) -> None:
+    def test_existing_hugo_toml_unchanged_when_matching(self) -> None:
+        """hugo.toml is left alone if content matches the generated config."""
+        from curik.templates import get_hugo_config
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "hugo.toml").write_text("existing config\n")
+            config = get_hugo_config("Test", 2)
+            (root / "hugo.toml").write_text(config)
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)
             self.assertIn("hugo.toml", result["existing"])
-            self.assertEqual((root / "hugo.toml").read_text(), "existing config\n")
+
+    def test_existing_hugo_toml_updated_when_stale(self) -> None:
+        """hugo.toml is regenerated when it differs from the expected config."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "hugo.toml").write_text("old config\n")
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                result = self.hugo_setup(root, "Test", 2)
+            self.assertIn("hugo.toml", result["created"])
+            content = (root / "hugo.toml").read_text()
+            self.assertIn('title = "Test"', content)
+            self.assertIn("curriculum_version", content)
 
     def test_existing_theme_not_overwritten(self) -> None:
         with TemporaryDirectory() as tmp:
