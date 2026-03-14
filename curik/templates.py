@@ -26,12 +26,14 @@ def get_curik_version() -> str:
     return pkg_version("curik")
 
 
-def get_hugo_config(title: str, tier: int) -> str:
+def get_hugo_config(title: str, tier: int, *, github_repo: str = "") -> str:
     """Return a tier-appropriate hugo.toml configuration string.
 
     All tiers reference the curriculum-hugo-theme (expected at
     ``themes/curriculum-hugo-theme/`` in the course repo). Tiers 1-2 include
     an ``instructorGuide = true`` parameter.
+
+    If *github_repo* is provided, a GitHub icon link appears in the footer.
     """
     lines = [
         'baseURL = "/"',
@@ -54,6 +56,9 @@ def get_hugo_config(title: str, tier: int) -> str:
 
     if tier in (1, 2):
         lines.append("  instructorGuide = true")
+
+    if github_repo and github_repo != "TBD":
+        lines.append(f'  github_repo = "{github_repo}"')
 
     lines.append("")
     return "\n".join(lines)
@@ -81,6 +86,7 @@ def _clone_theme(dest: Path, tag: str) -> None:
 
 def hugo_setup(
     root: Path, title: str, tier: int, *, symlink_theme: bool = False,
+    github_repo: str = "",
 ) -> dict[str, list[str]]:
     """Generate hugo.toml and install the theme into a course repo.
 
@@ -106,7 +112,7 @@ def hugo_setup(
     if hugo_toml.exists():
         existing.append(rel_toml)
     else:
-        hugo_toml.write_text(get_hugo_config(title, tier), encoding="utf-8")
+        hugo_toml.write_text(get_hugo_config(title, tier, github_repo=github_repo), encoding="utf-8")
         created.append(rel_toml)
 
     # Install theme

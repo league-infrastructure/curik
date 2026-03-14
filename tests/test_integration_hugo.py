@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 
 from curik.hugo import hugo_build
+from curik.readme import generate_readmes, parse_guards
 from curik.scaffolding import scaffold_structure
 
 TESTS_DIR = Path(__file__).resolve().parent
@@ -174,19 +175,37 @@ class WebDevIntegrationTest(unittest.TestCase):
         self.assertTrue((self.root / "content" / "01-html-basics").is_dir())
         self.assertTrue((self.root / "content" / "02-css-styling").is_dir())
 
-    def test_lesson_stubs_have_student_content(self) -> None:
-        """Tier 3 lessons should have student content section."""
+    def test_real_content_preserved(self) -> None:
+        """Pre-existing lesson content from the fixture must not be overwritten."""
         lesson = (
             self.root / "content" / "01-html-basics" / "01-first-page.md"
         ).read_text()
-        self.assertIn("## Student Content", lesson)
+        # Real content has detailed explanations, not just stub placeholders
         self.assertIn("{{< instructor-guide >}}", lesson)
+        self.assertIn("{{< readme-shared >}}", lesson)
+        self.assertIn("Your First Web Page", lesson)
+
+    def test_real_content_has_shortcodes(self) -> None:
+        """Real content should exercise all shortcode types."""
+        first_page = (
+            self.root / "content" / "01-html-basics" / "01-first-page.md"
+        ).read_text()
+        self.assertIn("{{< callout type=", first_page)
+        self.assertIn("{{< instructor-guide >}}", first_page)
+        self.assertIn("{{< readme-shared >}}", first_page)
+        self.assertIn("{{< readme-only >}}", first_page)
 
     def test_hugo_toml_generated(self) -> None:
         toml = (self.root / "hugo.toml").read_text()
         self.assertIn('title = "Web Development"', toml)
         # Tier 3 should NOT have instructorGuide param
         self.assertNotIn("instructorGuide", toml)
+
+    def test_github_repo_in_hugo_toml(self) -> None:
+        """repo_url from course.yml should appear as github_repo in hugo.toml."""
+        toml = (self.root / "hugo.toml").read_text()
+        self.assertIn("github_repo", toml)
+        self.assertIn("league-curriculum/web-dev", toml)
 
     def test_theme_symlinked(self) -> None:
         theme_dir = self.root / "themes" / "curriculum-hugo-theme"
@@ -212,6 +231,92 @@ class WebDevIntegrationTest(unittest.TestCase):
     def test_hugo_build_succeeds(self) -> None:
         result = hugo_build(self.root)
         self.assertTrue(result["success"], f"Hugo build failed: {result['error']}")
+
+
+class ReadmeGenerationIntegrationTest(unittest.TestCase):
+    """Integration tests for README generation from real curriculum content."""
+
+    FIXTURE = "web-dev"
+    STRUCTURE = {
+        "modules": [
+            {
+                "name": "01-html-basics",
+                "lessons": ["01-first-page.md", "02-elements.md"],
+            },
+            {
+                "name": "02-css-styling",
+                "lessons": ["01-selectors.md", "02-layout.md", "03-responsive.md"],
+            },
+        ]
+    }
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.root = _copy_fixture(cls.FIXTURE)
+        scaffold_structure(cls.root, cls.STRUCTURE, tier=3, language="python", symlink_theme=True)
+        cls.readme_result = generate_readmes(cls.root)
+
+    def test_readmes_generated_for_pages_with_guards(self) -> None:
+        """Pages with readme-shared/readme-only guards should produce READMEs."""
+        self.assertGreater(len(self.readme_result["generated"]), 0)
+
+    def test_readmes_not_generated_for_pages_without_guards(self) -> None:
+        """Pages without guards (e.g. module _index.md) should be skipped."""
+        self.assertGreater(len(self.readme_result["skipped"]), 0)
+
+    def test_readme_contains_shared_content(self) -> None:
+        """Generated READMEs should contain content from readme-shared blocks."""
+        # 01-first-page has a readme-shared exercise
+        readme = self.root / "lessons" / "01-html-basics" / "01-first-page" / "README.md"
+        self.assertTrue(readme.is_file(), f"Expected README at {readme}")
+        content = readme.read_text()
+        self.assertIn("Exercise", content)
+
+    def test_readme_contains_only_content(self) -> None:
+        """Generated READMEs should contain content from readme-only blocks."""
+        readme = self.root / "lessons" / "01-html-basics" / "01-first-page" / "README.md"
+        content = readme.read_text()
+        # readme-only block has starter template
+        self.assertIn("Starter Template", content)
+
+    def test_readme_excludes_site_only_content(self) -> None:
+        """READMEs should NOT contain non-guarded content (instructor guides, etc.)."""
+        readme = self.root / "lessons" / "01-html-basics" / "01-first-page" / "README.md"
+        content = readme.read_text()
+        # Instructor guide content should not leak into README
+        self.assertNotIn("instructor-guide", content)
+        # Regular lesson prose should not appear
+        self.assertNotIn("What Is HTML?", content)
+
+    def test_readme_generated_for_each_lesson_with_guards(self) -> None:
+        """Every lesson file with guards should get its own README."""
+        expected_readmes = [
+            self.root / "lessons" / "01-html-basics" / "01-first-page" / "README.md",
+            self.root / "lessons" / "01-html-basics" / "02-elements" / "README.md",
+            self.root / "lessons" / "02-css-styling" / "01-selectors" / "README.md",
+            self.root / "lessons" / "02-css-styling" / "02-layout" / "README.md",
+            self.root / "lessons" / "02-css-styling" / "03-responsive" / "README.md",
+        ]
+        for readme_path in expected_readmes:
+            self.assertTrue(readme_path.is_file(), f"Missing README: {readme_path}")
+
+    def test_home_page_readme_generated(self) -> None:
+        """The course _index.md has guards and should generate a README."""
+        readme = self.root / "lessons" / "_index" / "README.md"
+        self.assertTrue(readme.is_file(), f"Expected README at {readme}")
+        content = readme.read_text()
+        self.assertIn("About This Course", content)
+
+    def test_parse_guards_on_real_content(self) -> None:
+        """parse_guards extracts correctly from real lesson files."""
+        lesson = (
+            self.root / "content" / "02-css-styling" / "03-responsive.md"
+        ).read_text()
+        guards = parse_guards(lesson)
+        self.assertEqual(len(guards["shared"]), 1)
+        self.assertEqual(len(guards["only"]), 1)
+        self.assertIn("Responsive Portfolio", guards["shared"][0])
+        self.assertIn("Checklist", guards["only"][0])
 
 
 if __name__ == "__main__":
