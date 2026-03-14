@@ -6,6 +6,7 @@ import json
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from curik.hugo import (
     create_content_page,
@@ -188,6 +189,12 @@ class HugoBuildTest(unittest.TestCase):
         self.assertIn("error", result)
 
 
+def _fake_clone(dest: Path, tag: str) -> None:
+    """Simulate _clone_theme by creating a minimal theme directory."""
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "theme.toml").write_text(f'name = "curriculum-hugo-theme"\n')
+
+
 class HugoSetupTest(unittest.TestCase):
     """Tests for hugo_setup() in templates.py."""
 
@@ -200,27 +207,46 @@ class HugoSetupTest(unittest.TestCase):
     def test_creates_hugo_toml(self) -> None:
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            result = self.hugo_setup(root, "Test Course", 2)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                result = self.hugo_setup(root, "Test Course", 2)
             self.assertIn("hugo.toml", result["created"])
             toml = (root / "hugo.toml").read_text()
             self.assertIn('title = "Test Course"', toml)
             self.assertIn('theme = "curriculum-hugo-theme"', toml)
             self.assertIn("instructorGuide = true", toml)
 
-    def test_copies_theme(self) -> None:
+    def test_clones_theme_from_repo(self) -> None:
+        """Production mode clones theme at the curik version tag."""
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            result = self.hugo_setup(root, "Test", 3)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone) as mock_clone, \
+                 patch("curik.templates.get_curik_version", return_value="0.20260313.7"):
+                result = self.hugo_setup(root, "Test", 3)
+            theme_dir = root / "themes" / self.theme_name
+            self.assertTrue(theme_dir.is_dir())
+            self.assertIn(f"themes/{self.theme_name}", result["created"])
+            # Check tag argument; path may differ due to macOS /private symlink
+            args = mock_clone.call_args
+            self.assertEqual(args[0][1], "v0.20260313.7")
+            self.assertEqual(args[0][0].name, self.theme_name)
+
+    def test_symlink_theme_uses_local_source(self) -> None:
+        """symlink_theme=True should symlink, not clone."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch("curik.templates._clone_theme") as mock_clone:
+                result = self.hugo_setup(root, "Test", 2, symlink_theme=True)
+            mock_clone.assert_not_called()
             theme_dir = root / "themes" / self.theme_name
             if self.theme_source.is_dir():
-                self.assertTrue(theme_dir.is_dir())
-                self.assertIn(f"themes/{self.theme_name}", result["created"])
+                self.assertTrue(theme_dir.is_symlink())
 
     def test_existing_hugo_toml_not_overwritten(self) -> None:
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "hugo.toml").write_text("existing config\n")
-            result = self.hugo_setup(root, "Test", 2)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                result = self.hugo_setup(root, "Test", 2)
             self.assertIn("hugo.toml", result["existing"])
             self.assertEqual((root / "hugo.toml").read_text(), "existing config\n")
 
@@ -230,7 +256,8 @@ class HugoSetupTest(unittest.TestCase):
             theme_dir = root / "themes" / self.theme_name
             theme_dir.mkdir(parents=True)
             (theme_dir / "marker.txt").write_text("original")
-            result = self.hugo_setup(root, "Test", 2)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                result = self.hugo_setup(root, "Test", 2)
             self.assertIn(f"themes/{self.theme_name}", result["existing"])
             self.assertEqual(
                 (theme_dir / "marker.txt").read_text(), "original"

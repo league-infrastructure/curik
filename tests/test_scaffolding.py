@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from curik.project import CurikError, init_course
 from curik.scaffolding import (
@@ -16,6 +17,25 @@ from curik.scaffolding import (
     scaffold_structure,
 )
 from curik.templates import get_hugo_config
+
+
+def _fake_clone(dest: Path, tag: str) -> None:
+    """Simulate _clone_theme for unit tests (no network)."""
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "theme.toml").write_text(f'name = "curriculum-hugo-theme"\n')
+
+
+# Patch _clone_theme for all tests in this module so scaffold_structure()
+# never hits the network.
+_clone_patch = patch("curik.templates._clone_theme", side_effect=_fake_clone)
+
+
+def setUpModule() -> None:
+    _clone_patch.start()
+
+
+def tearDownModule() -> None:
+    _clone_patch.stop()
 
 
 class ScaffoldStructureTest(unittest.TestCase):

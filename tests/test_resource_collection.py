@@ -4,6 +4,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from curik.assets import get_skill_definition
 from curik.project import (
@@ -15,6 +16,22 @@ from curik.project import (
     update_spec,
 )
 from curik.scaffolding import scaffold_structure
+
+
+def _fake_clone(dest: Path, tag: str) -> None:
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "theme.toml").write_text(f'name = "curriculum-hugo-theme"\n')
+
+
+_clone_patch = patch("curik.templates._clone_theme", side_effect=_fake_clone)
+
+
+def setUpModule() -> None:
+    _clone_patch.start()
+
+
+def tearDownModule() -> None:
+    _clone_patch.stop()
 
 
 # Sections that resource collections skip.
