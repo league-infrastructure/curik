@@ -134,7 +134,14 @@ body {
 
 .sidebar-tree .current > a {
   font-weight: 700;
-  color: var(--color-brand-primary);
+  color: #D45E18;
+  background: #FFF0E5;
+  border-radius: 0.25rem;
+}
+
+/* Highlight the open module header */
+.sidebar-module.open > .sidebar-module-link {
+  color: #D45E18 !important;
 }
 
 .sidebar-tree ul ul {
