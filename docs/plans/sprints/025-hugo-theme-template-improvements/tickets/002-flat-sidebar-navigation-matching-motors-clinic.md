@@ -10,15 +10,26 @@ depends-on: ["001"]
 
 ## Description
 
-The Motors Clinic has a flat list of page links in the sidebar — no nested section headers. Our current template groups pages under section headers with nested `<ul>` elements.
+The Motors Clinic has a flat list of page links in the sidebar — section
+titles are clickable links that go to the section overview page, and
+lessons appear at the same level below them.
 
-Update the sidebar nav in baseof.html to render a flat list: iterate over all pages across all sections in weight/alphabetical order, outputting a single-level `<ul>`. Highlight the current page.
+Our current template has two problems:
+1. Section titles are rendered as non-clickable `<p class="caption">`
+   headers — you can't click "Control Flow" to go to its overview page
+2. Lessons are nested in sub-`<ul>` elements under section headers
+
+Update the sidebar nav in baseof.html to render a flat list where:
+- Each section's `_index.md` page appears as a clickable link
+- Each lesson appears as a clickable link at the same nesting level
+- The current page is visually highlighted
+- The list order follows Hugo's default weight/alphabetical ordering
 
 ## Acceptance Criteria
 
-- [ ] Sidebar shows a flat list of all lesson pages
+- [ ] Section titles in sidebar are clickable links to the section page
+- [ ] All pages (sections + lessons) appear in a single flat list
 - [ ] Current page is visually highlighted
-- [ ] No nested section headers in sidebar
 - [ ] Hugo build succeeds
 
 ## Testing
