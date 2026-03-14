@@ -365,6 +365,7 @@ body {
 .sidebar-nav-buttons {
   display: flex;
   justify-content: space-between;
+  gap: 0.5rem;
   padding: 1rem var(--sidebar-item-spacing-horizontal);
   border-top: 1px solid var(--color-background-border);
   margin-top: 0.5rem;
@@ -372,9 +373,15 @@ body {
 
 .sidebar-nav-prev,
 .sidebar-nav-next {
-  font-size: var(--font-size--small);
-  color: var(--color-brand-content);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
   text-decoration: none;
+  color: #fff;
+  background: #F37121;
+  border-radius: 0.3rem;
+  transition: background 0.15s ease;
 }
 
 .sidebar-nav-next {
@@ -383,7 +390,8 @@ body {
 
 .sidebar-nav-prev:hover,
 .sidebar-nav-next:hover {
-  text-decoration: underline;
+  background: #D45E18;
+  text-decoration: none;
 }
 
 /* ── Footer ──────────────────────────────────────────────────── */
