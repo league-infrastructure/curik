@@ -1,7 +1,7 @@
 ---
-id: "025"
-title: "Hugo Theme Template Improvements"
-status: planning
+id: '025'
+title: Hugo Theme Template Improvements
+status: done
 branch: sprint/025-hugo-theme-template-improvements
 use-cases: []
 ---
