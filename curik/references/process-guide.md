@@ -182,6 +182,7 @@ Use `get_activity_guide(activity)` to load bundled context for:
 
 ## Rules
 
+- **Use AskUserQuestion for all questions**: NEVER pose questions to the stakeholder in plain text output. Always use the `AskUserQuestion` tool — it renders a visible UI prompt. Text questions get buried and missed. This applies to design decisions, approvals, clarifications, course.yml field values, and any time you need input.
 - **MCP-first**: Use Curik tools for state changes, not direct file editing
 - **Agent boundaries**: Respect the loaded agent's role limits
 - **Skills are workflows**: Follow steps in order, don't skip

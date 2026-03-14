@@ -125,15 +125,20 @@ def init_course(
         created.append(rel_mcp)
 
     # Install CLAUDE.md section, /curik skill, and MCP permissions
+    updated: list[str] = []
     init_result = run_init(root)
     for path in init_result.get("created", []):
         created.append(path)
     for path in init_result.get("unchanged", []):
         existing.append(path)
     for path in init_result.get("updated", []):
-        created.append(path)
+        updated.append(path)
 
-    return {"created": sorted(created), "existing": sorted(existing)}
+    return {
+        "created": sorted(created),
+        "updated": sorted(updated),
+        "existing": sorted(existing),
+    }
 
 
 def _read_state(root: Path) -> dict[str, str]:

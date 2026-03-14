@@ -21,11 +21,36 @@ to the user and stop — do not execute any tool.
 | `/curik agents` | List available curriculum agents | `list_agents()` |
 | `/curik skills` | List available curriculum skills | `list_skills()` |
 | `/curik refs` | List available reference documents | `list_references()` |
-| `/curik publish` | Show publishing guide with pre/post checklists | `tool_get_publish_guide()` |
-| `/curik publish check` | Quick readiness check for publishing | `tool_check_publish_ready()` |
+| `/curik publish` | Run publish check, fix issues, and push | See **Publish workflow** below |
+| `/curik publish check` | Quick readiness check (no push) | `tool_check_publish_ready()` |
+| `/curik publish guide` | Show full publishing setup guide | `tool_get_publish_guide()` |
 
 Pass any remaining text after the subcommand as the argument to the
 tool (e.g., `/curik validate content/01-intro/01-hello.md`).
 
-For general guidance, call `list_agents()` and load the `start-curik`
-agent definition to begin the curriculum development workflow.
+## Publish workflow
+
+When the user runs `/curik publish`, execute these steps in order:
+
+1. **Run readiness check**: Call `tool_check_publish_ready()`.
+2. **Fix what you can**: If any checks fail:
+   - Missing `course.yml` fields → fill them in with `tool_update_course_yml()`,
+     using your best inference from the course content. Present the values to
+     the user with `AskUserQuestion` for confirmation.
+   - Missing `.gitignore` or workflow → run `tool_init_course()`.
+   - Wrong `baseURL` → run `tool_hugo_setup()`.
+   - Hugo build fails → investigate and fix the build errors.
+3. **Re-check**: Run `tool_check_publish_ready()` again to confirm all green.
+4. **Commit**: Stage and commit any changes from step 2.
+5. **Push**: Run `git push` to deploy. The GitHub Actions workflow handles
+   the rest (build + deploy to GitHub Pages).
+6. **Report**: Show the user the target URL and remind them to check the
+   post-publish checklist from `tool_get_publish_guide()`.
+
+If a check fails that you cannot fix (e.g., no content, GitHub Pages not
+enabled), use `AskUserQuestion` to tell the user what's needed.
+
+## General guidance
+
+Call `list_agents()` and load the `start-curik` agent definition to begin
+the curriculum development workflow.

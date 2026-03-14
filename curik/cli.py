@@ -53,19 +53,28 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "init":
             result = init_course(root)
             created = result.get("created", [])
+            updated = result.get("updated", [])
             existing = result.get("existing", [])
             if created:
                 print("Created:")
                 for path in created:
                     print(f"  {path}")
-            if existing:
-                print("Already existed:")
-                for path in existing:
+            if updated:
+                print("Updated:")
+                for path in updated:
                     print(f"  {path}")
+            if existing and not created and not updated:
+                print("Everything up to date.")
             print()
-            print("Curik is ready. Open Claude Code in this directory and say:")
+            print("Next steps:")
             print()
-            print('  "Start Curik"')
+            print("  1. If you're in VS Code, reload the window to pick up")
+            print("     the new MCP server and /curik skill.")
+            print()
+            print("  2. Then run:  /curik start")
+            print()
+            print("     The /curik command connects to the Curik MCP server")
+            print("     and walks you through the curriculum development process.")
             return 0
         if args.command == "get-phase":
             print(json.dumps(get_phase(root), indent=2))

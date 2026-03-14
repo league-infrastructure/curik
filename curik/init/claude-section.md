@@ -20,6 +20,7 @@ in `hugo.toml`.
 
 ## Rules
 
+- **Use the AskUserQuestion tool for all questions**: When you need input, a decision, or approval from the stakeholder, ALWAYS use the `AskUserQuestion` tool. Do NOT pose questions in plain text output — users working in IDEs often miss text-only questions. The AskUserQuestion tool renders a visible UI prompt that the user can respond to. This applies to design decisions, approval gates, clarifications, and any time you need the stakeholder to choose or confirm something.
 - **MCP-first**: For any operation that Curik has a tool for (creating issues, managing change plans, scaffolding, validation, syllabus operations), use the Curik MCP tool. Do not perform these operations by directly editing files.
 - **Agent boundaries**: When you load an agent definition via `get_agent()`, respect its boundaries. The Curriculum Architect does not write lesson content. The Lesson Author does not modify course structure.
 - **Skills are workflows**: When you load a skill via `get_skill()`, follow its steps in order. Do not skip steps.
