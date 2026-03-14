@@ -148,6 +148,28 @@ body {
   font-size: 0.95rem;
 }
 
+/* Collapse lessons by default, expand for the active module */
+.sidebar-lessons {
+  display: none;
+}
+
+.sidebar-module.open > .sidebar-lessons {
+  display: block;
+}
+
+/* Chevron indicator on module links */
+.sidebar-module-link::before {
+  content: "▸";
+  display: inline-block;
+  width: 1em;
+  margin-left: -0.25em;
+  transition: transform 0.15s ease;
+}
+
+.sidebar-module.open > .sidebar-module-link::before {
+  content: "▾";
+}
+
 .sidebar-lessons a {
   font-size: 0.8125rem;
   font-weight: 400;

@@ -11,6 +11,7 @@ from typing import Any
 
 THEME_NAME = "curriculum-hugo-theme"
 THEME_REPO = "https://github.com/league-infrastructure/curriculum-hugo-theme.git"
+CURRICULUM_BASE = "https://curriculum.jointheleague.org"
 
 # Local theme source — used only for symlink_theme (development mode).
 _THEME_SOURCE = Path(__file__).resolve().parent.parent / THEME_NAME
@@ -26,17 +27,24 @@ def get_curik_version() -> str:
     return pkg_version("curik")
 
 
-def get_hugo_config(title: str, tier: int, *, github_repo: str = "") -> str:
+def get_hugo_config(
+    title: str, tier: int, *, slug: str = "", github_repo: str = "",
+) -> str:
     """Return a tier-appropriate hugo.toml configuration string.
 
     All tiers reference the curriculum-hugo-theme (expected at
     ``themes/curriculum-hugo-theme/`` in the course repo). Tiers 1-2 include
     an ``instructorGuide = true`` parameter.
 
+    If *slug* is provided, sets baseURL to the curriculum site subpath.
     If *github_repo* is provided, a GitHub icon link appears in the footer.
     """
+    if slug and slug != "TBD":
+        base_url = f"{CURRICULUM_BASE}/{slug}/"
+    else:
+        base_url = "/"
     lines = [
-        'baseURL = "/"',
+        f'baseURL = "{base_url}"',
         f'title = "{title}"',
         f'theme = "{THEME_NAME}"',
         "",
@@ -85,8 +93,8 @@ def _clone_theme(dest: Path, tag: str) -> None:
 
 
 def hugo_setup(
-    root: Path, title: str, tier: int, *, symlink_theme: bool = False,
-    github_repo: str = "",
+    root: Path, title: str, tier: int, *, slug: str = "",
+    symlink_theme: bool = False, github_repo: str = "",
 ) -> dict[str, list[str]]:
     """Generate hugo.toml and install the theme into a course repo.
 
@@ -112,7 +120,10 @@ def hugo_setup(
     if hugo_toml.exists():
         existing.append(rel_toml)
     else:
-        hugo_toml.write_text(get_hugo_config(title, tier, github_repo=github_repo), encoding="utf-8")
+        hugo_toml.write_text(
+            get_hugo_config(title, tier, slug=slug, github_repo=github_repo),
+            encoding="utf-8",
+        )
         created.append(rel_toml)
 
     # Install theme

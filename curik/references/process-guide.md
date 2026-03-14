@@ -86,10 +86,11 @@ If `get_course_status()` reports `has_existing_content: true`:
 
 **Path A: From Scratch** (no existing content)
 1. Scaffold with `scaffold_structure()`
-2. Create outlines in `.course/outlines/`, get approval via `approve_outline()`
-3. Draft lessons using the appropriate lesson author agent
-4. Configure quizzes using quiz-author agent
-5. Validate with reviewer agent
+2. **Complete `course.yml`** — see "course.yml Completion" below
+3. Create outlines in `.course/outlines/`, get approval via `approve_outline()`
+4. Draft lessons using the appropriate lesson author agent
+5. Configure quizzes using quiz-author agent
+6. Validate with reviewer agent
 
 **Path B: Convert Existing Content**
 1. Load `content-conversion` skill
@@ -108,6 +109,31 @@ For each module:
 3. For Tier 3-4: call `write_syllabus_url()` after each lesson
 4. Call `trigger_readme_generation()` after completing a module (Tier 3-4)
 5. Run `validate_module()` to check completeness
+
+### course.yml Completion
+
+After scaffolding, `course.yml` will have TBD values. **These must all be
+filled in before the course can be published or validated.**
+
+Required fields: `title`, `slug`, `tier`, `grades`, `category`,
+`description`, `curriculum_url`, `repo_url`.
+
+Use `tool_update_course_yml()` to set fields. The `slug` is the URL path
+segment — it determines the published URL at
+`https://curriculum.jointheleague.org/<slug>/`.
+
+**Agent behavior:**
+1. After scaffolding, check `course.yml` for TBD fields.
+2. For fields you can infer from the spec and course content (title, slug,
+   tier, grades, category, description), set them to your best values.
+3. Set `curriculum_url` to `https://curriculum.jointheleague.org/<slug>/`.
+4. Set `repo_url` to `https://github.com/league-curriculum/<slug>`.
+5. Present the completed `course.yml` to the designer for review.
+6. After updating slug or title, run `tool_hugo_setup()` to regenerate
+   `hugo.toml` with the correct `baseURL`.
+
+**Do not leave TBD values.** If you genuinely cannot determine a field,
+ask the designer rather than leaving it as TBD.
 
 ## Phase 3: Ongoing Changes
 

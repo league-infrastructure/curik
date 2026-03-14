@@ -21,6 +21,8 @@ to the user and stop — do not execute any tool.
 | `/curik agents` | List available curriculum agents | `list_agents()` |
 | `/curik skills` | List available curriculum skills | `list_skills()` |
 | `/curik refs` | List available reference documents | `list_references()` |
+| `/curik publish` | Show publishing guide with pre/post checklists | `tool_get_publish_guide()` |
+| `/curik publish check` | Quick readiness check for publishing | `tool_check_publish_ready()` |
 
 Pass any remaining text after the subcommand as the argument to the
 tool (e.g., `/curik validate content/01-intro/01-hello.md`).

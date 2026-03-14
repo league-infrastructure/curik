@@ -205,7 +205,7 @@ class RunInitTest(unittest.TestCase):
         run_init(self.target)
         result = run_init(self.target)
         self.assertEqual(len(result["created"]), 0)
-        self.assertEqual(len(result["unchanged"]), 4)
+        self.assertEqual(len(result["unchanged"]), 6)
 
 
 class InitCourseIntegrationTest(unittest.TestCase):

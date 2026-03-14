@@ -26,6 +26,7 @@ in `hugo.toml`.
 - **Gates are gates**: When `advance_phase()` fails, do not work around it. Address the unmet conditions.
 - **Designer approval**: Change plans, outlines, and phase transitions require designer approval. Do not self-approve.
 - **Theme is read-only**: Do not edit files in `themes/`. The theme is managed by the curik package.
+- **No TBDs in course.yml**: After scaffolding, fill in all `course.yml` fields using `tool_update_course_yml()`. Infer values from the spec and content, then present to the designer for review. Never leave TBD values — ask the designer if you cannot determine a field.
 
 ## Available MCP Tools
 
@@ -49,5 +50,7 @@ in `hugo.toml`.
 - Issues and change plans: `create_issue`, `list_issues`, `approve_change_plan`, `close_change_plan`
 - Validation: `validate_lesson`, `validate_module`, `validate_course`, `get_validation_report`
 - Quiz: `generate_quiz_stub`, `validate_quiz_alignment`, `set_quiz_status`
+- Course metadata: `update_course_yml` — set fields in course.yml (title, slug, tier, etc.)
 - Hugo: `list_content_pages`, `create_content_page`, `update_frontmatter`, `hugo_build`
+- Publishing: `get_publish_guide` — full guide with pre/post checklists; `check_publish_ready` — quick readiness check
 <!-- CURIK:END -->

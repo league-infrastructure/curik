@@ -114,6 +114,60 @@ def _update_vscode_mcp_json(target: Path) -> str:
     return "created" if len(servers) == 1 and len(data) == 1 else "updated"
 
 
+_GITIGNORE_START = "# -- CURIK:START --"
+_GITIGNORE_END = "# -- CURIK:END --"
+
+
+def _write_gitignore(target: Path) -> str:
+    """Create or update .gitignore with the Curik-managed section.
+
+    Uses markers so user-added entries outside the markers are preserved.
+    Returns "created", "updated", or "unchanged".
+    """
+    gitignore = target / ".gitignore"
+    section = _read_template("gitignore").rstrip()
+
+    if gitignore.exists():
+        content = gitignore.read_text(encoding="utf-8")
+
+        if _GITIGNORE_START in content and _GITIGNORE_END in content:
+            start_idx = content.index(_GITIGNORE_START)
+            end_idx = content.index(_GITIGNORE_END) + len(_GITIGNORE_END)
+            new_content = content[:start_idx] + section + content[end_idx:]
+        else:
+            # Existing .gitignore without markers — prepend the managed section
+            new_content = section + "\n\n" + content
+
+        if new_content == content:
+            return "unchanged"
+
+        gitignore.write_text(new_content, encoding="utf-8")
+        return "updated"
+    else:
+        gitignore.write_text(section + "\n", encoding="utf-8")
+        return "created"
+
+
+def _write_github_workflow(target: Path) -> str:
+    """Create or update .github/workflows/deploy-pages.yml.
+
+    This file is fully curik-owned — updates replace the entire file.
+    Returns "created", "updated", or "unchanged".
+    """
+    source = _read_template("deploy-pages.yml")
+    workflow = target / ".github" / "workflows" / "deploy-pages.yml"
+
+    if workflow.exists():
+        if workflow.read_text(encoding="utf-8") == source:
+            return "unchanged"
+        workflow.write_text(source, encoding="utf-8")
+        return "updated"
+
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_text(source, encoding="utf-8")
+    return "created"
+
+
 def _update_settings_json(target: Path) -> str:
     """Add mcp__curik__* to the permissions allowlist.
 
@@ -160,6 +214,8 @@ def run_init(target: Path) -> dict[str, list[str]]:
         (".claude/skills/curik/SKILL.md", _write_curik_skill(target)),
         (".vscode/mcp.json", _update_vscode_mcp_json(target)),
         (".claude/settings.local.json", _update_settings_json(target)),
+        (".gitignore", _write_gitignore(target)),
+        (".github/workflows/deploy-pages.yml", _write_github_workflow(target)),
     ]
 
     for path, status in actions:

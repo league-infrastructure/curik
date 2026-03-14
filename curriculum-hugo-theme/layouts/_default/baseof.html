@@ -55,7 +55,12 @@
             </li>
             {{ else }}
             {{ range $sections }}
-            <li class="sidebar-module{{ if eq $.RelPermalink .RelPermalink }} current{{ end }}">
+            {{/* Module is "open" if the current page is this section or any page within it */}}
+            {{ $isOpen := eq $.RelPermalink .RelPermalink }}
+            {{ range .Pages }}
+              {{ if eq $.RelPermalink .RelPermalink }}{{ $isOpen = true }}{{ end }}
+            {{ end }}
+            <li class="sidebar-module{{ if $isOpen }} open{{ end }}{{ if eq $.RelPermalink .RelPermalink }} current{{ end }}">
               <a href="{{ .RelPermalink }}" class="sidebar-module-link">{{ .Title }}</a>
               {{ $pages := sort .Pages "File.Path" }}
               {{ if $pages }}
