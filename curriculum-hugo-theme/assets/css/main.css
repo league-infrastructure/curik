@@ -78,22 +78,23 @@ body {
 
 /* Brand / logo */
 .sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0 var(--sidebar-item-spacing-horizontal) 1.5rem;
+  display: block;
   text-decoration: none;
   color: var(--color-foreground-primary);
+  padding-bottom: 1rem;
 }
 
-.sidebar-brand img {
-  height: 2rem;
-  width: auto;
+.sidebar-logo {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .sidebar-brand-text {
+  display: block;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
+  padding: 0.75rem var(--sidebar-item-spacing-horizontal) 0;
 }
 
 /* Sidebar navigation tree */
@@ -323,6 +324,27 @@ body {
   padding: 0.75rem 1rem;
 }
 
+/* ── Sidebar nav buttons ─────────────────────────────────────── */
+.sidebar-nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem var(--sidebar-item-spacing-horizontal);
+  border-top: 1px solid var(--color-background-border);
+  margin-top: 0.5rem;
+}
+
+.sidebar-nav-prev,
+.sidebar-nav-next {
+  font-size: var(--font-size--small);
+  color: var(--color-brand-content);
+  text-decoration: none;
+}
+
+.sidebar-nav-prev:hover,
+.sidebar-nav-next:hover {
+  text-decoration: underline;
+}
+
 /* ── Footer ──────────────────────────────────────────────────── */
 .bottom-of-page {
   border-top: 1px solid var(--color-background-border);
@@ -333,7 +355,9 @@ body {
 .prev-next {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-background-border);
 }
 
 .prev-next a {
@@ -346,11 +370,33 @@ body {
   text-decoration: underline;
 }
 
-.copyright {
-  color: var(--color-foreground-muted);
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   font-size: 0.8rem;
-  text-align: center;
-  padding: 0.75rem 0;
+  color: var(--color-foreground-muted);
+}
+
+.footer-bottom a {
+  color: var(--color-foreground-muted);
+  text-decoration: none;
+}
+
+.footer-bottom a:hover {
+  color: var(--color-brand-content);
+}
+
+.footer-credits {
+  flex: 1;
+}
+
+.footer-github {
+  margin-left: auto;
+}
+
+.footer-github svg {
+  vertical-align: middle;
 }
 
 /* ── Breadcrumb ──────────────────────────────────────────────── */

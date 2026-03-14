@@ -1,7 +1,4 @@
-{{- /* Instructor Guide: collapsible section hidden by default. */ -}}
-<details class="instructor-guide">
-  <summary>Instructor Guide</summary>
-  <div class="instructor-guide-content">
-    {{ .Inner | markdownify }}
-  </div>
-</details>
+{{- /* Instructor Guide: hidden content revealed by footer icon. */ -}}
+<div class="instructor-guide-section" style="display:none;">
+  {{ .Inner | markdownify }}
+</div>
