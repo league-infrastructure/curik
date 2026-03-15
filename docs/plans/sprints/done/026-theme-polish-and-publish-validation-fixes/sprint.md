@@ -1,9 +1,13 @@
 ---
-id: "026"
-title: "Theme polish and publish validation fixes"
-status: planning
+id: '026'
+title: Theme polish and publish validation fixes
+status: done
 branch: sprint/026-theme-polish-and-publish-validation-fixes
-use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+- SUC-004
 ---
 
 # Sprint 026: Theme polish and publish validation fixes
