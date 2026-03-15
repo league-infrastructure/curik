@@ -1,8 +1,11 @@
 ---
 title: check_publish_ready() should validate github_repo is in hugo.toml
-status: open
+status: done
 created: 2026-03-14
 source: user-reported (Motors curriculum agent feedback)
+sprint: '026'
+tickets:
+- '001'
 ---
 
 ## Problem

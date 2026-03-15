@@ -8,6 +8,8 @@
   {{ if $main }}<style>{{ $main.Content | safeCSS }}</style>{{ end }}
   {{ $ig := resources.Get "css/instructor-guide.css" }}
   {{ if $ig }}<style>{{ $ig.Content | safeCSS }}</style>{{ end }}
+  {{ $custom := resources.Get "css/custom.css" }}
+  {{ if $custom }}<style>{{ $custom.Content | safeCSS }}</style>{{ end }}
   {{ block "head" . }}{{ end }}
 </head>
 <body>

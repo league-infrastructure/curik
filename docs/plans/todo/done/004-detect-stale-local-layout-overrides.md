@@ -1,8 +1,11 @@
 ---
 title: Detect stale local baseof.html overrides that shadow theme updates
-status: open
+status: done
 created: 2026-03-14
 source: user-reported (Motors curriculum agent feedback)
+sprint: '026'
+tickets:
+- '002'
 ---
 
 ## Problem

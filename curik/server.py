@@ -961,6 +961,8 @@ def _read_publish_state(root: Path) -> dict:
         "has_gitignore": (root / ".gitignore").exists(),
         "has_hugo_toml": (root / "hugo.toml").exists(),
         "base_url_ok": False,
+        "has_github_repo_param": False,
+        "has_local_baseof": (root / "layouts" / "_default" / "baseof.html").exists(),
         "has_content": False,
         "content_sections": 0,
         "content_pages": 0,
@@ -991,6 +993,7 @@ def _read_publish_state(root: Path) -> dict:
     if state["has_hugo_toml"]:
         content = (root / "hugo.toml").read_text(encoding="utf-8")
         state["base_url_ok"] = "curriculum.jointheleague.org" in content
+        state["has_github_repo_param"] = "github_repo" in content
 
     content_dir = root / "content"
     if content_dir.is_dir():
@@ -1153,6 +1156,22 @@ def tool_get_publish_guide() -> str:
         "**Run `curik init`** to install `.github/workflows/deploy-pages.yml`",
     ))
 
+    lines.append(check(
+        s["has_github_repo_param"],
+        "`github_repo` param set in `hugo.toml`",
+        "**Missing `github_repo`** in `hugo.toml` — run `tool_hugo_setup()` to regenerate",
+    ))
+
+    if s["has_local_baseof"]:
+        lines.extend([
+            "",
+            "### Warning",
+            "",
+            "- [ ] **Local `layouts/_default/baseof.html` detected** — this overrides",
+            "  the theme template and may block theme updates. Delete it unless you",
+            "  have a specific reason to keep it.",
+        ])
+
     lines.extend(["", "### Content", ""])
 
     lines.append(check(
@@ -1176,6 +1195,7 @@ def tool_get_publish_guide() -> str:
     config_ready = all([
         course_yml_ok, s["has_hugo_toml"], s["base_url_ok"],
         s["has_theme"], s["has_gitignore"], s["has_workflow"],
+        s["has_github_repo_param"],
     ])
     content_ready = s["has_content"] and s["hugo_builds"]
     all_ready = config_ready and content_ready
@@ -1254,12 +1274,19 @@ def tool_check_publish_ready() -> str:
         "course_yml_complete": course_yml_complete,
         "hugo_toml_exists": s["has_hugo_toml"],
         "base_url_configured": s["base_url_ok"],
+        "github_repo_in_config": s["has_github_repo_param"],
         "theme_installed": s["has_theme"],
         "gitignore_installed": s["has_gitignore"],
         "workflow_installed": s["has_workflow"],
         "has_content": s["has_content"],
         "hugo_builds": s["hugo_builds"],
     }
+
+    warnings = {}
+    if s["has_local_baseof"]:
+        warnings["local_baseof_override"] = (
+            "layouts/_default/baseof.html exists and shadows the theme template"
+        )
 
     url = ""
     if has_slug:
@@ -1277,6 +1304,9 @@ def tool_check_publish_ready() -> str:
 
     if s["course_yml_tbd_fields"]:
         result["course_yml_tbd_fields"] = s["course_yml_tbd_fields"]
+
+    if warnings:
+        result["warnings"] = warnings
 
     return json.dumps(result, indent=2)
 
