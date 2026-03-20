@@ -6,6 +6,13 @@
       "args": [
         "mcp"
       ]
+    },
+    "curik": {
+      "type": "stdio",
+      "command": "curik",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

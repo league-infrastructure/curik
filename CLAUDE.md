@@ -1,172 +1,57 @@
-<!-- CLASI:START -->
-## CLASI Software Engineering Process
+<!-- CURIK:START -->
+# Curik Curriculum Project
 
-**MANDATORY: Before doing ANY work that involves code or planning on
-code, you MUST call `get_se_overview()` to load the software engineering
-process. Do this at the start of every conversation. No exceptions.**
+This repository is a Curik-managed curriculum project for the League of Amazing Programmers.
 
-This project uses the **CLASI** (Claude Agent Skills Instructions)
-software engineering process, managed via an MCP server.
+## Before You Do Anything
 
-**The SE process is the default.** Any activity that results in changes
-to the codebase — or plans to change the codebase — falls under this
-process. Follow it unless the stakeholder explicitly says "out of
-process" or "direct change".
+1. Call `get_course_status()` to determine where this project stands.
+2. Call `get_process_guide()` to understand what to do next.
+3. Follow the process guide's instructions for the current phase.
 
-Activities that trigger the SE process include:
+Do not write curriculum content, modify course structure, scaffold files, or make any substantive changes without first consulting the MCP server for the current phase and the applicable agent.
 
-- Building a new feature or adding functionality
-- Fixing a bug or resolving an issue
-- Refactoring, restructuring, or reorganizing code
-- Writing, updating, or removing tests
-- Updating documentation that describes code behavior
-- Planning, scoping, or designing an implementation
-- Reviewing code or architecture
-- Creating, modifying, or closing sprints and tickets
-- Merging, branching, or tagging releases
+## Hugo Theme
 
-**If it touches code, tests, docs about code, or plans for code — STOP.
-Call `get_se_overview()` if you haven't already. Then either follow the
-process it describes, or confirm the stakeholder has explicitly said
-"out of process" or "direct change" before proceeding without a sprint.**
+The Hugo theme lives at `themes/curriculum-hugo-theme/` in this repo. Curik
+copies it there during scaffolding. Do not modify it — changes go upstream
+in the curik package. Hugo finds it automatically via `theme = "curriculum-hugo-theme"`
+in `hugo.toml`.
 
-### MANDATORY: Pre-Flight Check
+## Rules
 
-**Before writing ANY code, you MUST confirm one of:**
+- **Use the AskUserQuestion tool for all questions**: When you need input, a decision, or approval from the stakeholder, ALWAYS use the `AskUserQuestion` tool. Do NOT pose questions in plain text output — users working in IDEs often miss text-only questions. The AskUserQuestion tool renders a visible UI prompt that the user can respond to. This applies to design decisions, approval gates, clarifications, and any time you need the stakeholder to choose or confirm something.
+- **MCP-first**: For any operation that Curik has a tool for (creating issues, managing change plans, scaffolding, validation, syllabus operations), use the Curik MCP tool. Do not perform these operations by directly editing files.
+- **Agent boundaries**: When you load an agent definition via `get_agent()`, respect its boundaries. The Curriculum Architect does not write lesson content. The Lesson Author does not modify course structure.
+- **Skills are workflows**: When you load a skill via `get_skill()`, follow its steps in order. Do not skip steps.
+- **Gates are gates**: When `advance_phase()` fails, do not work around it. Address the unmet conditions.
+- **Designer approval**: Change plans, outlines, and phase transitions require designer approval. Do not self-approve.
+- **Theme is read-only**: Do not edit files in `themes/`. The theme is managed by the curik package.
+- **No TBDs in course.yml**: After scaffolding, fill in all `course.yml` fields using `tool_update_course_yml()`. Infer values from the spec and content, then present to the designer for review. Never leave TBD values — ask the designer if you cannot determine a field.
 
-1. You have an active sprint and ticket — check with `list_sprints()`
-   and `list_tickets()`. If you do, execute that ticket.
-2. The stakeholder has explicitly said "out of process", "direct change",
-   or invoked `/oop`. If so, proceed without a sprint.
+## Available MCP Tools
 
-**If neither is true, do NOT write code.** Instead, enter the SE process:
-use `get_skill_definition("plan-sprint")` to create a sprint, or
-`get_skill_definition("next")` to determine the correct next step.
+### Process Discovery
+- `get_process_guide()` — full process overview and decision tree
+- `get_course_status()` — current project state
+- `get_phase()` — current phase and gate conditions
+- `advance_phase()` — gated phase transition
+- `get_activity_guide(activity)` — bundled agent + skills + instructions
 
-### MANDATORY: CLASI Skills First
+### Agent and Skill Loading
+- `list_agents()` / `get_agent(name)` — agent definitions
+- `list_skills()` / `get_skill(name)` — skill workflows
+- `list_instructions()` / `get_instruction(name)` — reference documents
 
-**Before using any generic tool for a process activity, check
-`list_skills()` for a CLASI-specific skill.** CLASI skills always take
-priority over generic tools for process activities.
-
-Examples of what this means:
-- Creating a TODO → use the CLASI `todo` skill, not the `TodoWrite` tool
-- Finishing a sprint → use `close-sprint` skill, not generic branch tools
-- Creating tickets → use `create-tickets` skill, not ad-hoc file creation
-
-### MANDATORY: Stop and Report on Failure
-
-**When a required MCP tool or process step is unavailable or fails, STOP
-and report the failure to the stakeholder.** Do not:
-
-- Create substitute artifacts that bypass the process
-- Improvise workarounds outside the established workflow
-- Silently continue without the required tool
-
-The correct response is: "Tool X is unavailable. I cannot proceed without
-it. Let's fix the MCP connection first."
-
-### Process
-
-Work happens at two levels: **project initiation** and **sprints**.
-
-**Project initiation** (once per project):
-
-1. Interview the stakeholder to understand the project goals and scope.
-   → `get_skill_definition("project-initiation")`
-2. Generate project initiation documents (overview, spec, use cases).
-   → `get_skill_definition("elicit-requirements")`
-3. Break the project into sprints — either all at once if the spec is
-   complete, or incrementally (one or two sprints at a time) so the
-   stakeholder can adjust later sprints as the project evolves.
-   → `get_skill_definition("plan-sprint")`
-
-**Sprint lifecycle** (repeated per sprint):
-
-1. **Mine TODOs** — Scan `docs/plans/todo/` with `list_todos()` for
-   ideas relevant to the sprint. Discuss with the stakeholder.
-2. **Create sprint** — `create_sprint(title)` sets up the directory and
-   registers the sprint. Create the branch: `git checkout -b sprint/NNN-slug`.
-3. **Write planning docs** — Fill in `sprint.md`, `usecases.md`, and
-   update `architecture.md` in the sprint directory with real content.
-   The architecture doc is copied from the previous sprint — update it
-   to reflect the target end-of-sprint state and fill in Sprint Changes.
-4. **Architecture review** — `advance_sprint_phase(sprint_id)` to move
-   to architecture-review. Delegate to the architecture-reviewer agent.
-   Record the result: `record_gate_result(sprint_id, "architecture_review", "passed")`.
-5. **Stakeholder review** — Present the plan to the stakeholder.
-   `record_gate_result(sprint_id, "stakeholder_approval", "passed")`.
-6. **Create tickets** — `advance_sprint_phase(sprint_id)` to ticketing.
-   Use `create_ticket(sprint_id, title)` for each ticket. Fill in details.
-7. **Execute tickets** — `advance_sprint_phase(sprint_id)` to executing.
-   `acquire_execution_lock(sprint_id)`. Execute each ticket via
-   `get_skill_definition("execute-ticket")`.
-8. **Close sprint** — After all tickets are done, use
-   `get_skill_definition("close-sprint")` to merge, archive, and tag.
-
-Use `/se` or call `get_se_overview()` for full process details and MCP
-tool reference.
-
-### MANDATORY: Ticket and Sprint Completion
-
-**Agents MUST complete these steps. No exceptions. No skipping.**
-
-Agents have repeatedly failed to move tickets to done and close sprint
-branches. This creates inconsistent state. These rules are non-negotiable.
-
-**After finishing a ticket's code changes, you MUST:**
-
-1. Run the full test suite and confirm all tests pass.
-2. Set ticket `status` to `done` in YAML frontmatter.
-3. Check off all acceptance criteria (`- [x]`).
-4. Move the ticket file to `tickets/done/` — use `move_ticket_to_done`.
-5. Move the ticket plan file to `tickets/done/` if it exists.
-6. Commit the moves: `chore: move ticket #NNN to done`.
-
-**Finishing the code is NOT finishing the ticket.** The ticket is not done
-until the file is in `tickets/done/` and committed.
-
-**After finishing all tickets in a sprint, you MUST close the sprint:**
-
-1. Merge the sprint branch into main.
-2. Call `close_sprint` MCP tool (archives directory, releases lock).
-3. Commit the archive.
-4. Push tags (`git push --tags`).
-5. Delete the sprint branch (`git branch -d sprint/NNN-slug`).
-
-**Never merge a sprint branch without archiving the sprint directory.**
-**Never leave a sprint branch dangling after the sprint is closed.**
-
-### Pushing and Versioning
-
-This project uses a `justfile` for pushing releases. **Always use the
-justfile targets — never manually tag, push, or bump versions.**
-
-- `just bump-push` — bump version, commit, tag, push curik and theme
-- `just push` — tag and push curik and theme (current version, no bump)
-- `just push-curik` — tag and push curik only
-- `just push-theme` — push curriculum-hugo-theme subtree to its repo
-- `just bump` — bump version without pushing
-- `just version` — show current version
-
-Version format: `0.YYYYMMDD.revision` (e.g., `0.20260313.6`). The bump
-script increments the revision if the date matches today, otherwise
-resets to `.1` with today's date. Versions are kept in sync between
-`pyproject.toml` and `curriculum-hugo-theme/theme.toml`.
-
-**After closing a sprint**, use `just bump-push` to bump, tag, and push
-everything in one step. Do not manually edit version numbers.
-
-### Stakeholder Corrections
-
-When the stakeholder corrects your behavior or expresses frustration
-("that's wrong", "why did you do X?", "I told you to..."):
-
-1. Acknowledge the correction immediately.
-2. Run `get_skill_definition("self-reflect")` to produce a structured
-   reflection in `docs/plans/reflections/`.
-3. Continue with the corrected approach.
-
-Do NOT trigger on simple clarifications, new instructions, or questions
-about your reasoning.
-<!-- CLASI:END -->
+### State Management
+- Spec state: `record_course_concept`, `record_pedagogical_model`, `record_alignment`
+- Scaffolding: `scaffold_structure`, `create_lesson_stub`
+- Syllabus: `regenerate_syllabus`, `get_syllabus`, `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
+- Outlines: `approve_outline`
+- Issues and change plans: `create_issue`, `list_issues`, `approve_change_plan`, `close_change_plan`
+- Validation: `validate_lesson`, `validate_module`, `validate_course`, `get_validation_report`
+- Quiz: `generate_quiz_stub`, `validate_quiz_alignment`, `set_quiz_status`
+- Course metadata: `update_course_yml` — set fields in course.yml (title, slug, tier, etc.)
+- Hugo: `list_content_pages`, `create_content_page`, `update_frontmatter`, `hugo_build`
+- Publishing: `get_publish_guide` — full guide with pre/post checklists; `check_publish_ready` — quick readiness check
+<!-- CURIK:END -->
