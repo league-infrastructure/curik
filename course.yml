@@ -1,5 +1,4 @@
 title: TBD
-slug: TBD
 uid: 87e0ceee-389c-4f80-b859-b111d07de668
 type: course
 tier: TBD
@@ -9,6 +8,11 @@ topics: []
 prerequisites: []
 lessons: 0
 estimated_weeks: 0
-curriculum_url: TBD
 repo_url: TBD
 description: TBD
+
+# Fields from previous course.yml not in the current template.
+# Move these to the appropriate place or delete if no longer needed.
+old:
+  slug: TBD
+  curriculum_url: TBD
