@@ -866,7 +866,7 @@ def tool_hugo_setup(title: str = "", tier: int = 2) -> str:
     effective_title = title
     effective_tier = tier
 
-    slug = ""
+    repo_url = ""
     if not effective_title:
         course_yml = root / "course.yml"
         if course_yml.is_file():
@@ -874,15 +874,15 @@ def tool_hugo_setup(title: str = "", tier: int = 2) -> str:
                 data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
                 if isinstance(data, dict):
                     effective_title = data.get("title", "Course")
-                    slug = data.get("slug", "")
                     effective_tier = data.get("tier", tier)
+                    repo_url = data.get("repo_url", "")
             except yaml.YAMLError:
                 pass
         if not effective_title:
             effective_title = "Course"
 
     try:
-        result = hugo_setup(root, effective_title, effective_tier, slug=slug)
+        result = hugo_setup(root, effective_title, effective_tier, repo_url=repo_url)
         return json.dumps(result, indent=2)
     except Exception as e:
         return f"Error: {e}"
@@ -923,13 +923,11 @@ def tool_hugo_build() -> str:
 # These are the fields that affect the published site or are required metadata.
 COURSE_YML_REQUIRED_FIELDS = [
     "title",        # course title — appears in site header and browser tab
-    "slug",         # URL path segment — determines the published URL
     "tier",         # tier number — controls theme behavior (instructor guide, etc.)
     "grades",       # grade range — displayed in course metadata
     "category",     # course category — used for index page grouping
     "description",  # one-line description — used in index listing and meta tags
-    "curriculum_url",  # published URL — set to https://curriculum.jointheleague.org/<slug>/
-    "repo_url",     # GitHub repo URL — appears in site footer
+    "repo_url",     # GitHub repo URL — baseURL derived from this, shown in footer
 ]
 
 
@@ -961,7 +959,7 @@ def _read_publish_state(root: Path) -> dict:
         "has_gitignore": (root / ".gitignore").exists(),
         "has_hugo_toml": (root / "hugo.toml").exists(),
         "base_url_ok": False,
-        "has_github_repo_param": False,
+        "has_repo_url": False,
         "has_local_baseof": (root / "layouts" / "_default" / "baseof.html").exists(),
         "has_content": False,
         "content_sections": 0,
@@ -981,6 +979,8 @@ def _read_publish_state(root: Path) -> dict:
                 state["slug"] = data.get("slug", "")
                 state["title"] = data.get("title", state["title"])
                 state["tier"] = data.get("tier", 0)
+                repo_url = data.get("repo_url", "")
+                state["has_repo_url"] = bool(repo_url) and repo_url != "TBD"
                 # Check required fields for TBD/empty values
                 tbd = []
                 for field in COURSE_YML_REQUIRED_FIELDS:
@@ -993,7 +993,7 @@ def _read_publish_state(root: Path) -> dict:
     if state["has_hugo_toml"]:
         content = (root / "hugo.toml").read_text(encoding="utf-8")
         state["base_url_ok"] = "curriculum.jointheleague.org" in content
-        state["has_github_repo_param"] = "github_repo" in content
+        # repo_url is now read from course.yml via data mount, not hugo.toml
 
     content_dir = root / "content"
     if content_dir.is_dir():
@@ -1157,9 +1157,9 @@ def tool_get_publish_guide() -> str:
     ))
 
     lines.append(check(
-        s["has_github_repo_param"],
-        "`github_repo` param set in `hugo.toml`",
-        "**Missing `github_repo`** in `hugo.toml` — run `tool_hugo_setup()` to regenerate",
+        s["has_repo_url"],
+        "`repo_url` set in `course.yml`",
+        "**Missing `repo_url`** in `course.yml` — set it to the GitHub repo URL",
     ))
 
     if s["has_local_baseof"]:
@@ -1195,7 +1195,7 @@ def tool_get_publish_guide() -> str:
     config_ready = all([
         course_yml_ok, s["has_hugo_toml"], s["base_url_ok"],
         s["has_theme"], s["has_gitignore"], s["has_workflow"],
-        s["has_github_repo_param"],
+        s["has_repo_url"],
     ])
     content_ready = s["has_content"] and s["hugo_builds"]
     all_ready = config_ready and content_ready
@@ -1274,7 +1274,7 @@ def tool_check_publish_ready() -> str:
         "course_yml_complete": course_yml_complete,
         "hugo_toml_exists": s["has_hugo_toml"],
         "base_url_configured": s["base_url_ok"],
-        "github_repo_in_config": s["has_github_repo_param"],
+        "repo_url_set": s["has_repo_url"],
         "theme_installed": s["has_theme"],
         "gitignore_installed": s["has_gitignore"],
         "workflow_installed": s["has_workflow"],

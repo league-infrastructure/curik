@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 
 from .init_command import run_init
+from .templates import hugo_setup
 from .uid import generate_course_uid
 
 SPEC_SECTION_HEADINGS: dict[str, str] = {
@@ -55,7 +56,6 @@ def _course_yml_template(course_type: str, uid: str) -> dict[str, Any]:
     """Return the canonical course.yml fields with defaults."""
     return {
         "title": "TBD",
-        "slug": "TBD",
         "uid": uid,
         "type": course_type,
         "tier": "TBD",
@@ -65,7 +65,6 @@ def _course_yml_template(course_type: str, uid: str) -> dict[str, Any]:
         "prerequisites": [],
         "lessons": 0,
         "estimated_weeks": 0,
-        "curriculum_url": "TBD",
         "repo_url": "TBD",
         "description": "TBD",
     }
@@ -235,6 +234,26 @@ def init_course(
         existing.append(path)
     for path in init_result.get("updated", []):
         updated.append(path)
+
+    # Generate or update hugo.toml (reads title, tier, repo_url from course.yml)
+    course_yml = root / "course.yml"
+    if course_yml.is_file():
+        try:
+            data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                title = data.get("title", "Course")
+                tier_val = data.get("tier")
+                tier_int = int(tier_val) if isinstance(tier_val, (int, float)) else 2
+                repo_url = data.get("repo_url", "")
+                hugo_result = hugo_setup(
+                    root, title, tier_int, repo_url=repo_url,
+                )
+                for path in hugo_result.get("created", []):
+                    created.append(path)
+                for path in hugo_result.get("existing", []):
+                    existing.append(path)
+        except (yaml.YAMLError, ValueError):
+            pass
 
     return {
         "created": sorted(created),

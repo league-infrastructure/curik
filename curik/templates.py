@@ -70,28 +70,51 @@ def get_curik_version() -> str:
     return pkg_version("curik")
 
 
+def _base_url_from_repo(repo_url: str) -> str:
+    """Derive the GitHub Pages baseURL from a repo_url.
+
+    ``https://github.com/league-curriculum/Motors`` → ``/Motors/``
+    Falls back to ``/`` if the URL can't be parsed.
+    """
+    if not repo_url or repo_url == "TBD":
+        return "/"
+    # Extract the repo name (last path segment)
+    repo_name = repo_url.rstrip("/").rsplit("/", 1)[-1]
+    if not repo_name:
+        return "/"
+    return f"/{repo_name}/"
+
+
 def get_hugo_config(
-    title: str, tier: int, *, slug: str = "", github_repo: str = "",
-    description: str = "",
+    title: str, tier: int, *, repo_url: str = "",
 ) -> str:
     """Return a tier-appropriate hugo.toml configuration string.
 
-    All tiers reference the curriculum-hugo-theme (expected at
-    ``themes/curriculum-hugo-theme/`` in the course repo). Tiers 1-2 include
+    All tiers reference the curriculum-hugo-theme. Tiers 1-2 include
     an ``instructorGuide = true`` parameter.
 
-    If *slug* is provided, sets baseURL to the curriculum site subpath.
-    If *github_repo* is provided, a GitHub icon link appears in the footer.
+    The baseURL is derived from *repo_url* (the GitHub repo name becomes
+    the path segment). Course metadata (description, repo_url, etc.) is
+    read by Hugo from ``course.yml`` via a data mount — not duplicated
+    in ``[params]``.
     """
-    if slug and slug != "TBD":
-        base_url = f"{CURRICULUM_BASE}/{slug}/"
-    else:
-        base_url = "/"
+    base_url = _base_url_from_repo(repo_url)
+    curik_ver = get_curik_version()
+
     lines = [
         f'baseURL = "{base_url}"',
         f'title = "{title}"',
         f'theme = "{THEME_NAME}"',
         "enableEmoji = true",
+        "",
+        "# Mount course.yml as Hugo data so templates can read it",
+        "# directly via .Site.Data.course — no need to duplicate fields.",
+        "[[module.mounts]]",
+        '  source = "content"',
+        '  target = "content"',
+        "[[module.mounts]]",
+        '  source = "course.yml"',
+        '  target = "data/course.yml"',
         "",
         "[markup]",
         "  [markup.goldmark.renderer]",
@@ -108,20 +131,11 @@ def get_hugo_config(
         '  copyright = "The League of Amazing Programmers"',
         '  license = "CC BY-NC 4.0"',
         f'  curriculum_version = "0.{_today()}.1"',
+        f'  curik_version = "{curik_ver}"',
     ]
-
-    if description and description != "TBD":
-        # Escape quotes in description
-        lines.append(f'  description = "{description.replace(chr(34), chr(39))}"')
-
-    curik_ver = get_curik_version()
-    lines.append(f'  curik_version = "{curik_ver}"')
 
     if tier in (1, 2):
         lines.append("  instructorGuide = true")
-
-    if github_repo and github_repo != "TBD":
-        lines.append(f'  github_repo = "{github_repo}"')
 
     lines.append("")
     return "\n".join(lines)
@@ -160,10 +174,49 @@ def _get_installed_theme_version(theme_dir: Path) -> str:
     return ""
 
 
+def _extract_params_section(toml_content: str) -> str | None:
+    """Extract the [params] section from a hugo.toml string.
+
+    Returns everything from ``[params]`` to the next section header
+    or end of file, including the ``[params]`` line itself.
+    Returns None if no [params] section found.
+    """
+    lines = toml_content.splitlines(keepends=True)
+    start = None
+    end = len(lines)
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped == "[params]":
+            start = i
+        elif start is not None and stripped.startswith("[") and not stripped.startswith("[["):
+            end = i
+            break
+    if start is None:
+        return None
+    return "".join(lines[start:end])
+
+
+def _replace_params_section(toml_content: str, params_section: str) -> str:
+    """Replace the [params] section in a hugo.toml string."""
+    lines = toml_content.splitlines(keepends=True)
+    start = None
+    end = len(lines)
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped == "[params]":
+            start = i
+        elif start is not None and stripped.startswith("[") and not stripped.startswith("[["):
+            end = i
+            break
+    if start is None:
+        # No params section in new config — just append
+        return toml_content.rstrip() + "\n\n" + params_section
+    return "".join(lines[:start]) + params_section + "".join(lines[end:])
+
+
 def hugo_setup(
-    root: Path, title: str, tier: int, *, slug: str = "",
-    symlink_theme: bool = False, github_repo: str = "",
-    description: str = "",
+    root: Path, title: str, tier: int, *,
+    symlink_theme: bool = False, repo_url: str = "",
 ) -> dict[str, list[str]]:
     """Generate hugo.toml and install the theme into a course repo.
 
@@ -186,22 +239,17 @@ def hugo_setup(
     # Generate or update hugo.toml
     hugo_toml = root / "hugo.toml"
     rel_toml = str(hugo_toml.relative_to(root))
-    new_config = get_hugo_config(
-        title, tier, slug=slug, github_repo=github_repo,
-        description=description,
-    )
+    new_config = get_hugo_config(title, tier, repo_url=repo_url)
     if hugo_toml.exists():
         old_config = hugo_toml.read_text(encoding="utf-8")
+        # Preserve the old [params] section — it's user-managed
+        # (curriculum_version, curik_version, instructorGuide, etc.)
+        old_params = _extract_params_section(old_config)
+        if old_params is not None:
+            new_config = _replace_params_section(new_config, old_params)
         if old_config == new_config:
             existing.append(rel_toml)
         else:
-            # Preserve curriculum_version if it exists in the old config
-            old_match = _VERSION_RE.search(old_config)
-            if old_match:
-                new_config = _VERSION_RE.sub(
-                    f'{old_match.group(1)} = "{old_match.group(2)}"',
-                    new_config,
-                )
             hugo_toml.write_text(new_config, encoding="utf-8")
             created.append(rel_toml)
     else:

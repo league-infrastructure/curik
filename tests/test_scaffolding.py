@@ -391,16 +391,22 @@ class HugoConfigTest(unittest.TestCase):
         toml = get_hugo_config("Advanced", 4)
         self.assertNotIn("instructorGuide", toml)
 
-    def test_github_repo_included(self) -> None:
-        toml = get_hugo_config("Test", 3, github_repo="https://github.com/org/repo")
-        self.assertIn('github_repo = "https://github.com/org/repo"', toml)
+    def test_base_url_from_repo_url(self) -> None:
+        toml = get_hugo_config("Test", 3, repo_url="https://github.com/org/my-repo")
+        self.assertIn('baseURL = "/my-repo/"', toml)
 
-    def test_github_repo_omitted_when_empty(self) -> None:
+    def test_base_url_default_when_no_repo(self) -> None:
         toml = get_hugo_config("Test", 3)
-        self.assertNotIn("github_repo", toml)
+        self.assertIn('baseURL = "/"', toml)
 
-    def test_github_repo_omitted_when_tbd(self) -> None:
-        toml = get_hugo_config("Test", 3, github_repo="TBD")
+    def test_data_mount_included(self) -> None:
+        toml = get_hugo_config("Test", 3)
+        self.assertIn("course.yml", toml)
+        self.assertIn("module.mounts", toml)
+
+    def test_no_github_repo_in_params(self) -> None:
+        """github_repo is no longer duplicated in params — comes from course.yml data mount."""
+        toml = get_hugo_config("Test", 3, repo_url="https://github.com/org/repo")
         self.assertNotIn("github_repo", toml)
 
 

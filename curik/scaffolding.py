@@ -156,25 +156,20 @@ def scaffold_structure(
     if course_type != "resource-collection":
         course_yml = root / "course.yml"
         title = "Course"
-        slug = ""
-        description = ""
         effective_tier = tier if tier is not None else 2
-        github_repo = ""
+        repo_url = ""
         if course_yml.is_file():
             try:
                 data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
                 if isinstance(data, dict):
                     title = data.get("title", title)
-                    slug = data.get("slug", "")
-                    description = data.get("description", "")
                     effective_tier = data.get("tier", effective_tier)
-                    github_repo = data.get("repo_url", "")
+                    repo_url = data.get("repo_url", "")
             except yaml.YAMLError:
                 pass
         hugo_result = hugo_setup(
-            root, title, effective_tier, slug=slug,
-            symlink_theme=symlink_theme, github_repo=github_repo,
-            description=description,
+            root, title, effective_tier,
+            symlink_theme=symlink_theme, repo_url=repo_url,
         )
         created.extend(hugo_result["created"])
         existing.extend(hugo_result["existing"])
