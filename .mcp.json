@@ -5,6 +5,14 @@
       "args": [
         "mcp"
       ]
+    },
+    "clasi": {
+      "command": "uv",
+      "args": [
+        "run",
+        "clasi",
+        "mcp"
+      ]
     }
   }
 }

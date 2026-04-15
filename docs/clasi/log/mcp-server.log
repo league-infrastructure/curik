@@ -1,0 +1,20 @@
+2026-04-15T15:37:34 [INFO] ============================================================
+2026-04-15T15:37:34 [INFO] CLASI MCP server starting
+2026-04-15T15:37:34 [INFO]   serving: team-lead (tier 0)
+2026-04-15T15:37:34 [INFO]   project_root: /Users/eric/proj/league/infrastructure/curik
+2026-04-15T15:37:34 [INFO]   clasi_dir: /Users/eric/proj/league/infrastructure/curik/docs/clasi
+2026-04-15T15:37:34 [INFO]   content_root: /Users/eric/.local/pipx/venvs/clasi/lib/python3.14/site-packages/clasi
+2026-04-15T15:37:34 [INFO]   python: /Users/eric/.local/pipx/venvs/clasi/bin/python
+2026-04-15T15:37:34 [INFO]   log_file: /Users/eric/proj/league/infrastructure/curik/docs/clasi/log/mcp-server.log
+2026-04-15T15:37:34 [INFO]   tools registered: 30
+2026-04-15T15:37:34 [INFO] CLASI MCP server ready
+2026-04-15T15:40:59 [INFO] ============================================================
+2026-04-15T15:40:59 [INFO] CLASI MCP server starting
+2026-04-15T15:40:59 [INFO]   serving: team-lead (tier 0)
+2026-04-15T15:40:59 [INFO]   project_root: /Users/eric/proj/league/infrastructure/curik
+2026-04-15T15:40:59 [INFO]   clasi_dir: /Users/eric/proj/league/infrastructure/curik/docs/clasi
+2026-04-15T15:40:59 [INFO]   content_root: /Users/eric/.local/pipx/venvs/clasi/lib/python3.14/site-packages/clasi
+2026-04-15T15:40:59 [INFO]   python: /Users/eric/.local/pipx/venvs/clasi/bin/python
+2026-04-15T15:40:59 [INFO]   log_file: /Users/eric/proj/league/infrastructure/curik/docs/clasi/log/mcp-server.log
+2026-04-15T15:40:59 [INFO]   tools registered: 30
+2026-04-15T15:40:59 [INFO] CLASI MCP server ready

@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12"
 
 [[package]]
@@ -175,7 +175,7 @@ wheels = [
 
 [[package]]
 name = "curik"
-version = "0.20260312.6"
+version = "0.20260320.2"
 source = { editable = "." }
 dependencies = [
     { name = "jtl-syllabus" },

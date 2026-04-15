@@ -55,3 +55,10 @@ in `hugo.toml`.
 - Hugo: `list_content_pages`, `create_content_page`, `update_frontmatter`, `hugo_build`
 - Publishing: `get_publish_guide` — full guide with pre/post checklists; `check_publish_ready` — quick readiness check
 <!-- CURIK:END -->
+
+# CLASI Software Engineering Process
+
+This project uses the CLASI SE process. Your role and workflow are
+defined in `.claude/agents/team-lead/agent.md` — read it at session start.
+
+Available skills: run `/se` for a list.
