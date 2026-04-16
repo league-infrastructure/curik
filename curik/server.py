@@ -57,9 +57,6 @@ from .scaffolding import (
 )
 from .templates import bump_curriculum_version, hugo_setup
 from .syllabus import (
-    get_syllabus,
-    read_syllabus_entries,
-    regenerate_syllabus,
     validate_syllabus_consistency,
     write_syllabus_url,
 )
@@ -553,40 +550,11 @@ def tool_save_validation_report(report_json: str) -> str:
 
 
 @mcp.tool()
-def tool_read_syllabus_entries() -> str:
-    """Read syllabus.yaml and return lesson entries with uid, name, lesson, exercise fields."""
-    try:
-        result = read_syllabus_entries(_root())
-        return json.dumps(result, indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
 def tool_write_syllabus_url(uid: str, url: str) -> str:
     """Update the url field for a lesson entry identified by UID in syllabus.yaml."""
     try:
         result = write_syllabus_url(_root(), uid, url)
         return json.dumps(result, indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_regenerate_syllabus(lesson_dir: str = "lessons") -> str:
-    """Compile syllabus from lesson directory using jtl-syllabus and write syllabus.yaml."""
-    try:
-        result = regenerate_syllabus(_root(), lesson_dir)
-        return json.dumps(result, indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_syllabus() -> str:
-    """Return the raw content of syllabus.yaml."""
-    try:
-        return get_syllabus(_root())
     except CurikError as e:
         return f"Error: {e}"
 

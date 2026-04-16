@@ -6,7 +6,6 @@ from pathlib import Path
 
 import yaml
 from syllabus.models import Course, LessonSet
-from syllabus.sync import compile_syllabus
 
 from .project import CurikError
 
@@ -33,14 +32,6 @@ def _iter_lessons(course: Course) -> list[dict]:
                 })
     return entries
 
-
-def read_syllabus_entries(root: Path) -> list[dict]:
-    """Read syllabus.yaml and return lesson entries with uid, name, path fields."""
-    syllabus_path = root / "syllabus.yaml"
-    if not syllabus_path.exists():
-        raise CurikError(f"syllabus.yaml not found at {syllabus_path}")
-    course = Course.from_yaml(syllabus_path)
-    return _iter_lessons(course)
 
 
 def write_syllabus_url(root: Path, uid: str, url: str) -> dict:
@@ -83,23 +74,6 @@ def write_syllabus_url(root: Path, uid: str, url: str) -> dict:
     )
     return {"status": "ok", "uid": uid, "url": url}
 
-
-def regenerate_syllabus(root: Path, lesson_dir: str = "lessons") -> dict:
-    """Compile syllabus from lesson directory using syllabus.sync.compile_syllabus()."""
-    target = root / lesson_dir
-    if not target.is_dir():
-        raise CurikError(f"Lesson directory not found: {target}")
-    course = compile_syllabus(target)
-    course.to_yaml(root / "syllabus.yaml")
-    return {"status": "ok", "path": "syllabus.yaml"}
-
-
-def get_syllabus(root: Path) -> str:
-    """Return raw syllabus.yaml content."""
-    syllabus_path = root / "syllabus.yaml"
-    if not syllabus_path.exists():
-        raise CurikError(f"syllabus.yaml not found at {syllabus_path}")
-    return syllabus_path.read_text(encoding="utf-8")
 
 
 def validate_syllabus_consistency(root: Path) -> dict:

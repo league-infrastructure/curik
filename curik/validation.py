@@ -10,6 +10,24 @@ import yaml
 
 from .project import CurikError, _course_dir
 
+
+def _get_syllabus_uids(syllabus_path: Path) -> set[str]:
+    """Return the set of UIDs declared in syllabus.yaml.
+
+    Returns an empty set if the file cannot be parsed.  Kept as a
+    module-level function so tests can patch it cleanly.
+    """
+    from syllabus.models import Course
+    from .syllabus import _iter_lessons
+
+    try:
+        course = Course.from_yaml(syllabus_path)
+        entries = _iter_lessons(course)
+        return {e.get("uid") for e in entries if e.get("uid")}
+    except Exception:
+        return set()
+
+
 INSTRUCTOR_GUIDE_FIELDS = [
     "Objectives",
     "Materials",
@@ -120,16 +138,9 @@ def validate_lesson(root: Path, lesson_path: str, *, tier: int | None = None) ->
             fm = _parse_frontmatter(text)
             lesson_uid = fm.get("uid")
             if lesson_uid:
-                from .syllabus import read_syllabus_entries
-
-                try:
-                    entries = read_syllabus_entries(root)
-                    syllabus_uids = {e.get("uid") for e in entries if e.get("uid")}
-                    if lesson_uid not in syllabus_uids:
-                        errors.append("Lesson UID not found in syllabus.yaml")
-                except Exception:
-                    # If syllabus parsing fails, skip the check gracefully
-                    pass
+                syllabus_uids = _get_syllabus_uids(syllabus_path)
+                if syllabus_uids and lesson_uid not in syllabus_uids:
+                    errors.append("Lesson UID not found in syllabus.yaml")
 
     return {"valid": len(errors) == 0, "errors": errors}
 

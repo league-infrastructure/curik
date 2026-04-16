@@ -181,9 +181,9 @@ class ValidateLessonTierTest(unittest.TestCase):
         lesson.parent.mkdir(parents=True)
         lesson.write_text(COMPLETE_LESSON_WITH_GUARD_BAD_UID, encoding="utf-8")
 
-        # Mock read_syllabus_entries to return entries without the bad UID
-        mock_entries = [{"uid": "test-uid-001", "name": "Test", "lesson": "", "exercise": ""}]
-        with patch("curik.syllabus.read_syllabus_entries", return_value=mock_entries):
+        # Mock _get_syllabus_uids to return UIDs without the bad UID
+        mock_uids = {"test-uid-001"}
+        with patch("curik.validation._get_syllabus_uids", return_value=mock_uids):
             # Create a dummy syllabus.yaml so the check triggers
             (self.root / "syllabus.yaml").write_text("title: Test\nmodules: []\n", encoding="utf-8")
             result = validate_lesson(self.root, "modules/mod1/01-variables.md", tier=3)
@@ -199,8 +199,8 @@ class ValidateLessonTierTest(unittest.TestCase):
         lesson.parent.mkdir(parents=True)
         lesson.write_text(COMPLETE_LESSON_WITH_GUARD, encoding="utf-8")
 
-        mock_entries = [{"uid": "test-uid-001", "name": "Test", "lesson": "", "exercise": ""}]
-        with patch("curik.syllabus.read_syllabus_entries", return_value=mock_entries):
+        mock_uids = {"test-uid-001"}
+        with patch("curik.validation._get_syllabus_uids", return_value=mock_uids):
             (self.root / "syllabus.yaml").write_text("title: Test\nmodules: []\n", encoding="utf-8")
             result = validate_lesson(self.root, "modules/mod1/01-variables.md", tier=3)
 
