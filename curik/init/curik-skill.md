@@ -18,9 +18,6 @@ to the user and stop — do not execute any tool.
 | `/curik spec` | Display the current course specification | `tool_get_spec(path=".")` |
 | `/curik phase` | Show the current development phase | `tool_get_phase(path=".")` |
 | `/curik validate <path>` | Validate a lesson file | `tool_validate_lesson(lesson_path=<path>)` |
-| `/curik agents` | List available curriculum agents | `list_agents()` |
-| `/curik skills` | List available curriculum skills | `list_skills()` |
-| `/curik refs` | List available reference documents | `list_references()` |
 | `/curik publish` | Run publish check, fix issues, and push | See **Publish workflow** below |
 | `/curik publish check` | Quick readiness check (no push) | `tool_check_publish_ready()` |
 | `/curik publish guide` | Show full publishing setup guide | `tool_get_publish_guide()` |
@@ -54,5 +51,5 @@ enabled), use `AskUserQuestion` to tell the user what's needed.
 
 ## General guidance
 
-Call `list_agents()` and load the `start-curik` agent definition to begin
-the curriculum development workflow.
+Load the `start-curik` agent definition to begin the curriculum development
+workflow.

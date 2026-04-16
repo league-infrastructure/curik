@@ -34,13 +34,8 @@ class ClaudeMdTemplateTest(unittest.TestCase):
     def test_claude_md_lists_tool_categories(self) -> None:
         claude_md = (self.root / "CLAUDE.md").read_text()
         self.assertIn("Process Discovery", claude_md)
-        self.assertIn("Agent and Skill Loading", claude_md)
+        self.assertNotIn("Agent and Skill Loading", claude_md)
         self.assertIn("State Management", claude_md)
-
-    def test_claude_md_references_instructions_not_references(self) -> None:
-        claude_md = (self.root / "CLAUDE.md").read_text()
-        self.assertIn("list_instructions()", claude_md)
-        self.assertIn("get_instruction(name)", claude_md)
 
     def test_claude_md_includes_activity_guide(self) -> None:
         claude_md = (self.root / "CLAUDE.md").read_text()

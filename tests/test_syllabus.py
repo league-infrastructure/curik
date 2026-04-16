@@ -11,8 +11,6 @@ import yaml
 
 from curik.project import CurikError
 from curik.syllabus import (
-    get_syllabus,
-    read_syllabus_entries,
     validate_syllabus_consistency,
     write_syllabus_url,
 )
@@ -72,36 +70,6 @@ def _sample_syllabus_data() -> dict:
     }
 
 
-class ReadSyllabusEntriesTest(unittest.TestCase):
-    def test_reads_flat_and_nested_lessons(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            _write_syllabus(root, _sample_syllabus_data())
-            entries = read_syllabus_entries(root)
-            uids = [e["uid"] for e in entries]
-            self.assertIn("les-001", uids)
-            self.assertIn("les-002", uids)
-            self.assertIn("les-003", uids)
-            self.assertEqual(len(entries), 3)
-
-    def test_entries_have_expected_fields(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            _write_syllabus(root, _sample_syllabus_data())
-            entries = read_syllabus_entries(root)
-            first = entries[0]
-            self.assertEqual(first["uid"], "les-001")
-            self.assertEqual(first["name"], "Lesson A")
-            self.assertEqual(first["lesson"], "lesson_a.py")
-            self.assertEqual(first["exercise"], "exercise_a.py")
-
-    def test_missing_file_raises_curik_error(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            with self.assertRaises(CurikError):
-                read_syllabus_entries(root)
-
-
 class WriteSyllabusUrlTest(unittest.TestCase):
     def test_writes_url_for_uid(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -132,22 +100,6 @@ class WriteSyllabusUrlTest(unittest.TestCase):
             _write_syllabus(root, _sample_syllabus_data())
             with self.assertRaises(CurikError):
                 write_syllabus_url(root, "nonexistent", "https://example.com")
-
-
-class GetSyllabusTest(unittest.TestCase):
-    def test_returns_raw_content(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            content = "name: Test\nmodules: []\n"
-            (root / "syllabus.yaml").write_text(content, encoding="utf-8")
-            result = get_syllabus(root)
-            self.assertEqual(result, content)
-
-    def test_missing_file_raises_curik_error(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            with self.assertRaises(CurikError):
-                get_syllabus(root)
 
 
 class ValidateSyllabusConsistencyTest(unittest.TestCase):
@@ -209,23 +161,6 @@ class MCPSyllabusToolTest(unittest.TestCase):
 
     def tearDown(self) -> None:
         self._tmp.cleanup()
-
-    def test_tool_read_syllabus_entries_returns_json(self) -> None:
-        _write_syllabus(self.root, _sample_syllabus_data())
-        result = server.tool_read_syllabus_entries()
-        parsed = json.loads(result)
-        self.assertIsInstance(parsed, list)
-        self.assertEqual(len(parsed), 3)
-
-    def test_tool_read_syllabus_entries_error(self) -> None:
-        result = server.tool_read_syllabus_entries()
-        self.assertTrue(result.startswith("Error:"))
-
-    def test_tool_get_syllabus_returns_content(self) -> None:
-        content = "name: Test\nmodules: []\n"
-        (self.root / "syllabus.yaml").write_text(content, encoding="utf-8")
-        result = server.tool_get_syllabus()
-        self.assertEqual(result, content)
 
     def test_tool_write_syllabus_url_returns_json(self) -> None:
         _write_syllabus(self.root, _sample_syllabus_data())

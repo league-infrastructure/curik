@@ -38,19 +38,13 @@ in `hugo.toml`.
 - `advance_phase()` — gated phase transition
 - `get_activity_guide(activity)` — bundled agent + skills + instructions
 
-### Agent and Skill Loading
-- `list_agents()` / `get_agent(name)` — agent definitions
-- `list_skills()` / `get_skill(name)` — skill workflows
-- `list_instructions()` / `get_instruction(name)` — reference documents
-
 ### State Management
 - Spec state: `record_course_concept`, `record_pedagogical_model`, `record_alignment`
 - Scaffolding: `scaffold_structure`, `create_lesson_stub`
-- Syllabus: `regenerate_syllabus`, `get_syllabus`, `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
+- Syllabus: `write_syllabus_url`, `trigger_readme_generation`, `validate_syllabus_consistency`
 - Outlines: `approve_outline`
 - Issues and change plans: `create_issue`, `list_issues`, `approve_change_plan`, `close_change_plan`
 - Validation: `validate_lesson`, `validate_module`, `validate_course`, `get_validation_report`
-- Quiz: `generate_quiz_stub`, `validate_quiz_alignment`, `set_quiz_status`
 - Course metadata: `update_course_yml` — set fields in course.yml (title, slug, tier, etc.)
 - Hugo: `list_content_pages`, `create_content_page`, `update_frontmatter`, `hugo_build`
 - Publishing: `get_publish_guide` — full guide with pre/post checklists; `check_publish_ready` — quick readiness check
