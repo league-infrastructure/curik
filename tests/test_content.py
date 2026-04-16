@@ -1,62 +1,10 @@
-"""Tests for content authoring agents, skills, and validation."""
+"""Tests for content authoring validation."""
 
 from __future__ import annotations
 
 import unittest
 
-from curik.assets import get_agent_definition, get_skill_definition, list_agents, list_skills
 from curik.validation import validate_instructor_guide
-
-
-class ContentAssetLoadingTest(unittest.TestCase):
-    """Test that new agents and skills load via curik.assets."""
-
-    def test_lesson_author_young_in_list(self) -> None:
-        agents = list_agents()
-        self.assertIn("lesson-author-young", agents)
-
-    def test_lesson_author_older_in_list(self) -> None:
-        agents = list_agents()
-        self.assertIn("lesson-author-older", agents)
-
-    def test_load_lesson_author_young(self) -> None:
-        content = get_agent_definition("lesson-author-young")
-        self.assertIn("Lesson Author", content)
-        self.assertIn("Tiers 1-2", content)
-        self.assertIn("instructor guide", content.lower())
-
-    def test_load_lesson_author_older(self) -> None:
-        content = get_agent_definition("lesson-author-older")
-        self.assertIn("Lesson Author", content)
-        self.assertIn("Tiers 3-4", content)
-        self.assertIn("Jupyter", content)
-
-    def test_lesson_writing_young_in_list(self) -> None:
-        skills = list_skills()
-        self.assertIn("lesson-writing-young", skills)
-
-    def test_lesson_writing_older_in_list(self) -> None:
-        skills = list_skills()
-        self.assertIn("lesson-writing-older", skills)
-
-    def test_instructor_guide_sections_in_list(self) -> None:
-        skills = list_skills()
-        self.assertIn("instructor-guide-sections", skills)
-
-    def test_load_lesson_writing_young(self) -> None:
-        content = get_skill_definition("lesson-writing-young")
-        self.assertIn("Young Learners", content)
-        self.assertIn("voice", content.lower())
-
-    def test_load_lesson_writing_older(self) -> None:
-        content = get_skill_definition("lesson-writing-older")
-        self.assertIn("Older Learners", content)
-        self.assertIn("Jupyter", content)
-
-    def test_load_instructor_guide_sections(self) -> None:
-        content = get_skill_definition("instructor-guide-sections")
-        self.assertIn("Objectives", content)
-        self.assertIn("Differentiation", content)
 
 
 COMPLETE_GUIDE = """\

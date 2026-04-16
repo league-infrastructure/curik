@@ -7,7 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from curik.assets import get_skill_definition, list_skills
 from curik.project import init_course
 from curik.validation import validate_course, validate_lesson
 
@@ -315,28 +314,6 @@ class BackwardCompatibilityTest(unittest.TestCase):
         )
         result = validate_course(self.root)
         self.assertTrue(result["valid"])
-
-
-class SkillLoadingTest(unittest.TestCase):
-    """Verify all three new skill files load via the assets system."""
-
-    def test_repo_scaffolding_skill_loads(self) -> None:
-        skills = list_skills()
-        self.assertIn("repo-scaffolding", skills)
-        content = get_skill_definition("repo-scaffolding")
-        self.assertIn("Repo Scaffolding", content)
-
-    def test_status_tracking_skill_loads(self) -> None:
-        skills = list_skills()
-        self.assertIn("status-tracking", skills)
-        content = get_skill_definition("status-tracking")
-        self.assertIn("Status Tracking", content)
-
-    def test_syllabus_integration_skill_loads(self) -> None:
-        skills = list_skills()
-        self.assertIn("syllabus-integration", skills)
-        content = get_skill_definition("syllabus-integration")
-        self.assertIn("Syllabus Integration", content)
 
 
 if __name__ == "__main__":

@@ -8,19 +8,6 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
-from .assets import (
-    ACTIVITY_MAPPINGS,
-    get_activity_guide,
-    get_agent_definition,
-    get_instruction,
-    get_process_guide,
-    get_reference,
-    get_skill_definition,
-    list_agents,
-    list_instructions,
-    list_references,
-    list_skills,
-)
 from .project import (
     CurikError,
     advance_phase,
@@ -51,8 +38,6 @@ from .hugo import (
     update_frontmatter,
 )
 from .migrate import inventory_course, migrate_structure, sequester_content
-from .quiz import generate_quiz_stub, set_quiz_status, validate_quiz_alignment
-from .research import get_research_findings, save_research_findings
 from .validation import (
     get_validation_report,
     save_validation_report,
@@ -85,8 +70,7 @@ mcp = FastMCP(
         "Curik is a curriculum development tool for the League of Amazing "
         "Programmers.\n\n"
         "GETTING STARTED: Call tool_get_course_status() to see current phase, "
-        "then tool_get_phase() for what to do next. Load the start-curik agent "
-        "via tool_get_agent_definition('start-curik') for guided workflow.\n\n"
+        "then tool_get_phase() for what to do next.\n\n"
         "HUGO SSG: Content lives in content/ with _index.md branch bundles. "
         "Navigation order from numeric prefixes (01-, 02-). Config in hugo.toml. "
         "The Curriculum Hugo Theme provides branding and shortcodes.\n\n"
@@ -99,11 +83,7 @@ mcp = FastMCP(
         "In Phase 1, use tool_update_spec() to fill spec sections and "
         "tool_advance_sub_phase() to progress. In Phase 2, use "
         "tool_scaffold_structure() for layout, tool_create_lesson_stub() for "
-        "lessons, tool_validate_lesson() to check work.\n\n"
-        "DISCOVERY: Use tool_get_process_guide() for the full process decision "
-        "tree. Use tool_get_activity_guide(activity) to load bundled context "
-        "for a named activity. Use tool_list_agents(), tool_list_skills(), "
-        "tool_list_instructions() to find curriculum development resources."
+        "lessons, tool_validate_lesson() to check work."
     ),
 )
 
@@ -289,132 +269,6 @@ def tool_update_course_yml(updates_json: str) -> str:
         result["message"] = "All required fields are set."
 
     return json.dumps(result, indent=2)
-
-
-# -- Asset tools --
-
-
-@mcp.tool()
-def tool_list_agents() -> str:
-    """List all available agent definitions."""
-    try:
-        return json.dumps(list_agents())
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_agent_definition(name: str) -> str:
-    """Get the full markdown content of a named agent definition."""
-    try:
-        return get_agent_definition(name)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_list_skills() -> str:
-    """List all available skill definitions."""
-    try:
-        return json.dumps(list_skills())
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_skill_definition(name: str) -> str:
-    """Get the full markdown content of a named skill definition."""
-    try:
-        return get_skill_definition(name)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_list_instructions() -> str:
-    """List all available instruction documents (process refs, conventions, templates)."""
-    try:
-        return json.dumps(list_instructions())
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_instruction(name: str) -> str:
-    """Get the full markdown content of a named instruction document."""
-    try:
-        return get_instruction(name)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-# Backward-compatible aliases
-@mcp.tool()
-def tool_list_references() -> str:
-    """List all available reference documents. Alias for tool_list_instructions."""
-    return tool_list_instructions()
-
-
-@mcp.tool()
-def tool_get_reference(name: str) -> str:
-    """Get a reference document by name. Alias for tool_get_instruction."""
-    return tool_get_instruction(name)
-
-
-# -- Process discovery tools --
-
-
-@mcp.tool()
-def tool_get_process_guide() -> str:
-    """Get the full curriculum development process guide.
-
-    Returns a decision-tree document describing all 3 macro-phases,
-    which agents to use at each stage, which skills apply, and gate
-    conditions. Call this at session start and whenever uncertain about
-    what to do next.
-    """
-    try:
-        return get_process_guide()
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_activity_guide(activity: str) -> str:
-    """Get bundled context for a named activity: agent + skills + instructions.
-
-    Combines the agent definition, all applicable skills, and all applicable
-    instructions into a single document. Valid activities:
-    spec-development, research, content-analysis, scaffolding,
-    lesson-writing-young, lesson-writing-older, quiz-authoring,
-    content-conversion, change-management, validation.
-    """
-    try:
-        return get_activity_guide(activity)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-# -- Research tools --
-
-
-@mcp.tool()
-def tool_save_research_findings(title: str, content: str) -> str:
-    """Save structured research findings to CURIK_DIR/research/."""
-    try:
-        result = save_research_findings(_root(), title, content)
-        return json.dumps(result, indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_get_research_findings() -> str:
-    """List all saved research findings."""
-    try:
-        return json.dumps(get_research_findings(_root()), indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
 
 
 # -- Scaffolding tools --
@@ -692,40 +546,6 @@ def tool_save_validation_report(report_json: str) -> str:
         result = save_validation_report(_root(), report)
         return json.dumps(result, indent=2)
     except (json.JSONDecodeError, CurikError) as e:
-        return f"Error: {e}"
-
-
-# -- Quiz tools --
-
-
-@mcp.tool()
-def tool_generate_quiz_stub(lesson_id: str, topics_json: str) -> str:
-    """Create a quiz.yml stub for a lesson. topics_json is a JSON array of topic strings."""
-    try:
-        topics = json.loads(topics_json)
-        result = generate_quiz_stub(_root(), lesson_id, topics)
-        return json.dumps(result, indent=2)
-    except (json.JSONDecodeError, CurikError) as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_validate_quiz_alignment(lesson_path: str, quiz_path: str) -> str:
-    """Check that each lesson objective has at least one quiz topic covering it."""
-    try:
-        result = validate_quiz_alignment(_root(), lesson_path, quiz_path)
-        return json.dumps(result, indent=2)
-    except CurikError as e:
-        return f"Error: {e}"
-
-
-@mcp.tool()
-def tool_set_quiz_status(quiz_path: str, status: str) -> str:
-    """Update a quiz file's status. Valid statuses: drafted, reviewed, complete."""
-    try:
-        result = set_quiz_status(_root(), quiz_path, status)
-        return json.dumps(result, indent=2)
-    except CurikError as e:
         return f"Error: {e}"
 
 

@@ -6,7 +6,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from curik.assets import get_skill_definition
 from curik.project import (
     CurikError,
     SPEC_SECTION_HEADINGS,
@@ -180,15 +179,6 @@ class ScaffoldResourceCollectionTest(unittest.TestCase):
             )
             self.assertIn("content/how-to-guides", result["created"])
             self.assertNotIn("resources/how-to-guides", result["created"])
-
-
-class SkillDefinitionTest(unittest.TestCase):
-    """Ticket 002: resource-collection-spec skill exists."""
-
-    def test_skill_loads(self) -> None:
-        content = get_skill_definition("resource-collection-spec")
-        self.assertIn("# Resource Collection Spec", content)
-        self.assertIn("pedagogical-model", content)
 
 
 if __name__ == "__main__":

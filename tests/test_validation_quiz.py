@@ -1,4 +1,4 @@
-"""Tests for validation and quiz authoring tools."""
+"""Tests for validation tools."""
 
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from curik.assets import get_agent_definition, get_skill_definition, list_agents, list_skills
 from curik.project import CurikError, init_course
 from curik.validation import (
     get_validation_report,
@@ -16,12 +15,6 @@ from curik.validation import (
     validate_lesson,
     validate_module,
 )
-from curik.quiz import (
-    generate_quiz_stub,
-    set_quiz_status,
-    validate_quiz_alignment,
-)
-from curik import server
 
 
 COMPLETE_LESSON = """\
@@ -263,141 +256,6 @@ class ValidationReportTest(unittest.TestCase):
     def test_get_report_when_none_exists(self) -> None:
         with self.assertRaises(CurikError):
             get_validation_report(self.root)
-
-
-class QuizStubTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name)
-        init_course(self.root)
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_generate_quiz_stub(self) -> None:
-        result = generate_quiz_stub(self.root, "01-variables", ["variables", "assignment"])
-        self.assertIn("path", result)
-        path = Path(result["path"])
-        self.assertTrue(path.exists())
-        import yaml
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-        self.assertEqual(data["lesson_id"], "01-variables")
-        self.assertEqual(data["status"], "drafted")
-        self.assertEqual(data["difficulty"], "beginner")
-        self.assertEqual(data["topics"], ["variables", "assignment"])
-        self.assertIn("multiple-choice", data["question_types"])
-
-    def test_quiz_stub_creates_directory(self) -> None:
-        result = generate_quiz_stub(self.root, "02-loops", ["loops"])
-        self.assertTrue(Path(result["path"]).parent.is_dir())
-
-
-class QuizAlignmentTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name).resolve()
-        init_course(self.root)
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_aligned_quiz(self) -> None:
-        # Create lesson
-        lesson = self.root / "modules" / "mod1" / "01-variables.md"
-        lesson.parent.mkdir(parents=True)
-        lesson.write_text(COMPLETE_LESSON, encoding="utf-8")
-        # Create quiz covering all objectives
-        result = generate_quiz_stub(
-            self.root, "01-variables", ["define a variable", "assign values"]
-        )
-        quiz_rel = str(Path(result["path"]).relative_to(self.root))
-        alignment = validate_quiz_alignment(
-            self.root, "modules/mod1/01-variables.md", quiz_rel
-        )
-        self.assertTrue(alignment["aligned"])
-        self.assertEqual(alignment["uncovered_objectives"], [])
-
-    def test_unaligned_quiz(self) -> None:
-        lesson = self.root / "modules" / "mod1" / "01-variables.md"
-        lesson.parent.mkdir(parents=True)
-        lesson.write_text(COMPLETE_LESSON, encoding="utf-8")
-        # Create quiz covering only one objective
-        result = generate_quiz_stub(
-            self.root, "01-variables", ["define a variable"]
-        )
-        quiz_rel = str(Path(result["path"]).relative_to(self.root))
-        alignment = validate_quiz_alignment(
-            self.root, "modules/mod1/01-variables.md", quiz_rel
-        )
-        self.assertFalse(alignment["aligned"])
-        self.assertGreater(len(alignment["uncovered_objectives"]), 0)
-
-    def test_missing_lesson_raises(self) -> None:
-        result = generate_quiz_stub(self.root, "01-x", ["topic"])
-        quiz_rel = str(Path(result["path"]).relative_to(self.root))
-        with self.assertRaises(CurikError):
-            validate_quiz_alignment(self.root, "nonexistent.md", quiz_rel)
-
-    def test_missing_quiz_raises(self) -> None:
-        lesson = self.root / "modules" / "mod1" / "01-variables.md"
-        lesson.parent.mkdir(parents=True)
-        lesson.write_text(COMPLETE_LESSON, encoding="utf-8")
-        with self.assertRaises(CurikError):
-            validate_quiz_alignment(
-                self.root, "modules/mod1/01-variables.md", "nonexistent.yml"
-            )
-
-
-class QuizStatusTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name).resolve()
-        init_course(self.root)
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_set_status(self) -> None:
-        import yaml
-        result = generate_quiz_stub(self.root, "01-vars", ["variables"])
-        quiz_rel = str(Path(result["path"]).relative_to(self.root))
-        set_quiz_status(self.root, quiz_rel, "reviewed")
-        data = yaml.safe_load(Path(result["path"]).read_text(encoding="utf-8"))
-        self.assertEqual(data["status"], "reviewed")
-
-    def test_invalid_status_raises(self) -> None:
-        result = generate_quiz_stub(self.root, "01-vars", ["variables"])
-        quiz_rel = str(Path(result["path"]).relative_to(self.root))
-        with self.assertRaises(CurikError):
-            set_quiz_status(self.root, quiz_rel, "invalid-status")
-
-
-class NewAssetsTest(unittest.TestCase):
-    """Verify new agents and skills load via the assets system."""
-
-    def test_quiz_author_agent_loads(self) -> None:
-        agents = list_agents()
-        self.assertIn("quiz-author", agents)
-        content = get_agent_definition("quiz-author")
-        self.assertIn("Quiz Author", content)
-
-    def test_reviewer_agent_loads(self) -> None:
-        agents = list_agents()
-        self.assertIn("reviewer", agents)
-        content = get_agent_definition("reviewer")
-        self.assertIn("Reviewer", content)
-
-    def test_validation_checklist_skill_loads(self) -> None:
-        skills = list_skills()
-        self.assertIn("validation-checklist", skills)
-        content = get_skill_definition("validation-checklist")
-        self.assertIn("Validation Checklist", content)
-
-    def test_quiz_authoring_skill_loads(self) -> None:
-        skills = list_skills()
-        self.assertIn("quiz-authoring", skills)
-        content = get_skill_definition("quiz-authoring")
-        self.assertIn("Quiz Authoring", content)
 
 
 if __name__ == "__main__":
