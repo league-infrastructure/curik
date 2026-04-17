@@ -123,8 +123,8 @@ submodule or Hugo module.
 
 ## Building
 
-Run `hugo` in the project root to build. The Curik MCP server provides
-`hugo_build()` which runs this and returns success/failure status.
+Run `hugo` in the project root to build. The `curik hugo build` command
+runs this and returns success/failure status.
 
 For local development: `hugo server` starts a live-reload dev server.
 

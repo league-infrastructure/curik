@@ -1,11 +1,5 @@
 {
   "mcpServers": {
-    "curik": {
-      "command": "curik",
-      "args": [
-        "mcp"
-      ]
-    },
     "clasi": {
       "command": "uv",
       "args": [

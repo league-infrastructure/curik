@@ -79,16 +79,16 @@ snapshot of the course's structural health:
 - **module_results**: Per-module validation detail
 - **lesson_results**: Per-lesson validation detail
 
-Use `tool_validate_course` to generate a fresh report and
-`tool_save_validation_report` to persist it. Use
-`tool_get_validation_report` to read the last saved report.
+Run `curik validate course` to generate a fresh report and
+`curik validate save-report` to persist it. Run
+`curik validate get-report` to read the last saved report.
 
 ## Tracking Workflow
 
-1. Check `tool_get_phase` to see the current phase.
-2. Check `tool_get_course_status` for a summary including open issues
+1. Run `curik phase get` to see the current phase.
+2. Run `curik status` for a summary including open issues
    and active change plans.
-3. Run `tool_validate_course` to assess structural completeness.
+3. Run `curik validate course` to assess structural completeness.
 4. Review `course.yml` for TBD fields that need attention.
 5. Use the spec document to identify which planning sub-phases are
    complete and which still need work.

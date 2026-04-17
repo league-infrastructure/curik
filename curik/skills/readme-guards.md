@@ -90,7 +90,7 @@ python exercise.py
 1. Author writes or edits a Hugo lesson page in `content/`.
 2. Author adds `{{< readme-shared >}}` and/or `{{< readme-only >}}`
    guards around appropriate content.
-3. Run `tool_trigger_readme_generation` to generate READMEs from all
+3. Run `Bash("curik readme generate")` to generate READMEs from all
    guarded pages.
 4. Generated READMEs appear in `lessons/<module>/<lesson>/README.md`.
 5. Commit both the lesson page and the generated README.

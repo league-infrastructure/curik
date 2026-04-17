@@ -62,7 +62,7 @@ for cross-referencing between systems:
 The `syl` tool (from the `jtl-syllabus` package) can regenerate
 `syllabus.yaml` from the lesson directory structure:
 
-1. Run `tool_regenerate_syllabus(lesson_dir="lessons")` to scan the
+1. Run `syl compile lessons` (from the `jtl-syllabus` package) to scan the
    lesson directory and produce a fresh `syllabus.yaml`.
 2. The compile step reads lesson metadata from file frontmatter and
    directory structure to build the Course model.
@@ -96,10 +96,8 @@ Hugo content pages that lack a `uid` frontmatter field are reported as
 `pages_without_uid`. These pages cannot be cross-referenced and should
 have UIDs added.
 
-## MCP Tools Reference
+## CLI Commands Reference
 
-- `tool_read_syllabus_entries` — Read all lesson entries from syllabus
-- `tool_write_syllabus_url(uid, url)` — Set the URL for a lesson by UID
-- `tool_regenerate_syllabus(lesson_dir)` — Rebuild syllabus from files
-- `tool_get_syllabus` — Return raw syllabus.yaml content
-- `tool_validate_syllabus_consistency` — Check syllabus vs Hugo content sync
+- `curik syllabus write-url <uid> <url>` — Set the URL for a lesson by UID
+- `curik syllabus validate` — Check syllabus vs Hugo content sync
+- `syl compile <lesson_dir>` — Rebuild syllabus.yaml from lesson files

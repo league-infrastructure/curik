@@ -238,7 +238,7 @@ Edit anything you want to change directly in the file.
 
 ---
 
-When confirmed, call `tool_advance_sub_phase()` to move to Phase 1c.
+When confirmed, run `Bash("curik phase advance-sub")` to move to Phase 1c.
 
 ## Guided Mode Rule
 

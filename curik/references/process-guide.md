@@ -118,7 +118,7 @@ filled in before the course can be published or validated.**
 Required fields: `title`, `slug`, `tier`, `grades`, `category`,
 `description`, `curriculum_url`, `repo_url`.
 
-Use `tool_update_course_yml()` to set fields. The `slug` is the URL path
+Run `curik config update '<json>'` to set fields. The `slug` is the URL path
 segment — it determines the published URL at
 `https://curriculum.jointheleague.org/<slug>/`.
 
@@ -129,7 +129,7 @@ segment — it determines the published URL at
 3. Set `curriculum_url` to `https://curriculum.jointheleague.org/<slug>/`.
 4. Set `repo_url` to `https://github.com/league-curriculum/<slug>`.
 5. Present the completed `course.yml` to the designer for review.
-6. After updating slug or title, run `tool_hugo_setup()` to regenerate
+6. After updating slug or title, run `curik hugo setup` to regenerate
    `hugo.toml` with the correct `baseURL`.
 
 **Do not leave TBD values.** If you genuinely cannot determine a field,
@@ -139,18 +139,18 @@ ask the designer rather than leaving it as TBD.
 
 ### The Change Cycle
 
-1. **File issues**: Designer reports problems → `create_issue()`
-2. **Collect**: Read open issues via `list_issues()`, write a change plan
-3. **Approve**: Designer reviews → `approve_change_plan()`
+1. **File issues**: Designer reports problems → `curik issue create <title>`
+2. **Collect**: Read open issues via `curik issue list`, write a change plan
+3. **Approve**: Designer reviews → `curik plan approve <n>`
 4. **Execute**: Follow `change-plan-execution` skill — branch, structural moves first, content edits second, regenerate syllabus, validate
-5. **Review**: Load reviewer agent → `validate_course()` or `validate_module()`
-6. **Close**: `close_change_plan()` — moves plan and issues to done/
+5. **Review**: Load reviewer agent → `curik validate course` or `curik validate module <path>`
+6. **Close**: `curik plan close <n>` — moves plan and issues to done/
 
 ### Issue Sources
 
-- Designer comments → `create_issue()`
-- Validation failures → `create_issue()`
-- Agent observations (with designer approval) → `create_issue()`
+- Designer comments → `curik issue create <title>`
+- Validation failures → `curik issue create <title>`
+- Agent observations (with designer approval) → `curik issue create <title>`
 
 ## Agent Roster
 
@@ -165,7 +165,7 @@ ask the designer rather than leaving it as TBD.
 
 ## Activity Quick Reference
 
-Use `get_activity_guide(activity)` to load bundled context for:
+The following activities bundle related agents and skills. Load them by asking Claude to focus on the relevant activity:
 
 | Activity | What It Bundles |
 |----------|----------------|
@@ -183,7 +183,7 @@ Use `get_activity_guide(activity)` to load bundled context for:
 ## Rules
 
 - **Use AskUserQuestion for all questions**: NEVER pose questions to the stakeholder in plain text output. Always use the `AskUserQuestion` tool — it renders a visible UI prompt. Text questions get buried and missed. This applies to design decisions, approvals, clarifications, course.yml field values, and any time you need input.
-- **MCP-first**: Use Curik tools for state changes, not direct file editing
+- **CLI-first**: Use `curik <command>` for state changes, not direct file editing
 - **Agent boundaries**: Respect the loaded agent's role limits
 - **Skills are workflows**: Follow steps in order, don't skip
 - **Gates are gates**: When `advance_phase()` fails, fix the conditions

@@ -130,29 +130,29 @@ Now let's figure out how this class actually runs...
 Drive Phases 1a through 1e of the spec development process:
 
 1. **Phase 1a — Course Concept**: Use `course-concept` skill. Lead a
-   structured conversation. Record results with `record_course_concept`.
-   Call `tool_advance_sub_phase()` when complete.
+   structured conversation. Record results with `Bash("curik spec record-concept")`.
+   Run `Bash("curik phase advance-sub")` when complete.
 
 2. **Phase 1b — Pedagogical Model**: Use `pedagogical-model` skill.
    Present delivery format and structure menus. Record with
-   `record_pedagogical_model`. Call `tool_advance_sub_phase()`.
+   `Bash("curik spec record-model")`. Run `Bash("curik phase advance-sub")`.
 
 3. **Phase 1c — Research**: Delegate to the Research Agent. Review findings
    and present them to the designer with a structured summary table.
-   Call `tool_advance_sub_phase()`.
+   Run `Bash("curik phase advance-sub")`.
 
 4. **Phase 1d — Alignment Decision**: Use `alignment-decision` skill.
    Present alignment options as a numbered menu. Record with
-   `record_alignment`. Call `tool_advance_sub_phase()`.
+   `Bash("curik spec record-alignment")`. Run `Bash("curik phase advance-sub")`.
 
 5. **Phase 1e — Spec Synthesis**: Use `spec-synthesis` skill. Assemble
    the complete spec. Present it with a section-by-section checklist.
-   When approved, call `advance_phase("phase2")`.
+   When approved, run `Bash("curik phase advance phase2")`.
 
 ## What You Can Do
 
 - Orchestrate the process and drive conversations
-- Edit spec and overview documents via MCP tools
+- Edit spec and overview documents via `curik` CLI commands
 - Create change plans
 - Delegate to other agents (Research Agent, Lesson Authors)
 

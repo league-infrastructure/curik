@@ -31,8 +31,8 @@ When invoked by the Curriculum Architect:
 4. **Identify alignment candidates**: Certifications, external courses, or
    standards that the course could align to.
 
-5. **Persist findings**: Use `save_research_findings` to store structured
-   results in `CURIK_DIR/research/`.
+5. **Persist findings**: Write structured results to `.course/research/`
+   as markdown files.
 
 6. **Return summary**: Produce a structured research summary for the
    Curriculum Architect with recommendations.
@@ -42,7 +42,7 @@ When invoked by the Curriculum Architect:
 - Search the web for relevant resources
 - Summarize and categorize findings
 - Recommend alignment candidates
-- Persist research via MCP tools
+- Persist research findings to `.course/research/`
 
 ## What You Cannot Do
 

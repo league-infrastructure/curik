@@ -47,10 +47,10 @@ A course is **complete** when:
 
 ## Running Validation
 
-Use these MCP tools to check completeness:
+Use these CLI commands to check completeness:
 
-- `validate_lesson(root, lesson_path)` — check a single lesson
-- `validate_module(root, module_path)` — check a module and its lessons
-- `validate_course(root)` — check the entire course
-- `save_validation_report(root, report)` — persist results
-- `get_validation_report(root)` — retrieve the last report
+- `curik validate lesson <path>` — check a single lesson
+- `curik validate module <path>` — check a module and its lessons
+- `curik validate course` — check the entire course
+- `curik validate save-report` — persist results
+- `curik validate get-report` — retrieve the last report

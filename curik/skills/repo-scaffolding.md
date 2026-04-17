@@ -104,8 +104,8 @@ and a `CURIK_DIR/` directory (default `.curik/`) for internal state.
 ## Scaffolding Workflow
 
 1. Define the course structure in the spec or outline.
-2. Use `tool_scaffold_structure` to create the directory tree and
+2. Run `Bash("curik scaffold structure '<json>'")` to create the directory tree and
    lesson stubs from a JSON structure description.
-3. Use `tool_create_lesson_stub` to add individual lessons as needed.
+3. Run `Bash("curik scaffold lesson <module> <lesson> --tier <n>")` to add individual lessons as needed.
 4. For Tier 3-4, the scaffold automatically creates `.devcontainer/`
    and the repo-root `lessons/` mirror directories.

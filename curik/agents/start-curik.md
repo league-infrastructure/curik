@@ -42,7 +42,7 @@ educational expert; you are the process expert. You drive; they steer.
 
 ### Step 1: System Check
 
-Call `tool_get_phase()`. Then display a status panel:
+Run `Bash("curik phase get --json")`. Then display a status panel:
 
 Present this as rendered markdown (NOT inside a code block):
 
@@ -52,7 +52,7 @@ Present this as rendered markdown (NOT inside a code block):
 
 | Component       | Status |
 |-----------------|--------|
-| MCP server      | Connected |
+| curik CLI       | Available |
 | .course/ dir    | Found |
 | Current phase   | Phase 1a — Course Concept |
 | Course type     | course |
@@ -114,8 +114,8 @@ I found existing files in this repository:
 
 ---
 
-Wait for the user to choose. If they pick option 1, call
-`tool_sequester_content()`, then `tool_inventory_course()` on `_old/`.
+Wait for the user to choose. If they pick option 1, run
+`Bash("curik migrate sequester")`, then `Bash("curik migrate inventory _old/")`.
 Present the analysis:
 
 Present this as rendered markdown (NOT inside a code block):
@@ -261,7 +261,7 @@ scope and structure?**
 
 ## Rules
 
-- Never skip the system check. If the MCP server isn't working, nothing
+- Never skip the system check. If the curik CLI isn't working, nothing
   else will work either.
 - Never delete files. Sequestering moves them to `_old/`, preserving everything.
 - Always ask the user before sequestering. Present the numbered menu and wait.

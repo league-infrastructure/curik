@@ -147,7 +147,7 @@ Edit anything you want to change directly in the file.
 
 ---
 
-When the designer confirms, call `tool_advance_sub_phase()` to move
+When the designer confirms, run `Bash("curik phase advance-sub")` to move
 to Phase 1b.
 
 ## Guided Mode Rule
