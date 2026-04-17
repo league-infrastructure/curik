@@ -432,3 +432,91 @@ def get_course_status(root: Path) -> dict[str, str | int]:
         "open_issues": open_issues,
         "active_change_plans": active_plans,
     }
+
+
+# ---------------------------------------------------------------------------
+# course.yml field helpers
+# ---------------------------------------------------------------------------
+
+# Fields in course.yml that must be set (not TBD/empty) before publishing.
+# These are the fields that affect the published site or are required metadata.
+COURSE_YML_REQUIRED_FIELDS = [
+    "title",        # course title — appears in site header and browser tab
+    "tier",         # tier number — controls theme behavior (instructor guide, etc.)
+    "grades",       # grade range — displayed in course metadata
+    "category",     # course category — used for index page grouping
+    "description",  # one-line description — used in index listing and meta tags
+    "repo_url",     # GitHub repo URL — baseURL derived from this, shown in footer
+]
+
+
+def _is_tbd(value: object) -> bool:
+    """Return True if a course.yml value is unset / placeholder."""
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip() in ("", "TBD", "0")
+    if isinstance(value, (int, float)):
+        return value == 0
+    if isinstance(value, list):
+        return len(value) == 0
+    return False
+
+
+def update_course_yml(root: Path, updates: dict) -> dict:
+    """Update fields in course.yml and return a result dict.
+
+    *updates* is a dict of field names to new values.  Only the specified
+    fields are modified; all other fields are left unchanged.
+
+    Returns a dict with:
+    - ``updated_fields``: list of field names that were written
+    - ``content``: the full updated course.yml text
+    - ``message``: human-readable summary
+    - ``still_tbd`` (optional): required fields that are still placeholder values
+    """
+    course_yml = root / "course.yml"
+    if not course_yml.exists():
+        raise CurikError("course.yml not found. Run init first.")
+
+    try:
+        data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            data = {}
+    except yaml.YAMLError as e:
+        raise CurikError(f"Failed to parse course.yml: {e}") from e
+
+    data.update(updates)
+
+    # Write back preserving simple key: value format
+    import json as _json
+    lines = []
+    for key, value in data.items():
+        if isinstance(value, list):
+            lines.append(f"{key}: {_json.dumps(value)}")
+        elif isinstance(value, bool):
+            lines.append(f"{key}: {'true' if value else 'false'}")
+        else:
+            lines.append(f"{key}: {value}")
+    lines.append("")
+
+    content = "\n".join(lines)
+    course_yml.write_text(content, encoding="utf-8")
+
+    # Report what changed and what's still TBD
+    still_tbd = [f for f in COURSE_YML_REQUIRED_FIELDS if _is_tbd(data.get(f))]
+
+    result: dict = {
+        "updated_fields": list(updates.keys()),
+        "content": content,
+    }
+    if still_tbd:
+        result["still_tbd"] = still_tbd
+        result["message"] = (
+            f"{len(still_tbd)} required field(s) still need values: "
+            + ", ".join(still_tbd)
+        )
+    else:
+        result["message"] = "All required fields are set."
+
+    return result

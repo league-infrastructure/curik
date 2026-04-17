@@ -292,6 +292,36 @@ def hugo_setup(
     return {"created": created, "existing": existing}
 
 
+def hugo_setup_from_course(root: Path) -> dict:
+    """Read course.yml and call hugo_setup with the extracted metadata.
+
+    Reads ``title``, ``tier``, and ``repo_url`` from ``course.yml`` (falling
+    back to sensible defaults when fields are missing or TBD), then calls
+    :func:`hugo_setup` and returns its result dict.
+    """
+    import yaml
+
+    effective_title = "Course"
+    effective_tier = 2
+    repo_url = ""
+
+    course_yml = root / "course.yml"
+    if course_yml.is_file():
+        try:
+            data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                effective_title = data.get("title", "Course") or "Course"
+                effective_tier = data.get("tier", 2)
+                repo_url = data.get("repo_url", "")
+        except yaml.YAMLError:
+            pass
+
+    if not effective_title or effective_title == "TBD":
+        effective_title = "Course"
+
+    return hugo_setup(root, effective_title, effective_tier, repo_url=repo_url)
+
+
 def get_devcontainer_json(language: str) -> str:
     """Return a .devcontainer/devcontainer.json string for the given language.
 
