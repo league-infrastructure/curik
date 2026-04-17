@@ -39,6 +39,9 @@ class SequesterContentTest(unittest.TestCase):
 
     def test_protected_paths_not_moved(self) -> None:
         (self.root / "README.md").write_text("hello", encoding="utf-8")
+        # Create .mcp.json manually to test that it's protected when present
+        # (init_course no longer creates it — curik is now a CLI, not MCP server)
+        (self.root / ".mcp.json").write_text('{"mcpServers": {}}', encoding="utf-8")
         result = sequester_content(self.root)
 
         # These should still exist

@@ -1,7 +1,7 @@
 """Implementation of Curik's init-time file installation.
 
 Installs CLAUDE.md (with inline Curik section), a /curik skill stub,
-VS Code MCP config, and MCP permissions into a target repository.
+and CLI permissions into a target repository.
 Follows the same pattern as CLASI's init_command.py.
 """
 
@@ -13,21 +13,6 @@ from pathlib import Path
 
 _SECTION_START = "<!-- CURIK:START -->"
 _SECTION_END = "<!-- CURIK:END -->"
-
-MCP_CONFIG = {
-    "curik": {
-        "command": "curik",
-        "args": ["mcp"],
-    }
-}
-
-VSCODE_MCP_CONFIG = {
-    "curik": {
-        "type": "stdio",
-        "command": "curik",
-        "args": ["mcp"],
-    }
-}
 
 
 def _read_template(name: str) -> str:
@@ -85,35 +70,6 @@ def _write_curik_skill(target: Path) -> str:
     return "created"
 
 
-def _update_vscode_mcp_json(target: Path) -> str:
-    """Merge curik server config into .vscode/mcp.json.
-
-    Returns "created", "updated", or "unchanged".
-    """
-    vscode_dir = target / ".vscode"
-    mcp_json_path = vscode_dir / "mcp.json"
-
-    if mcp_json_path.exists():
-        try:
-            data = json.loads(mcp_json_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, ValueError):
-            data = {}
-    else:
-        data = {}
-
-    servers = data.setdefault("servers", {})
-
-    if servers.get("curik") == VSCODE_MCP_CONFIG["curik"]:
-        return "unchanged"
-
-    vscode_dir.mkdir(parents=True, exist_ok=True)
-    servers["curik"] = VSCODE_MCP_CONFIG["curik"]
-    mcp_json_path.write_text(
-        json.dumps(data, indent=2) + "\n", encoding="utf-8"
-    )
-    return "created" if len(servers) == 1 and len(data) == 1 else "updated"
-
-
 _GITIGNORE_START = "# -- CURIK:START --"
 _GITIGNORE_END = "# -- CURIK:END --"
 
@@ -169,7 +125,10 @@ def _write_github_workflow(target: Path) -> str:
 
 
 def _update_settings_json(target: Path) -> str:
-    """Add mcp__curik__* to the permissions allowlist.
+    """Add Bash(curik *) to the permissions allowlist.
+
+    Also migrates the old mcp__curik__* permission to Bash(curik *) when
+    re-running init on a project that was initialized before the CLI migration.
 
     Returns "created", "updated", or "unchanged".
     """
@@ -187,7 +146,18 @@ def _update_settings_json(target: Path) -> str:
     permissions = data.setdefault("permissions", {})
     allow = permissions.setdefault("allow", [])
 
-    target_perm = "mcp__curik__*"
+    target_perm = "Bash(curik *)"
+    old_perm = "mcp__curik__*"
+
+    # Migrate old MCP permission to CLI permission
+    if old_perm in allow:
+        allow.remove(old_perm)
+        allow.append(target_perm)
+        settings_path.write_text(
+            json.dumps(data, indent=2) + "\n", encoding="utf-8"
+        )
+        return "updated"
+
     if target_perm in allow:
         return "unchanged"
 
@@ -212,7 +182,6 @@ def run_init(target: Path) -> dict[str, list[str]]:
     actions = [
         ("CLAUDE.md", _update_claude_md(target)),
         (".claude/skills/curik/SKILL.md", _write_curik_skill(target)),
-        (".vscode/mcp.json", _update_vscode_mcp_json(target)),
         (".claude/settings.local.json", _update_settings_json(target)),
         (".gitignore", _write_gitignore(target)),
         (".github/workflows/deploy-pages.yml", _write_github_workflow(target)),

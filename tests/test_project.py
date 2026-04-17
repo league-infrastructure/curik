@@ -25,7 +25,7 @@ class CurikProjectTest(unittest.TestCase):
             self.assertIn(".course/spec.md", result["created"])
             self.assertTrue((root / ".course" / "change-plan" / "active").is_dir())
             self.assertTrue((root / "course.yml").is_file())
-            self.assertTrue((root / ".mcp.json").is_file())
+            self.assertFalse((root / ".mcp.json").is_file())
 
     def test_advance_phase_blocked_by_tbd_sections(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

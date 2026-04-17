@@ -1,4 +1,4 @@
-"""Tests for curik.init_command — CLAUDE.md, skill, and MCP permission installation."""
+"""Tests for curik.init_command — CLAUDE.md, skill, and CLI permission installation."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ from curik.init_command import (
     _SECTION_START,
     _update_claude_md,
     _update_settings_json,
-    _update_vscode_mcp_json,
     _write_curik_skill,
     run_init,
 )
@@ -115,41 +114,6 @@ class WriteCurikSkillTest(unittest.TestCase):
         self.assertEqual(status, "updated")
 
 
-class UpdateVscodeMcpJsonTest(unittest.TestCase):
-    """Tests for _update_vscode_mcp_json()."""
-
-    def setUp(self) -> None:
-        self._tmpdir = TemporaryDirectory()
-        self.target = Path(self._tmpdir.name)
-
-    def tearDown(self) -> None:
-        self._tmpdir.cleanup()
-
-    def test_creates_vscode_mcp_json(self) -> None:
-        status = _update_vscode_mcp_json(self.target)
-        self.assertIn(status, ("created", "updated"))
-        mcp_json = self.target / ".vscode" / "mcp.json"
-        data = json.loads(mcp_json.read_text())
-        self.assertIn("curik", data["servers"])
-        self.assertEqual(data["servers"]["curik"]["type"], "stdio")
-
-    def test_merges_with_existing_servers(self) -> None:
-        vscode_dir = self.target / ".vscode"
-        vscode_dir.mkdir()
-        existing = {"servers": {"other": {"type": "stdio", "command": "other"}}}
-        (vscode_dir / "mcp.json").write_text(json.dumps(existing))
-        status = _update_vscode_mcp_json(self.target)
-        self.assertEqual(status, "updated")
-        data = json.loads((vscode_dir / "mcp.json").read_text())
-        self.assertIn("other", data["servers"])
-        self.assertIn("curik", data["servers"])
-
-    def test_unchanged_when_already_configured(self) -> None:
-        _update_vscode_mcp_json(self.target)
-        status = _update_vscode_mcp_json(self.target)
-        self.assertEqual(status, "unchanged")
-
-
 class UpdateSettingsJsonTest(unittest.TestCase):
     """Tests for _update_settings_json()."""
 
@@ -160,12 +124,18 @@ class UpdateSettingsJsonTest(unittest.TestCase):
     def tearDown(self) -> None:
         self._tmpdir.cleanup()
 
-    def test_creates_settings_with_permission(self) -> None:
+    def test_creates_settings_with_bash_permission(self) -> None:
         status = _update_settings_json(self.target)
         self.assertIn(status, ("created", "updated"))
         settings_path = self.target / ".claude" / "settings.local.json"
         data = json.loads(settings_path.read_text())
-        self.assertIn("mcp__curik__*", data["permissions"]["allow"])
+        self.assertIn("Bash(curik *)", data["permissions"]["allow"])
+
+    def test_does_not_write_mcp_permission(self) -> None:
+        _update_settings_json(self.target)
+        settings_path = self.target / ".claude" / "settings.local.json"
+        data = json.loads(settings_path.read_text())
+        self.assertNotIn("mcp__curik__*", data["permissions"]["allow"])
 
     def test_merges_with_existing_permissions(self) -> None:
         claude_dir = self.target / ".claude"
@@ -176,12 +146,27 @@ class UpdateSettingsJsonTest(unittest.TestCase):
         self.assertEqual(status, "updated")
         data = json.loads((claude_dir / "settings.local.json").read_text())
         self.assertIn("mcp__clasi__*", data["permissions"]["allow"])
-        self.assertIn("mcp__curik__*", data["permissions"]["allow"])
+        self.assertIn("Bash(curik *)", data["permissions"]["allow"])
 
     def test_unchanged_when_permission_exists(self) -> None:
         _update_settings_json(self.target)
         status = _update_settings_json(self.target)
         self.assertEqual(status, "unchanged")
+
+    def test_migration_replaces_old_mcp_permission(self) -> None:
+        """Re-running init on a project with old mcp__curik__* migrates to Bash(curik *)."""
+        claude_dir = self.target / ".claude"
+        claude_dir.mkdir()
+        existing = {"permissions": {"allow": ["mcp__curik__*", "mcp__clasi__*"]}}
+        (claude_dir / "settings.local.json").write_text(json.dumps(existing))
+        status = _update_settings_json(self.target)
+        self.assertEqual(status, "updated")
+        data = json.loads((claude_dir / "settings.local.json").read_text())
+        allow = data["permissions"]["allow"]
+        self.assertIn("Bash(curik *)", allow)
+        self.assertNotIn("mcp__curik__*", allow)
+        # Other permissions are preserved
+        self.assertIn("mcp__clasi__*", allow)
 
 
 class RunInitTest(unittest.TestCase):
@@ -198,14 +183,25 @@ class RunInitTest(unittest.TestCase):
         result = run_init(self.target)
         self.assertIn("CLAUDE.md", result["created"])
         self.assertIn(".claude/skills/curik/SKILL.md", result["created"])
-        self.assertIn(".vscode/mcp.json", result["created"])
         self.assertIn(".claude/settings.local.json", result["created"])
+
+    def test_does_not_create_vscode_mcp_json(self) -> None:
+        result = run_init(self.target)
+        all_paths = result["created"] + result["updated"] + result["unchanged"]
+        self.assertNotIn(".vscode/mcp.json", all_paths)
+        self.assertFalse((self.target / ".vscode" / "mcp.json").exists())
 
     def test_idempotent_rerun(self) -> None:
         run_init(self.target)
         result = run_init(self.target)
         self.assertEqual(len(result["created"]), 0)
-        self.assertEqual(len(result["unchanged"]), 6)
+        self.assertEqual(len(result["unchanged"]), 5)
+
+    def test_settings_has_bash_permission(self) -> None:
+        run_init(self.target)
+        settings_path = self.target / ".claude" / "settings.local.json"
+        data = json.loads(settings_path.read_text())
+        self.assertIn("Bash(curik *)", data["permissions"]["allow"])
 
 
 class InitCourseIntegrationTest(unittest.TestCase):
@@ -235,17 +231,37 @@ class InitCourseIntegrationTest(unittest.TestCase):
         skill = self.root / ".claude" / "skills" / "curik" / "SKILL.md"
         self.assertTrue(skill.exists())
 
-    def test_init_course_creates_vscode_mcp(self) -> None:
-        from curik.project import init_course
-
-        result = init_course(self.root)
-        self.assertIn(".vscode/mcp.json", result["created"])
-
     def test_init_course_creates_settings(self) -> None:
         from curik.project import init_course
 
         result = init_course(self.root)
         self.assertIn(".claude/settings.local.json", result["created"])
+
+    def test_init_course_does_not_create_vscode_mcp_json(self) -> None:
+        from curik.project import init_course
+
+        init_course(self.root)
+        self.assertFalse((self.root / ".vscode" / "mcp.json").exists())
+
+    def test_init_course_does_not_create_mcp_json(self) -> None:
+        from curik.project import init_course
+
+        init_course(self.root)
+        self.assertFalse((self.root / ".mcp.json").exists())
+
+    def test_init_course_existing_mcp_json_untouched(self) -> None:
+        """init_course does not modify a .mcp.json that already has other entries."""
+        from curik.project import init_course
+
+        clasi_entry = {"mcpServers": {"clasi": {"command": "clasi", "args": ["mcp"]}}}
+        mcp_json = self.root / ".mcp.json"
+        mcp_json.write_text(json.dumps(clasi_entry, indent=2) + "\n")
+
+        init_course(self.root)
+
+        data = json.loads(mcp_json.read_text())
+        self.assertIn("clasi", data["mcpServers"])
+        self.assertNotIn("curik", data.get("mcpServers", {}))
 
     def test_init_course_idempotent(self) -> None:
         from curik.project import init_course

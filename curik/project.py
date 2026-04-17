@@ -209,24 +209,7 @@ def init_course(
     else:
         existing.append("course.yml")
 
-    # .mcp.json is curik-owned — always update to latest config
-    mcp_json_path = root / ".mcp.json"
-    mcp_json_content = json.dumps(
-        {"mcpServers": {"curik": {"command": "curik", "args": ["mcp"]}}},
-        indent=2,
-    ) + "\n"
-    rel_mcp = str(mcp_json_path.relative_to(root))
-    if mcp_json_path.exists():
-        if mcp_json_path.read_text(encoding="utf-8") == mcp_json_content:
-            existing.append(rel_mcp)
-        else:
-            mcp_json_path.write_text(mcp_json_content, encoding="utf-8")
-            created.append(rel_mcp)
-    else:
-        mcp_json_path.write_text(mcp_json_content, encoding="utf-8")
-        created.append(rel_mcp)
-
-    # Install CLAUDE.md section, /curik skill, and MCP permissions
+    # Install CLAUDE.md section, /curik skill, and CLI permissions
     init_result = run_init(root)
     for path in init_result.get("created", []):
         created.append(path)
