@@ -2,7 +2,10 @@
 id: '001'
 title: Delete quiz, research, and assets modules
 status: done
-use-cases: [SUC-001, SUC-002, SUC-003]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
 depends-on: []
 github-issue: ''
 todo: prune-modules-for-cli-migration.md
