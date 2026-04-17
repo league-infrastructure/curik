@@ -10,6 +10,7 @@ from curik.project import (
     SPEC_SECTION_HEADINGS,
     _is_tbd,
     advance_phase,
+    get_course_status,
     get_phase,
     init_course,
     update_course_yml,
@@ -49,6 +50,31 @@ class CurikProjectTest(unittest.TestCase):
             init_course(root)
             with self.assertRaises(CurikError):
                 update_spec(root, "course-concept", "   ")
+
+    def test_get_course_status_returns_phase_and_counts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            init_course(root)
+            result = get_course_status(root)
+            self.assertEqual(result["phase"], "phase1")
+            self.assertEqual(result["open_issues"], 0)
+            self.assertEqual(result["active_change_plans"], 0)
+
+    def test_get_course_status_counts_issues(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            init_course(root)
+            # Manually create an open issue to verify counting
+            issue_dir = root / ".course" / "issues" / "open"
+            (issue_dir / "001-test-issue.md").write_text("# Test issue\n")
+            result = get_course_status(root)
+            self.assertEqual(result["open_issues"], 1)
+
+    def test_get_course_status_error_no_init(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with self.assertRaises(CurikError):
+                get_course_status(root)
 
 
 class IsTbdTest(unittest.TestCase):

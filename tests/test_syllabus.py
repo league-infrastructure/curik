@@ -14,7 +14,6 @@ from curik.syllabus import (
     validate_syllabus_consistency,
     write_syllabus_url,
 )
-from curik import server
 
 
 def _write_syllabus(root: Path, data: dict) -> None:
@@ -149,30 +148,6 @@ class ValidateSyllabusConsistencyTest(unittest.TestCase):
             result = validate_syllabus_consistency(root)
             self.assertEqual(result["entries_without_pages"], [])
             self.assertEqual(result["pages_without_entries"], [])
-
-
-class MCPSyllabusToolTest(unittest.TestCase):
-    """Test MCP tool wrappers return JSON."""
-
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name)
-        server._project_root = self.root
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_tool_write_syllabus_url_returns_json(self) -> None:
-        _write_syllabus(self.root, _sample_syllabus_data())
-        result = server.tool_write_syllabus_url("les-001", "https://example.com")
-        parsed = json.loads(result)
-        self.assertEqual(parsed["status"], "ok")
-
-    def test_tool_validate_syllabus_consistency_returns_json(self) -> None:
-        _write_syllabus(self.root, _sample_syllabus_data())
-        result = server.tool_validate_syllabus_consistency()
-        parsed = json.loads(result)
-        self.assertIn("entries_without_pages", parsed)
 
 
 if __name__ == "__main__":

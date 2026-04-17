@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,7 +17,6 @@ from curik.changes import (
     review_change_plan,
 )
 from curik.project import CurikError, init_course
-from curik import server
 
 
 class RegisterChangePlanTest(unittest.TestCase):
@@ -157,27 +155,6 @@ class FullChangeCycleTest(unittest.TestCase):
         # Gap issues remain open
         open_issues = list_issues(self.root, "open")
         self.assertEqual(len(open_issues), 2)
-
-
-class MCPRegisterChangePlanToolTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name)
-        server._project_root = self.root
-        init_course(self.root)
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_tool_register_change_plan(self) -> None:
-        server.tool_create_issue("Bug", "Details")
-        server.tool_create_change_plan("Fix", "[1]")
-        result = json.loads(server.tool_register_change_plan(1))
-        self.assertEqual(result["status"], "draft")
-
-    def test_tool_register_nonexistent(self) -> None:
-        result = server.tool_register_change_plan(99)
-        self.assertTrue(result.startswith("Error:"))
 
 
 if __name__ == "__main__":

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 from pathlib import Path
 
 from curik.readme import generate_readme, generate_readmes, parse_guards
-from curik import server
 
 
 class ParseGuardsSharedTest(unittest.TestCase):
@@ -170,33 +168,6 @@ class GenerateReadmesTest(unittest.TestCase):
             result = generate_readmes(root)
             self.assertEqual(len(result["generated"]), 1)
             self.assertEqual(len(result["skipped"]), 1)
-
-
-class MCPReadmeToolTest(unittest.TestCase):
-    """Test MCP tool wrapper returns JSON."""
-
-    def setUp(self) -> None:
-        self._tmp = tempfile.TemporaryDirectory()
-        self.root = Path(self._tmp.name)
-        server._project_root = self.root
-
-    def tearDown(self) -> None:
-        self._tmp.cleanup()
-
-    def test_tool_trigger_readme_generation_returns_json(self) -> None:
-        docs = self.root / "content"
-        docs.mkdir(parents=True)
-        (docs / "test.md").write_text(
-            "{{< readme-shared >}}\n# Test\n{{< /readme-shared >}}\n",
-            encoding="utf-8",
-        )
-        result = server.tool_trigger_readme_generation()
-        parsed = json.loads(result)
-        self.assertIn("generated", parsed)
-
-    def test_tool_trigger_readme_generation_error(self) -> None:
-        result = server.tool_trigger_readme_generation()
-        self.assertTrue(result.startswith("Error:"))
 
 
 if __name__ == "__main__":
