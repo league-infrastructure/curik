@@ -83,3 +83,97 @@
 01:45:54Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
 01:46:34Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
 01:47:49Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:24Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:39Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:41Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:44Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:47Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:48:49Z mcp-guard        0 tier-allowed tool_name=mcp__clasi__create_ticket agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:50:02Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:50:42Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:51:08Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:51:37Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:52:07Z role-guard       0 no-path      tool_name=Write agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:52:32Z sub-stop         0 logged       agent_type=sprint-planner agent_id=ae1c605d5891feebb session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:53:05Z sub-start        0 logged       agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:54:01Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:54:11Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:12Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:18Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:22Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:28Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:44Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:55:57Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:57:04Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:57:24Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:57:54Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:58:00Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:58:20Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+01:58:36Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:00:18Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:00:28Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:00:53Z sub-stop         0 logged       agent_type=programmer agent_id=a95fe3320932d387f session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:02:40Z sub-start        0 logged       agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:02:55Z sub-start        0 logged       agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:03:18Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:03:26Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:03:36Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:03:43Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:03:55Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:04:01Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:04:39Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:04:52Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:07:10Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:08:08Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:08:32Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:08:40Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:09:18Z sub-stop         0 logged       agent_type=programmer agent_id=a17948d1346aaea66 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:09:21Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:12:16Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:12:30Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:13:54Z sub-stop         0 logged       agent_type=programmer agent_id=a0d11801cbb2d724c session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:15:59Z sub-start        0 logged       agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:16:11Z sub-start        0 logged       agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:17:23Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:17:42Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:17:49Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:18:56Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:06Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:12Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:19Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:40Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:46Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:19:56Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:20:01Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:20:09Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:20:16Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:02Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:03Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:08Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:17Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:20Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:26Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:31Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:43Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:45Z sub-stop         0 logged       agent_type=programmer agent_id=a8da20e113b742eba session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:49Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:22:53Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:00Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:09Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:13Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:21Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:29Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:34Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:40Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:44Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:48Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:53Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:23:59Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:24:11Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:24:15Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:24:26Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:24:48Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:28:11Z role-guard       0 no-path      tool_name=Write agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:29:54Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:30:02Z role-guard       0 no-path      tool_name=Edit agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5
+02:30:25Z sub-stop         0 logged       agent_type=programmer agent_id=a8699859ad5751362 session_id=267a7351-8a13-4898-9fc6-938246616ea5

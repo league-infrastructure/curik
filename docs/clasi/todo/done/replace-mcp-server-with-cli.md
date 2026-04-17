@@ -1,5 +1,8 @@
 ---
-status: pending
+status: done
+sprint: '002'
+tickets:
+- 002-001
 ---
 
 # Replace MCP server with CLI

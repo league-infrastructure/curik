@@ -1,11 +1,15 @@
 ---
-id: "005"
-title: "Update tests (migrate MCP tests, add CLI coverage)"
+id: '005'
+title: Update tests (migrate MCP tests, add CLI coverage)
 status: done
-use-cases: [SUC-001, SUC-007]
-depends-on: ["002", "003"]
-github-issue: ""
-todo: ""
+use-cases:
+- SUC-001
+- SUC-007
+depends-on:
+- '002'
+- '003'
+github-issue: ''
+todo: ''
 ---
 
 # Update tests (migrate MCP tests, add CLI coverage)

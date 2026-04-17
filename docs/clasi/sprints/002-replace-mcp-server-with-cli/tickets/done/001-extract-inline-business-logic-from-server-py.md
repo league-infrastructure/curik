@@ -1,11 +1,12 @@
 ---
-id: "001"
-title: "Extract inline business logic from server.py"
+id: '001'
+title: Extract inline business logic from server.py
 status: done
-use-cases: [SUC-005]
+use-cases:
+- SUC-005
 depends-on: []
-github-issue: ""
-todo: "replace-mcp-server-with-cli.md"
+github-issue: ''
+todo: replace-mcp-server-with-cli.md
 ---
 
 # Extract inline business logic from server.py

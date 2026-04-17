@@ -1,11 +1,15 @@
 ---
-id: "004"
-title: "Remove MCP artifacts and update init templates"
+id: '004'
+title: Remove MCP artifacts and update init templates
 status: done
-use-cases: [SUC-002, SUC-006]
-depends-on: ["002", "003"]
-github-issue: ""
-todo: ""
+use-cases:
+- SUC-002
+- SUC-006
+depends-on:
+- '002'
+- '003'
+github-issue: ''
+todo: ''
 ---
 
 # Remove MCP artifacts and update init templates

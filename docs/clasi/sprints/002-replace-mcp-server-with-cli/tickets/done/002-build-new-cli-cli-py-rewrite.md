@@ -1,11 +1,16 @@
 ---
-id: "002"
-title: "Build new CLI (cli.py rewrite)"
+id: '002'
+title: Build new CLI (cli.py rewrite)
 status: done
-use-cases: [SUC-001, SUC-003, SUC-004, SUC-007]
-depends-on: ["001"]
-github-issue: ""
-todo: ""
+use-cases:
+- SUC-001
+- SUC-003
+- SUC-004
+- SUC-007
+depends-on:
+- '001'
+github-issue: ''
+todo: ''
 ---
 
 # Build new CLI (cli.py rewrite)

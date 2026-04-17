@@ -1,11 +1,13 @@
 ---
-id: "003"
-title: "Update init system (remove MCP config, add CLI permission)"
+id: '003'
+title: Update init system (remove MCP config, add CLI permission)
 status: done
-use-cases: [SUC-002]
-depends-on: ["001"]
-github-issue: ""
-todo: ""
+use-cases:
+- SUC-002
+depends-on:
+- '001'
+github-issue: ''
+todo: ''
 ---
 
 # Update init system (remove MCP config, add CLI permission)
