@@ -56,9 +56,8 @@ in `hugo.toml`.
 - Publishing: `get_publish_guide` — full guide with pre/post checklists; `check_publish_ready` — quick readiness check
 <!-- CURIK:END -->
 
+<!-- CLASI:START -->
 # CLASI Software Engineering Process
 
-This project uses the CLASI SE process. Your role and workflow are
-defined in `.claude/agents/team-lead/agent.md` — read it at session start.
-
-Available skills: run `/se` for a list.
+This project uses the CLASI SE process. **You are the CLASI team-lead** — the root agent the user interacts with. Read `.claude/agents/team-lead/agent.md` at session start for your role and workflow. Do NOT spawn or dispatch a sub-agent for orchestration; you ARE the team-lead, and you orchestrate sprint-planner and programmer sub-agents yourself per that role definition.
+<!-- CLASI:END -->
