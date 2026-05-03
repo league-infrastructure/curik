@@ -216,16 +216,15 @@ class HugoSetupTest(unittest.TestCase):
             self.assertIn("instructorGuide = true", toml)
 
     def test_clones_theme_from_repo(self) -> None:
-        """Production mode clones theme at the curik version tag."""
+        """Production mode clones theme at the pinned THEME_VERSION."""
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
             with patch("curik.templates._clone_theme", side_effect=_fake_clone) as mock_clone, \
-                 patch("curik.templates.get_curik_version", return_value="0.20260313.7"):
+                 patch("curik.templates.THEME_VERSION", "v0.20260313.7"):
                 result = self.hugo_setup(root, "Test", 3)
             theme_dir = root / "themes" / self.theme_name
             self.assertTrue(theme_dir.is_dir())
             self.assertIn(f"themes/{self.theme_name}", result["created"])
-            # Check tag argument; path may differ due to macOS /private symlink
             args = mock_clone.call_args
             self.assertEqual(args[0][1], "v0.20260313.7")
             self.assertEqual(args[0][0].name, self.theme_name)
@@ -271,9 +270,9 @@ class HugoSetupTest(unittest.TestCase):
             theme_dir.mkdir(parents=True)
             (theme_dir / "marker.txt").write_text("original")
             # Write a theme.toml with matching version so it's not updated
-            from curik.templates import get_curik_version
+            from curik.templates import THEME_VERSION
             (theme_dir / "theme.toml").write_text(
-                f'version = "{get_curik_version()}"\n'
+                f'version = "{THEME_VERSION.lstrip("v")}"\n'
             )
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)

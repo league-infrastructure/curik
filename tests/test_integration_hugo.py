@@ -258,8 +258,8 @@ class ProductionThemeIntegrationTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         from unittest.mock import patch
         cls.root = _copy_fixture(cls.FIXTURE)
-        # Use the latest published tag for the clone
-        with patch("curik.templates.get_curik_version", return_value="0.20260313.5"):
+        # Use a known-published theme tag for the clone
+        with patch("curik.templates.THEME_VERSION", "v0.20260313.5"):
             cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2)
 
     def test_theme_cloned_not_symlinked(self) -> None:

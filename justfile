@@ -48,7 +48,7 @@ bump-push: _ensure-clean-master
     echo "Version: $NEW_VERSION"
 
     # Commit the version bump
-    git add pyproject.toml {{ theme_dir }}/theme.toml
+    git add pyproject.toml {{ theme_dir }}/theme.toml curik/templates.py
     git commit -m "chore: bump version to v${NEW_VERSION}"
 
     # Push both

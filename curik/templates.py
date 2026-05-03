@@ -14,6 +14,9 @@ from datetime import date
 
 THEME_NAME = "curriculum-hugo-theme"
 THEME_REPO = "https://github.com/league-infrastructure/curriculum-hugo-theme.git"
+# Theme version is pinned independently of curik — the two repos release on
+# different cadences. Bump deliberately when adopting a new theme release.
+THEME_VERSION = "v0.20260320.2"
 CURRICULUM_BASE = "https://curriculum.jointheleague.org"
 
 _VERSION_RE = re.compile(r'^(\s*curriculum_version)\s*=\s*"([^"]*)"', re.MULTILINE)
@@ -224,7 +227,7 @@ def hugo_setup(
     into ``themes/curriculum-hugo-theme/``.
 
     In production mode (default), clones the theme from its GitHub repo
-    at the tag matching curik's installed version (``v{version}``).
+    at the pinned ``THEME_VERSION``.
 
     If *symlink_theme* is True, creates a symlink to the local theme
     source instead. This is useful during development so edits to the
@@ -270,13 +273,12 @@ def hugo_setup(
             theme_dest.symlink_to(get_theme_source())
             created.append(rel_theme)
         else:
-            # Check version: compare installed theme version to curik version
+            # Compare installed theme version to the pinned THEME_VERSION
             installed_version = _get_installed_theme_version(theme_dest)
-            current_version = get_curik_version()
-            if installed_version != current_version:
+            pinned_version = THEME_VERSION.lstrip("v")
+            if installed_version != pinned_version:
                 shutil.rmtree(theme_dest)
-                tag = f"v{current_version}"
-                _clone_theme(theme_dest, tag)
+                _clone_theme(theme_dest, THEME_VERSION)
                 created.append(rel_theme)
             else:
                 existing.append(rel_theme)
@@ -285,8 +287,7 @@ def hugo_setup(
         if symlink_theme:
             theme_dest.symlink_to(get_theme_source())
         else:
-            tag = f"v{get_curik_version()}"
-            _clone_theme(theme_dest, tag)
+            _clone_theme(theme_dest, THEME_VERSION)
         created.append(rel_theme)
 
     return {"created": created, "existing": existing}

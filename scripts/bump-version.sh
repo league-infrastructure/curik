@@ -15,6 +15,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PYPROJECT="$REPO_ROOT/pyproject.toml"
 THEME_TOML="$REPO_ROOT/curriculum-hugo-theme/theme.toml"
+TEMPLATES_PY="$REPO_ROOT/curik/templates.py"
 
 TODAY="$(date +%Y%m%d)"
 
@@ -41,5 +42,10 @@ sed -i '' "s/^version = \".*\"/version = \"$NEW_VERSION\"/" "$PYPROJECT"
 
 # Update theme.toml
 sed -i '' "s/^version = \".*\"/version = \"$NEW_VERSION\"/" "$THEME_TOML"
+
+# Update THEME_VERSION pin in curik/templates.py — this is the tag that
+# `init` clones from the theme remote, so it must match what push-theme
+# tags. Kept in lockstep with curik's version.
+sed -i '' "s/^THEME_VERSION = \".*\"/THEME_VERSION = \"v$NEW_VERSION\"/" "$TEMPLATES_PY"
 
 echo "$NEW_VERSION"
