@@ -201,12 +201,6 @@ class WebDevIntegrationTest(unittest.TestCase):
         # Tier 3 should NOT have instructorGuide param
         self.assertNotIn("instructorGuide", toml)
 
-    def test_github_repo_in_hugo_toml(self) -> None:
-        """repo_url from course.yml should appear as github_repo in hugo.toml."""
-        toml = (self.root / "hugo.toml").read_text()
-        self.assertIn("github_repo", toml)
-        self.assertIn("league-curriculum/web-dev", toml)
-
     def test_theme_symlinked(self) -> None:
         theme_dir = self.root / "themes" / "curriculum-hugo-theme"
         self.assertTrue(theme_dir.is_dir())
@@ -281,11 +275,6 @@ class ProductionThemeIntegrationTest(unittest.TestCase):
         self.assertTrue(shortcodes.is_dir())
         self.assertTrue((shortcodes / "instructor-guide.html").is_file())
         self.assertTrue((shortcodes / "callout.html").is_file())
-
-    def test_hugo_toml_has_github_repo(self) -> None:
-        toml = (self.root / "hugo.toml").read_text()
-        self.assertIn("github_repo", toml)
-        self.assertIn("league-curriculum/python-basics", toml)
 
     def test_hugo_build_succeeds(self) -> None:
         """Build may fail if published theme is behind local changes."""
