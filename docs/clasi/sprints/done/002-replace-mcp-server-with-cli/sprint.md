@@ -1,9 +1,16 @@
 ---
-id: "002"
-title: "Replace MCP Server with CLI"
-status: planning
+id: '002'
+title: Replace MCP Server with CLI
+status: done
 branch: sprint/002-replace-mcp-server-with-cli
-use-cases: [SUC-001, SUC-002, SUC-003, SUC-004, SUC-005, SUC-006, SUC-007]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+- SUC-004
+- SUC-005
+- SUC-006
+- SUC-007
 todo: replace-mcp-server-with-cli.md
 ---
 
