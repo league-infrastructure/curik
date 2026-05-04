@@ -1,10 +1,17 @@
 ---
-id: "001"
-title: "Prune Unused Modules for CLI Migration"
-status: planning
+id: '001'
+title: Prune Unused Modules for CLI Migration
+status: done
 branch: sprint/001-prune-unused-modules-for-cli-migration
-use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+- SUC-004
 todo: prune-modules-for-cli-migration.md
+abandoned: true
+abandoned_reason: Subsumed by sprint 002 (Replace MCP Server with CLI). Closed without
+  execution.
 ---
 
 # Sprint 001: Prune Unused Modules for CLI Migration
