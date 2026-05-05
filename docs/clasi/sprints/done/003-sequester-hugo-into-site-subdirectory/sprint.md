@@ -1,9 +1,13 @@
 ---
-id: "003"
-title: "Sequester Hugo into site/ Subdirectory"
-status: planning
+id: '003'
+title: Sequester Hugo into site/ Subdirectory
+status: done
 branch: sprint/003-sequester-hugo-into-site-subdirectory
-use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
+use-cases:
+- SUC-001
+- SUC-002
+- SUC-003
+- SUC-004
 todo: sequester-hugo-into-site-in-scaffolded-curriculum-projects.md
 ---
 
