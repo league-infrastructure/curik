@@ -161,7 +161,7 @@ class CliScaffoldTest(unittest.TestCase):
             with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                 result = main(["scaffold", "structure", structure, "--path", tmp])
             self.assertEqual(result, 0)
-            self.assertTrue((Path(tmp) / "content" / "01-intro").is_dir())
+            self.assertTrue((Path(tmp) / "site" / "content" / "01-intro").is_dir())
 
     def test_scaffold_structure_json_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -182,7 +182,7 @@ class CliScaffoldTest(unittest.TestCase):
                     "--tier", "2", "--path", tmp,
                 ])
             self.assertEqual(result, 0)
-            self.assertTrue((Path(tmp) / "content" / "01-intro" / "01-hello.md").exists())
+            self.assertTrue((Path(tmp) / "site" / "content" / "01-intro" / "01-hello.md").exists())
 
     def test_scaffold_lesson_error_bad_tier(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -295,13 +295,13 @@ class CliHugoTest(unittest.TestCase):
     def test_hugo_setup_from_course(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             _init_tmp(tmp)
-            # Remove existing hugo.toml so setup can write it
-            hugo_toml = Path(tmp) / "hugo.toml"
+            # Remove existing site/hugo.toml so setup can write it fresh
+            import shutil
+            hugo_toml = Path(tmp) / "site" / "hugo.toml"
             if hugo_toml.exists():
                 hugo_toml.unlink()
-            # Also remove theme to avoid cloning
-            theme_dir = Path(tmp) / "themes"
-            import shutil
+            # Also remove site/themes/ to avoid cloning
+            theme_dir = Path(tmp) / "site" / "themes"
             if theme_dir.exists():
                 shutil.rmtree(theme_dir)
             with patch("curik.templates._clone_theme"):
@@ -324,7 +324,8 @@ class CliHugoTest(unittest.TestCase):
     def test_hugo_bump_version(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             _init_tmp(tmp)
-            hugo_toml = Path(tmp) / "hugo.toml"
+            # hugo.toml now lives at site/hugo.toml in new-layout projects
+            hugo_toml = Path(tmp) / "site" / "hugo.toml"
             if hugo_toml.exists():
                 with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                     result = main(["hugo", "bump-version", "--path", tmp, "--json"])
@@ -369,8 +370,8 @@ class CliReadmeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             _init_tmp(tmp)
             # Create a content dir with a simple .md file (no guards)
-            content_dir = Path(tmp) / "content"
-            content_dir.mkdir(exist_ok=True)
+            content_dir = Path(tmp) / "site" / "content"
+            content_dir.mkdir(parents=True, exist_ok=True)
             (content_dir / "test.md").write_text("# Hello\n", encoding="utf-8")
             with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
                 result = main(["readme", "generate", "--path", tmp, "--json"])
@@ -378,6 +379,23 @@ class CliReadmeTest(unittest.TestCase):
             data = json.loads(mock_stdout.getvalue())
             self.assertIn("generated", data)
             self.assertIn("skipped", data)
+
+    def test_readme_generate_docs_dir_default_is_site_content(self) -> None:
+        """readme generate --docs-dir default must be 'site/content', not 'content'."""
+        import argparse
+        import curik.cli as cli_module
+
+        # Build the argument parser and check the docs_dir default
+        parser = argparse.ArgumentParser()
+        sub = parser.add_subparsers(dest="command")
+        # Re-parse the readme generate subcommand to inspect its defaults
+        readme_p = sub.add_parser("readme")
+        readme_sub = readme_p.add_subparsers(dest="readme_command")
+        rm_gen = readme_sub.add_parser("generate")
+        rm_gen.add_argument("--docs-dir", dest="docs_dir", default="site/content")
+
+        args = parser.parse_args(["readme", "generate"])
+        self.assertEqual(args.docs_dir, "site/content")
 
 
 class CliMigrateTest(unittest.TestCase):

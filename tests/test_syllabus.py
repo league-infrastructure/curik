@@ -115,7 +115,7 @@ class ValidateSyllabusConsistencyTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             _write_syllabus(root, _sample_syllabus_data())
-            docs_dir = root / "content" / "mod1"
+            docs_dir = root / "site" / "content" / "mod1"
             docs_dir.mkdir(parents=True)
             (docs_dir / "extra.md").write_text(
                 "---\nuid: extra-uid\n---\n# Extra\n", encoding="utf-8"
@@ -140,7 +140,7 @@ class ValidateSyllabusConsistencyTest(unittest.TestCase):
                 ],
             }
             _write_syllabus(root, data)
-            docs_dir = root / "content" / "m1"
+            docs_dir = root / "site" / "content" / "m1"
             docs_dir.mkdir(parents=True)
             (docs_dir / "l1.md").write_text(
                 "---\nuid: uid-a\n---\n# L1\n", encoding="utf-8"

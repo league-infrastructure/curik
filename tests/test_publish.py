@@ -79,5 +79,57 @@ class GetPublishGuideTest(unittest.TestCase):
             self.assertIn("still TBD", guide)
 
 
+class CheckPublishReadyHugoLayoutTest(unittest.TestCase):
+    """Verify publish readiness checks use site/ layout paths."""
+
+    def test_hugo_toml_at_site_detected(self) -> None:
+        """hugo_toml_exists is True when site/hugo.toml is present."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "site").mkdir()
+            (root / "site" / "hugo.toml").write_text('[config]\ntitle = "Test"\n')
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["hugo_toml_exists"])
+
+    def test_hugo_toml_at_root_not_detected(self) -> None:
+        """hugo_toml_exists is False when hugo.toml is only at root (legacy layout)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "hugo.toml").write_text('[config]\ntitle = "Test"\n')
+            result = check_publish_ready(root)
+            # Legacy root-level hugo.toml is NOT detected by the new layout check
+            self.assertFalse(result["checks"]["hugo_toml_exists"])
+
+    def test_theme_at_site_themes_detected(self) -> None:
+        """theme_installed is True when site/themes/curriculum-hugo-theme/ exists."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            theme_path = root / "site" / "themes" / "curriculum-hugo-theme"
+            theme_path.mkdir(parents=True)
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["theme_installed"])
+
+    def test_theme_at_root_themes_not_detected(self) -> None:
+        """theme_installed is False when theme is only at root/themes/ (legacy layout)."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            legacy_theme = root / "themes" / "curriculum-hugo-theme"
+            legacy_theme.mkdir(parents=True)
+            result = check_publish_ready(root)
+            self.assertFalse(result["checks"]["theme_installed"])
+
+    def test_has_content_uses_site_content(self) -> None:
+        """has_content is True when site/content/ has more than one .md file."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            content_path = root / "site" / "content"
+            content_path.mkdir(parents=True)
+            # Needs more than one .md file (has_content = len(pages) > 1)
+            (content_path / "_index.md").write_text("---\ntitle: Home\n---\n")
+            (content_path / "intro.md").write_text("---\ntitle: Intro\n---\n")
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["has_content"])
+
+
 if __name__ == "__main__":
     unittest.main()

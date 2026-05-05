@@ -1,7 +1,7 @@
 ---
 id: "004"
 title: "Update scaffolding.py, migrate.py, syllabus.py, readme.py, publish.py"
-status: todo
+status: done
 use-cases: [SUC-001, SUC-002]
 depends-on: ["001"]
 github-issue: ""
@@ -49,19 +49,19 @@ or `"themes"` relative to the project root.
 
 ## Acceptance Criteria
 
-- [ ] `scaffold_structure()` creates `site/content/_index.md` and module dirs under
+- [x] `scaffold_structure()` creates `site/content/_index.md` and module dirs under
   `site/content/`
-- [ ] `create_lesson_stub()` creates lesson files under `site/content/<module>/`
-- [ ] `migrate_structure()` creates `site/content/`, `site/themes/`, `site/hugo.toml`
-- [ ] `_PROTECTED_NAMES` contains `"site"` and does NOT contain `"hugo.toml"` or
+- [x] `create_lesson_stub()` creates lesson files under `site/content/<module>/`
+- [x] `migrate_structure()` creates `site/content/`, `site/themes/`, `site/hugo.toml`
+- [x] `_PROTECTED_NAMES` contains `"site"` and does NOT contain `"hugo.toml"` or
   `"themes"`
-- [ ] `inventory_course()` correctly detects Hugo presence in both legacy and new
+- [x] `inventory_course()` correctly detects Hugo presence in both legacy and new
   layout projects
-- [ ] `validate_syllabus_consistency()` scans `site/content/` for UID frontmatter
-- [ ] `generate_readmes()` default `docs_dir` is `"site/content"`
-- [ ] `curik readme generate` (no `--docs-dir`) reads from `site/content/`
-- [ ] `publish.py` readiness checks detect Hugo presence via new-layout paths
-- [ ] `check_publish_ready()` returns correct result for a new-layout project
+- [x] `validate_syllabus_consistency()` scans `site/content/` for UID frontmatter
+- [x] `generate_readmes()` default `docs_dir` is `"site/content"`
+- [x] `curik readme generate` (no `--docs-dir`) reads from `site/content/`
+- [x] `publish.py` readiness checks detect Hugo presence via new-layout paths
+- [x] `check_publish_ready()` returns correct result for a new-layout project
 
 ## Implementation Plan
 

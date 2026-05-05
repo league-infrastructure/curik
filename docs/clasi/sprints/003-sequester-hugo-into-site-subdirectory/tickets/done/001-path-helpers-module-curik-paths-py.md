@@ -1,7 +1,7 @@
 ---
 id: "001"
 title: "Path helpers module (curik/paths.py)"
-status: todo
+status: done
 use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
 depends-on: []
 github-issue: ""
@@ -23,18 +23,18 @@ depend on it.
 
 ## Acceptance Criteria
 
-- [ ] `curik/paths.py` exists and exports `SITE_DIR`, `site_root`, `hugo_toml_path`,
+- [x] `curik/paths.py` exists and exports `SITE_DIR`, `site_root`, `hugo_toml_path`,
   `content_dir`, `themes_dir`, and `theme_dir`
-- [ ] `SITE_DIR = "site"` (string constant, no trailing slash)
-- [ ] `site_root(root)` returns `root / "site"` where `root` is a `Path`
-- [ ] `hugo_toml_path(root)` returns `root / "site" / "hugo.toml"`
-- [ ] `content_dir(root)` returns `root / "site" / "content"`
-- [ ] `themes_dir(root)` returns `root / "site" / "themes"`
-- [ ] `theme_dir(root)` returns `root / "site" / "themes" / "curriculum-hugo-theme"`
-- [ ] All helpers accept a `Path` and return a `Path`
-- [ ] Module has no side effects (no filesystem calls, no imports from other curik
+- [x] `SITE_DIR = "site"` (string constant, no trailing slash)
+- [x] `site_root(root)` returns `root / "site"` where `root` is a `Path`
+- [x] `hugo_toml_path(root)` returns `root / "site" / "hugo.toml"`
+- [x] `content_dir(root)` returns `root / "site" / "content"`
+- [x] `themes_dir(root)` returns `root / "site" / "themes"`
+- [x] `theme_dir(root)` returns `root / "site" / "themes" / "curriculum-hugo-theme"`
+- [x] All helpers accept a `Path` and return a `Path`
+- [x] Module has no side effects (no filesystem calls, no imports from other curik
   modules)
-- [ ] Module is importable: `from curik.paths import site_root, content_dir` works
+- [x] Module is importable: `from curik.paths import site_root, content_dir` works
 
 ## Implementation Plan
 

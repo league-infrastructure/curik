@@ -1,7 +1,7 @@
 ---
 id: "002"
 title: "Update hugo.toml generation and theme install path"
-status: todo
+status: done
 use-cases: [SUC-001]
 depends-on: ["001"]
 github-issue: ""
@@ -31,14 +31,14 @@ Update `curik/templates.py` to write `hugo.toml` and install the theme into
 
 ## Acceptance Criteria
 
-- [ ] `curik hugo setup` writes `hugo.toml` to `site/hugo.toml`, not `hugo.toml`
-- [ ] `curik hugo setup` installs theme to `site/themes/curriculum-hugo-theme/`
-- [ ] Generated `hugo.toml` has `source = "../course.yml"` in the data mount
-- [ ] Generated `hugo.toml` has `source = "content"` in the content mount (unchanged)
-- [ ] `site/` directory is created if it does not exist before writing `hugo.toml`
-- [ ] `bump_curriculum_version()` reads and writes `site/hugo.toml`
-- [ ] Existing `[params]` preservation logic works with the new path
-- [ ] No `hugo.toml` is written at the project root
+- [x] `curik hugo setup` writes `hugo.toml` to `site/hugo.toml`, not `hugo.toml`
+- [x] `curik hugo setup` installs theme to `site/themes/curriculum-hugo-theme/`
+- [x] Generated `hugo.toml` has `source = "../course.yml"` in the data mount
+- [x] Generated `hugo.toml` has `source = "content"` in the content mount (unchanged)
+- [x] `site/` directory is created if it does not exist before writing `hugo.toml`
+- [x] `bump_curriculum_version()` reads and writes `site/hugo.toml`
+- [x] Existing `[params]` preservation logic works with the new path
+- [x] No `hugo.toml` is written at the project root
 
 ## Implementation Plan
 

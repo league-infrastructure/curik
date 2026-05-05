@@ -8,23 +8,28 @@ repositories consistently.
 
 ## Directory Structures
 
-### Hugo Content Tree (`content/`)
+### Hugo Content Tree (`site/content/`)
 
-All rendered course content lives under `content/`. This is the
-Hugo content directory. The site configuration is in `hugo.toml`
-at the repository root:
+All rendered course content lives under `site/content/`. This is the
+Hugo content directory. The site configuration is in `site/hugo.toml`.
+All Hugo files are contained within the `site/` subdirectory:
 
 ```
-content/
-  _index.md
-  01-module-name/
+site/
+  hugo.toml
+  content/
     _index.md
-    01-lesson-name.md
-    02-lesson-name.md
-  02-module-name/
-    _index.md
-    01-lesson-name.md
-hugo.toml
+    01-module-name/
+      _index.md
+      01-lesson-name.md
+      02-lesson-name.md
+    02-module-name/
+      _index.md
+      01-lesson-name.md
+  themes/
+    curriculum-hugo-theme/
+  public/             (build output, gitignored)
+  resources/_gen/     (build cache, gitignored)
 ```
 
 Module and lesson directories use numbered prefixes (`01-`, `02-`) for

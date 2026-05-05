@@ -55,16 +55,16 @@ class ScaffoldStructureTest(unittest.TestCase):
                 ]
             }
             result = scaffold_structure(root, structure)
-            self.assertIn("content/01-intro", result["created"])
-            self.assertIn("content/01-intro/01-hello.md", result["created"])
-            self.assertIn("content/01-intro/02-variables.md", result["created"])
-            self.assertIn("content/02-loops", result["created"])
-            self.assertIn("content/02-loops/01-for.md", result["created"])
+            self.assertIn("site/content/01-intro", result["created"])
+            self.assertIn("site/content/01-intro/01-hello.md", result["created"])
+            self.assertIn("site/content/01-intro/02-variables.md", result["created"])
+            self.assertIn("site/content/02-loops", result["created"])
+            self.assertIn("site/content/02-loops/01-for.md", result["created"])
             self.assertEqual(result["existing"], [])
 
             # Files actually exist
-            self.assertTrue((root / "content" / "01-intro" / "01-hello.md").is_file())
-            self.assertTrue((root / "content" / "02-loops" / "01-for.md").is_file())
+            self.assertTrue((root / "site" / "content" / "01-intro" / "01-hello.md").is_file())
+            self.assertTrue((root / "site" / "content" / "02-loops" / "01-for.md").is_file())
 
     def test_creates_content_index_md(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -75,11 +75,11 @@ class ScaffoldStructureTest(unittest.TestCase):
                 ]
             }
             result = scaffold_structure(root, structure)
-            index_path = root / "content" / "_index.md"
+            index_path = root / "site" / "content" / "_index.md"
             self.assertTrue(index_path.is_file())
             content = index_path.read_text()
             self.assertIn("title: Course Home", content)
-            self.assertIn("content/_index.md", result["created"])
+            self.assertIn("site/content/_index.md", result["created"])
 
     def test_creates_index_md_branch_bundles(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -90,11 +90,11 @@ class ScaffoldStructureTest(unittest.TestCase):
                 ]
             }
             result = scaffold_structure(root, structure)
-            index_path = root / "content" / "01-intro" / "_index.md"
+            index_path = root / "site" / "content" / "01-intro" / "_index.md"
             self.assertTrue(index_path.is_file())
             content = index_path.read_text()
             self.assertIn("# Intro", content)
-            self.assertIn("content/01-intro/_index.md", result["created"])
+            self.assertIn("site/content/01-intro/_index.md", result["created"])
 
     def test_stub_content_has_title_and_instructor_guide(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -105,22 +105,22 @@ class ScaffoldStructureTest(unittest.TestCase):
                 ]
             }
             scaffold_structure(root, structure)
-            content = (root / "content" / "mod" / "01-hello-world.md").read_text()
+            content = (root / "site" / "content" / "mod" / "01-hello-world.md").read_text()
             self.assertIn("# Hello World", content)
             self.assertIn("{{< instructor-guide >}}", content)
 
     def test_existing_dirs_reported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "content" / "01-intro").mkdir(parents=True)
+            (root / "site" / "content" / "01-intro").mkdir(parents=True)
             structure = {
                 "modules": [
                     {"name": "01-intro", "lessons": ["01-hello.md"]},
                 ]
             }
             result = scaffold_structure(root, structure)
-            self.assertIn("content/01-intro", result["existing"])
-            self.assertIn("content/01-intro/01-hello.md", result["created"])
+            self.assertIn("site/content/01-intro", result["existing"])
+            self.assertIn("site/content/01-intro/01-hello.md", result["created"])
 
     def test_rejects_empty_modules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -140,8 +140,8 @@ class CreateLessonStubTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             rel = create_lesson_stub(root, "mod1", "01-basics.md", 1)
-            self.assertEqual(rel, "content/mod1/01-basics.md")
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            self.assertEqual(rel, "site/content/mod1/01-basics.md")
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertIn("# Basics", content)
             self.assertIn("{{< instructor-guide >}}", content)
             self.assertNotIn("Student Content", content)
@@ -150,14 +150,14 @@ class CreateLessonStubTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-basics.md", 2)
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertNotIn("Student Content", content)
 
     def test_tier3_has_student_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-basics.md", 3)
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertIn("## Student Content", content)
             self.assertIn("{{< instructor-guide >}}", content)
 
@@ -165,14 +165,14 @@ class CreateLessonStubTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-basics.md", 4)
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertIn("## Student Content", content)
 
     def test_tier3_ipynb_creates_notebook(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-lab.ipynb", 3)
-            path = root / "content" / "mod1" / "01-lab.ipynb"
+            path = root / "site" / "content" / "mod1" / "01-lab.ipynb"
             self.assertTrue(path.is_file())
             nb = json.loads(path.read_text())
             self.assertEqual(nb["nbformat"], 4)
@@ -184,7 +184,7 @@ class CreateLessonStubTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-lab.ipynb", 1)
-            path = root / "content" / "mod1" / "01-lab.ipynb"
+            path = root / "site" / "content" / "mod1" / "01-lab.ipynb"
             content = path.read_text()
             # Should be the markdown stub, not JSON
             self.assertIn("# Lab", content)
@@ -280,7 +280,7 @@ class CreateLessonStubUidTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-basics.md", 3, uid="abc12345")
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertTrue(content.startswith("---\nuid: abc12345\n---\n\n"))
             self.assertIn("# Basics", content)
 
@@ -288,7 +288,7 @@ class CreateLessonStubUidTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             create_lesson_stub(root, "mod1", "01-basics.md", 3)
-            content = (root / "content" / "mod1" / "01-basics.md").read_text()
+            content = (root / "site" / "content" / "mod1" / "01-basics.md").read_text()
             self.assertFalse(content.startswith("---"))
             self.assertTrue(content.startswith("# Basics"))
 

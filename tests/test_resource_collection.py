@@ -175,9 +175,9 @@ class ScaffoldResourceCollectionTest(unittest.TestCase):
             root = Path(tmp)
             result = scaffold_structure(root, self._structure)
             self.assertTrue(
-                (root / "content" / "how-to-guides" / "01-setup.md").is_file()
+                (root / "site" / "content" / "how-to-guides" / "01-setup.md").is_file()
             )
-            self.assertIn("content/how-to-guides", result["created"])
+            self.assertIn("site/content/how-to-guides", result["created"])
             self.assertNotIn("resources/how-to-guides", result["created"])
 
 

@@ -1,7 +1,7 @@
 ---
 id: "006"
 title: "Legacy-layout detector wired into CLI (layout_check.py)"
-status: todo
+status: done
 use-cases: [SUC-002]
 depends-on: ["001"]
 github-issue: ""
@@ -44,17 +44,17 @@ command is the resolution action, no need to warn during it).
 
 ## Acceptance Criteria
 
-- [ ] `curik/layout_check.py` exists with `check_legacy_hugo_layout(root) -> str | None`
-- [ ] Returns a warning string when `root/hugo.toml` exists and `root/site/hugo.toml`
+- [x] `curik/layout_check.py` exists with `check_legacy_hugo_layout(root) -> str | None`
+- [x] Returns a warning string when `root/hugo.toml` exists and `root/site/hugo.toml`
   does not
-- [ ] Returns a warning string when `root/themes/curriculum-hugo-theme/` exists and
+- [x] Returns a warning string when `root/themes/curriculum-hugo-theme/` exists and
   `root/site/hugo.toml` does not
-- [ ] Returns `None` when `root/site/hugo.toml` exists (new layout)
-- [ ] Returns `None` when no Hugo files detected at all (non-Hugo project)
-- [ ] Warning fires to stderr before command output on every `curik` command
-- [ ] `CURIK_NO_LAYOUT_WARNING=1 curik <command>` suppresses the warning
-- [ ] Warning does NOT fire when running `curik migrate hugo-layout`
-- [ ] No existing commands break
+- [x] Returns `None` when `root/site/hugo.toml` exists (new layout)
+- [x] Returns `None` when no Hugo files detected at all (non-Hugo project)
+- [x] Warning fires to stderr before command output on every `curik` command
+- [x] `CURIK_NO_LAYOUT_WARNING=1 curik <command>` suppresses the warning
+- [x] Warning does NOT fire when running `curik migrate hugo-layout`
+- [x] No existing commands break
 
 ## Implementation Plan
 

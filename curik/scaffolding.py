@@ -10,6 +10,7 @@ from typing import Any
 
 import yaml
 
+from .paths import content_dir as content_dir_fn
 from .project import CurikError, _course_dir
 from .templates import get_devcontainer_json, hugo_setup
 from .uid import generate_unit_uid
@@ -55,7 +56,7 @@ def scaffold_structure(
 
     # Create content/_index.md landing page (standard courses only)
     if course_type != "resource-collection":
-        content_dir = root / "content"
+        content_dir = content_dir_fn(root)
         content_dir.mkdir(parents=True, exist_ok=True)
         index_path = content_dir / "_index.md"
         index_rel = str(index_path.relative_to(root))
@@ -76,7 +77,7 @@ def scaffold_structure(
         if course_type == "resource-collection":
             mod_dir = root / "resources" / mod_name
         else:
-            mod_dir = root / "content" / mod_name
+            mod_dir = content_dir_fn(root) / mod_name
         mod_rel = str(mod_dir.relative_to(root))
         if mod_dir.exists():
             existing.append(mod_rel)
@@ -225,7 +226,7 @@ def create_lesson_stub(
     if tier not in (1, 2, 3, 4):
         raise CurikError(f"Tier must be 1-4, got {tier}.")
 
-    mod_dir = root / "content" / module
+    mod_dir = content_dir_fn(root) / module
     mod_dir.mkdir(parents=True, exist_ok=True)
     lesson_path = mod_dir / lesson
     title = _title_from_filename(lesson)

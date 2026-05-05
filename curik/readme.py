@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from .paths import content_dir as content_dir_fn
 from .project import CurikError
 
 _SHARED_RE = re.compile(
@@ -36,7 +37,7 @@ def generate_readme(content: str) -> str | None:
     return "\n\n".join(parts).strip() + "\n"
 
 
-def generate_readmes(root: Path, docs_dir: str = "content") -> dict:
+def generate_readmes(root: Path, docs_dir: str = "site/content") -> dict:
     """Generate READMEs for all lessons in docs_dir that have guards.
 
     Writes README.md files to corresponding paths under root/lessons/.

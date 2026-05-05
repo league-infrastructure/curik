@@ -12,7 +12,8 @@ from typing import Any
 import re
 from datetime import date
 
-THEME_NAME = "curriculum-hugo-theme"
+from .paths import hugo_toml_path, theme_dir, site_root, THEME_NAME
+
 THEME_REPO = "https://github.com/league-infrastructure/curriculum-hugo-theme.git"
 # Theme version is pinned independently of curik — the two repos release on
 # different cadences. Bump deliberately when adopting a new theme release.
@@ -42,7 +43,7 @@ def bump_curriculum_version(root: Path) -> str:
     current version date, increments the revision. Otherwise resets to
     ``0.<today>.1``.
     """
-    hugo_toml = root / "hugo.toml"
+    hugo_toml = hugo_toml_path(root)
     if not hugo_toml.exists():
         raise FileNotFoundError("hugo.toml not found")
 
@@ -116,7 +117,7 @@ def get_hugo_config(
         '  source = "content"',
         '  target = "content"',
         "[[module.mounts]]",
-        '  source = "course.yml"',
+        '  source = "../course.yml"',
         '  target = "data/course.yml"',
         "",
         "[markup]",
@@ -239,8 +240,11 @@ def hugo_setup(
     created: list[str] = []
     existing: list[str] = []
 
+    # Ensure site/ directory exists
+    site_root(root).mkdir(parents=True, exist_ok=True)
+
     # Generate or update hugo.toml
-    hugo_toml = root / "hugo.toml"
+    hugo_toml = hugo_toml_path(root)
     rel_toml = str(hugo_toml.relative_to(root))
     new_config = get_hugo_config(title, tier, repo_url=repo_url)
     if hugo_toml.exists():
@@ -260,7 +264,7 @@ def hugo_setup(
         created.append(rel_toml)
 
     # Install or update theme
-    theme_dest = root / "themes" / THEME_NAME
+    theme_dest = theme_dir(root)
     rel_theme = str(theme_dest.relative_to(root))
     if theme_dest.is_symlink():
         # Symlink (dev mode) — always up to date, nothing to do

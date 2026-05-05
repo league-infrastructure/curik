@@ -101,7 +101,9 @@ I found existing files in this repository:
 |------|------|
 | docs/ | Directory (14 files) |
 | README.md | File |
-| hugo.toml | File |
+| site/hugo.toml | File |
+| site/content/ | Directory |
+| site/themes/ | Directory |
 | lessons/ | Directory (8 files) |
 
 ### What would you like to do?

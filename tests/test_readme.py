@@ -130,7 +130,7 @@ class GenerateReadmesTest(unittest.TestCase):
     def test_writes_files_to_correct_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            docs = root / "content" / "01-intro"
+            docs = root / "site" / "content" / "01-intro"
             docs.mkdir(parents=True)
             (docs / "01-hello.md").write_text(
                 "{{< readme-shared >}}\n"
@@ -148,7 +148,7 @@ class GenerateReadmesTest(unittest.TestCase):
     def test_skips_files_without_guards(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            docs = root / "content"
+            docs = root / "site" / "content"
             docs.mkdir(parents=True)
             (docs / "index.md").write_text("# Index\n", encoding="utf-8")
             result = generate_readmes(root)
@@ -158,7 +158,7 @@ class GenerateReadmesTest(unittest.TestCase):
     def test_multiple_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            docs = root / "content" / "mod1"
+            docs = root / "site" / "content" / "mod1"
             docs.mkdir(parents=True)
             (docs / "a.md").write_text(
                 "{{< readme-shared >}}\nA\n{{< /readme-shared >}}\n",

@@ -203,6 +203,25 @@ class RunInitTest(unittest.TestCase):
         data = json.loads(settings_path.read_text())
         self.assertIn("Bash(curik *)", data["permissions"]["allow"])
 
+    def test_gitignore_uses_site_paths(self) -> None:
+        run_init(self.target)
+        gitignore = (self.target / ".gitignore").read_text()
+        self.assertIn("site/public/", gitignore)
+        self.assertIn("site/resources/_gen/", gitignore)
+        self.assertIn("site/.hugo_build.lock", gitignore)
+        self.assertNotIn("\npublic/\n", gitignore)
+        self.assertNotIn("\nresources/_gen/\n", gitignore)
+        self.assertNotIn("\n.hugo_build.lock\n", gitignore)
+
+    def test_deploy_pages_yml_uses_site_paths(self) -> None:
+        run_init(self.target)
+        workflow = (
+            self.target / ".github" / "workflows" / "deploy-pages.yml"
+        ).read_text()
+        self.assertIn("hugo --minify --source site", workflow)
+        self.assertIn("path: ./site/public", workflow)
+        self.assertNotIn("path: ./public\n", workflow)
+
 
 class InitCourseIntegrationTest(unittest.TestCase):
     """Test that init_course() produces init_command files."""

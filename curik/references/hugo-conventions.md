@@ -5,7 +5,7 @@ generator. Lesson authors and reviewers consult this reference.
 
 ## Configuration
 
-The `hugo.toml` file in the project root configures Hugo:
+The `site/hugo.toml` file configures Hugo (located in the `site/` subdirectory):
 
 ```toml
 baseURL = "/"
@@ -30,7 +30,7 @@ Tiers 3–4 add `[params.syllabus]` for syllabus integration.
 ## Content Directory Structure
 
 ```
-content/
+site/content/
   _index.md                  # Course landing page
   01-module-name/
     _index.md                # Module overview (branch bundle)
@@ -118,13 +118,16 @@ The `curriculum-hugo-theme` provides:
 - Search functionality
 - Responsive navigation
 
-Referenced in `hugo.toml` via the `theme` field. Distributed as a git
-submodule or Hugo module.
+Referenced in `site/hugo.toml` via the `theme` field. The theme lives at
+`site/themes/curriculum-hugo-theme/`. Distributed as a git submodule or
+Hugo module.
 
 ## Building
 
-Run `hugo` in the project root to build. The `curik hugo build` command
-runs this and returns success/failure status.
+Run `hugo` from the `site/` directory to build, or use `curik hugo build`
+which handles the working directory automatically. The build output is
+written to `site/public/`. The `curik hugo build` command runs the build
+and returns success/failure status.
 
 For local development: `hugo server` starts a live-reload dev server.
 

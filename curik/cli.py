@@ -50,6 +50,8 @@ from .scaffolding import (
     get_outline,
     scaffold_structure,
 )
+from .layout_check import check_legacy_hugo_layout
+from .layout_migrate import migrate_hugo_layout
 from .syllabus import validate_syllabus_consistency, write_syllabus_url
 from .templates import bump_curriculum_version, hugo_setup, hugo_setup_from_course
 from .validation import (
@@ -511,6 +513,20 @@ def _handle_migrate(args: argparse.Namespace) -> int:
             return _error(str(exc))
         _output(result, args)
 
+    elif sub == "hugo-layout":
+        root = Path(args.path).resolve()
+        try:
+            result = migrate_hugo_layout(
+                root,
+                dry_run=args.dry_run,
+                force=args.force,
+                verify=args.verify,
+            )
+        except RuntimeError as exc:
+            return _error(str(exc))
+        if not args.dry_run:
+            _output(result, args)
+
     return 0
 
 
@@ -683,7 +699,7 @@ def _handle_readme(args: argparse.Namespace) -> int:
     sub = args.readme_command
 
     if sub == "generate":
-        docs_dir = getattr(args, "docs_dir", "content") or "content"
+        docs_dir = getattr(args, "docs_dir", "site/content") or "site/content"
         try:
             result = generate_readmes(root, docs_dir=docs_dir)
         except CurikError as exc:
@@ -922,6 +938,24 @@ def _build_parser() -> argparse.ArgumentParser:
     mg_str.add_argument("-f", "--file", help="Read JSON from file")
     _add_common_args(mg_str)
 
+    mg_hl = migrate_sub.add_parser(
+        "hugo-layout",
+        help="Migrate Hugo files from root to site/ subdirectory",
+    )
+    mg_hl.add_argument(
+        "--dry-run", dest="dry_run", action="store_true",
+        help="Print planned moves without making any changes",
+    )
+    mg_hl.add_argument(
+        "--force", action="store_true",
+        help="Skip dirty-tree check (proceed even with uncommitted changes)",
+    )
+    mg_hl.add_argument(
+        "--verify", action="store_true",
+        help="Run 'hugo --source site' after migration to verify the build",
+    )
+    mg_hl.add_argument("--path", default=".", help="Repository path (default: .)")
+
     # ── validate ──────────────────────────────────────────────────────────
     validate_p = sub.add_parser("validate", help="Validation commands")
     validate_sub = validate_p.add_subparsers(dest="validate_command", metavar="SUBCOMMAND")
@@ -1006,8 +1040,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     rm_gen = readme_sub.add_parser("generate", help="Generate README files from lesson guards")
     rm_gen.add_argument(
-        "--docs-dir", dest="docs_dir", default="content",
-        help="Docs directory (default: content)",
+        "--docs-dir", dest="docs_dir", default="site/content",
+        help="Docs directory (default: site/content)",
     )
     _add_common_args(rm_gen)
 
@@ -1028,7 +1062,7 @@ def _build_parser() -> argparse.ArgumentParser:
         ph_get, ph_adv, ph_advsub, sp_get, sp_update, sp_concept, sp_model,
         sp_align, cfg_update, sc_struct, sc_lesson, sc_outline, sc_approve,
         sc_getout, sc_cp, iss_create, iss_list, pl_create, pl_register,
-        pl_approve, pl_execute, pl_review, pl_close, mg_inv, mg_seq, mg_str,
+        pl_approve, pl_execute, pl_review, pl_close, mg_inv, mg_seq, mg_str, mg_hl,
         vl_lesson, vl_module, vl_course, vl_report, vl_save, sy_write,
         sy_val, hg_pages, hg_create, hg_fm, hg_setup, hg_bump, hg_build,
         rm_gen, pub_guide, pub_check,
@@ -1083,6 +1117,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.command is None:
         parser.print_help()
         return 1
+
+    # Emit legacy-layout warning before any command, except when running the
+    # migration command itself (that's the resolution action, no need to warn).
+    if not (
+        args.command == "migrate"
+        and getattr(args, "migrate_command", None) == "hugo-layout"
+    ):
+        root = Path(getattr(args, "path", ".")).resolve()
+        warn = check_legacy_hugo_layout(root)
+        if warn:
+            print(warn, file=sys.stderr)
 
     handler = _GROUP_HANDLERS.get(args.command)
     if handler is None:

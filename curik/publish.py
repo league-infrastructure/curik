@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 
 from .hugo import hugo_build
+from .paths import content_dir as content_dir_fn, hugo_toml_path, site_root, theme_dir
 from .project import COURSE_YML_REQUIRED_FIELDS, _is_tbd
 
 
@@ -21,15 +22,14 @@ def _read_publish_state(root: Path) -> dict:
         "course_yml_tbd_fields": [],
         "has_workflow": (root / ".github" / "workflows" / "deploy-pages.yml").exists(),
         "has_gitignore": (root / ".gitignore").exists(),
-        "has_hugo_toml": (root / "hugo.toml").exists(),
+        "has_hugo_toml": hugo_toml_path(root).exists(),
         "base_url_ok": False,
         "has_repo_url": False,
-        "has_local_baseof": (root / "layouts" / "_default" / "baseof.html").exists(),
+        "has_local_baseof": (site_root(root) / "layouts" / "_default" / "baseof.html").exists(),
         "has_content": False,
         "content_sections": 0,
         "content_pages": 0,
-        "has_theme": (root / "themes" / "curriculum-hugo-theme").exists()
-            or (root / "themes" / "curriculum-hugo-theme").is_symlink(),
+        "has_theme": theme_dir(root).exists() or theme_dir(root).is_symlink(),
         "hugo_builds": False,
     }
 
@@ -55,11 +55,11 @@ def _read_publish_state(root: Path) -> dict:
             pass
 
     if state["has_hugo_toml"]:
-        content = (root / "hugo.toml").read_text(encoding="utf-8")
+        content = hugo_toml_path(root).read_text(encoding="utf-8")
         state["base_url_ok"] = "curriculum.jointheleague.org" in content
         # repo_url is now read from course.yml via data mount, not hugo.toml
 
-    content_dir = root / "content"
+    content_dir = content_dir_fn(root)
     if content_dir.is_dir():
         sections = [
             d for d in content_dir.iterdir()

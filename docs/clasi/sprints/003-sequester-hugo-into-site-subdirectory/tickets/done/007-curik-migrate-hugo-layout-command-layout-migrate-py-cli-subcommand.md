@@ -1,7 +1,7 @@
 ---
 id: "007"
 title: "curik migrate hugo-layout command (layout_migrate.py + CLI subcommand)"
-status: todo
+status: done
 use-cases: [SUC-002]
 depends-on: ["001", "003"]
 github-issue: ""
@@ -48,20 +48,20 @@ Add this as a new subcommand under the existing `migrate` group in `cli.py`.
 
 ## Acceptance Criteria
 
-- [ ] `curik/layout_migrate.py` exists with `migrate_hugo_layout(root, *, dry_run, force, verify)`
-- [ ] On an already-migrated project (`site/hugo.toml` exists): exits 0, prints
+- [x] `curik/layout_migrate.py` exists with `migrate_hugo_layout(root, *, dry_run, force, verify)`
+- [x] On an already-migrated project (`site/hugo.toml` exists): exits 0, prints
   "Already on new layout — nothing to do."
-- [ ] On a dirty git tree without `--force`: exits non-zero with error message
-- [ ] With `--dry-run`: prints planned moves, makes no filesystem changes
-- [ ] Moves `hugo.toml`, `themes/`, `content/` to `site/` using `git mv` when in git
-- [ ] Falls back to `shutil.move` when not in a git repo
-- [ ] `layouts/`, `static/`, `data/`, `assets/` are moved only if they exist
-- [ ] `site/hugo.toml` data mount rewritten to `../course.yml`
-- [ ] `[params]` section from original `hugo.toml` preserved in `site/hugo.toml`
-- [ ] `.gitignore` CURIK block updated to `site/public/` etc.
-- [ ] `curik migrate hugo-layout` is idempotent: second run reports nothing to do
-- [ ] `--verify` flag runs `hugo --source site` and reports success/failure
-- [ ] `curik migrate hugo-layout` is available as a CLI subcommand
+- [x] On a dirty git tree without `--force`: exits non-zero with error message
+- [x] With `--dry-run`: prints planned moves, makes no filesystem changes
+- [x] Moves `hugo.toml`, `themes/`, `content/` to `site/` using `git mv` when in git
+- [x] Falls back to `shutil.move` when not in a git repo
+- [x] `layouts/`, `static/`, `data/`, `assets/` are moved only if they exist
+- [x] `site/hugo.toml` data mount rewritten to `../course.yml`
+- [x] `[params]` section from original `hugo.toml` preserved in `site/hugo.toml`
+- [x] `.gitignore` CURIK block updated to `site/public/` etc.
+- [x] `curik migrate hugo-layout` is idempotent: second run reports nothing to do
+- [x] `--verify` flag runs `hugo --source site` and reports success/failure
+- [x] `curik migrate hugo-layout` is available as a CLI subcommand
 
 ## Implementation Plan
 

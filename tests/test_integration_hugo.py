@@ -56,44 +56,44 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
         cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2, symlink_theme=True)
 
     def test_content_dir_created(self) -> None:
-        self.assertTrue((self.root / "content").is_dir())
+        self.assertTrue((self.root / "site" / "content").is_dir())
 
     def test_content_index_md_exists(self) -> None:
-        index = self.root / "content" / "_index.md"
+        index = self.root / "site" / "content" / "_index.md"
         self.assertTrue(index.is_file())
         content = index.read_text()
         self.assertIn("title:", content)
 
     def test_modules_created_under_content(self) -> None:
-        self.assertTrue((self.root / "content" / "01-variables").is_dir())
-        self.assertTrue((self.root / "content" / "02-control-flow").is_dir())
+        self.assertTrue((self.root / "site" / "content" / "01-variables").is_dir())
+        self.assertTrue((self.root / "site" / "content" / "02-control-flow").is_dir())
 
     def test_module_index_files_exist(self) -> None:
         self.assertTrue(
-            (self.root / "content" / "01-variables" / "_index.md").is_file()
+            (self.root / "site" / "content" / "01-variables" / "_index.md").is_file()
         )
         self.assertTrue(
-            (self.root / "content" / "02-control-flow" / "_index.md").is_file()
+            (self.root / "site" / "content" / "02-control-flow" / "_index.md").is_file()
         )
 
     def test_lesson_stubs_created(self) -> None:
         self.assertTrue(
-            (self.root / "content" / "01-variables" / "01-what-are-variables.md").is_file()
+            (self.root / "site" / "content" / "01-variables" / "01-what-are-variables.md").is_file()
         )
         self.assertTrue(
-            (self.root / "content" / "02-control-flow" / "03-functions.md").is_file()
+            (self.root / "site" / "content" / "02-control-flow" / "03-functions.md").is_file()
         )
 
     def test_lesson_stubs_have_instructor_guide(self) -> None:
         lesson = (
-            self.root / "content" / "01-variables" / "01-what-are-variables.md"
+            self.root / "site" / "content" / "01-variables" / "01-what-are-variables.md"
         ).read_text()
         self.assertIn("{{< instructor-guide >}}", lesson)
         # Tier 2 should NOT have student content section
         self.assertNotIn("Student Content", lesson)
 
     def test_hugo_toml_generated(self) -> None:
-        toml_path = self.root / "hugo.toml"
+        toml_path = self.root / "site" / "hugo.toml"
         self.assertTrue(toml_path.is_file())
         toml = toml_path.read_text()
         self.assertIn('title = "Python Basics"', toml)
@@ -101,7 +101,7 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
         self.assertIn("instructorGuide = true", toml)
 
     def test_theme_symlinked(self) -> None:
-        theme_dir = self.root / "themes" / "curriculum-hugo-theme"
+        theme_dir = self.root / "site" / "themes" / "curriculum-hugo-theme"
         self.assertTrue(theme_dir.is_dir())
         self.assertTrue(theme_dir.is_symlink(), "Theme should be a symlink for development")
         # Theme should have at least a theme.toml or config file
@@ -114,9 +114,9 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
     def test_scaffold_result_lists(self) -> None:
         # Pre-existing content files go to "existing", generated ones to "created"
         all_tracked = self.result["created"] + self.result["existing"]
-        self.assertIn("content/_index.md", all_tracked)
-        self.assertIn("content/01-variables", all_tracked)
-        self.assertIn("hugo.toml", self.result["created"])
+        self.assertIn("site/content/_index.md", all_tracked)
+        self.assertIn("site/content/01-variables", all_tracked)
+        self.assertIn("site/hugo.toml", self.result["created"])
 
     def test_no_modules_at_repo_root(self) -> None:
         """Modules must be under content/, not at repo root."""
@@ -132,7 +132,7 @@ class PythonBasicsIntegrationTest(unittest.TestCase):
     def test_real_content_preserved(self) -> None:
         """Pre-existing lesson content from the fixture must not be overwritten."""
         lesson = (
-            self.root / "content" / "01-variables" / "01-what-are-variables.md"
+            self.root / "site" / "content" / "01-variables" / "01-what-are-variables.md"
         ).read_text()
         # Real content has detailed explanations, not just stub placeholders
         self.assertIn("labeled box", lesson)
@@ -166,19 +166,19 @@ class WebDevIntegrationTest(unittest.TestCase):
         cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=3, language="python", symlink_theme=True)
 
     def test_content_dir_created(self) -> None:
-        self.assertTrue((self.root / "content").is_dir())
+        self.assertTrue((self.root / "site" / "content").is_dir())
 
     def test_content_index_md_exists(self) -> None:
-        self.assertTrue((self.root / "content" / "_index.md").is_file())
+        self.assertTrue((self.root / "site" / "content" / "_index.md").is_file())
 
     def test_modules_created_under_content(self) -> None:
-        self.assertTrue((self.root / "content" / "01-html-basics").is_dir())
-        self.assertTrue((self.root / "content" / "02-css-styling").is_dir())
+        self.assertTrue((self.root / "site" / "content" / "01-html-basics").is_dir())
+        self.assertTrue((self.root / "site" / "content" / "02-css-styling").is_dir())
 
     def test_real_content_preserved(self) -> None:
         """Pre-existing lesson content from the fixture must not be overwritten."""
         lesson = (
-            self.root / "content" / "01-html-basics" / "01-first-page.md"
+            self.root / "site" / "content" / "01-html-basics" / "01-first-page.md"
         ).read_text()
         # Real content has detailed explanations, not just stub placeholders
         self.assertIn("{{< instructor-guide >}}", lesson)
@@ -188,7 +188,7 @@ class WebDevIntegrationTest(unittest.TestCase):
     def test_real_content_has_shortcodes(self) -> None:
         """Real content should exercise all shortcode types."""
         first_page = (
-            self.root / "content" / "01-html-basics" / "01-first-page.md"
+            self.root / "site" / "content" / "01-html-basics" / "01-first-page.md"
         ).read_text()
         self.assertIn("{{< callout type=", first_page)
         self.assertIn("{{< instructor-guide >}}", first_page)
@@ -196,13 +196,13 @@ class WebDevIntegrationTest(unittest.TestCase):
         self.assertIn("{{< readme-only >}}", first_page)
 
     def test_hugo_toml_generated(self) -> None:
-        toml = (self.root / "hugo.toml").read_text()
+        toml = (self.root / "site" / "hugo.toml").read_text()
         self.assertIn('title = "Web Development"', toml)
         # Tier 3 should NOT have instructorGuide param
         self.assertNotIn("instructorGuide", toml)
 
     def test_theme_symlinked(self) -> None:
-        theme_dir = self.root / "themes" / "curriculum-hugo-theme"
+        theme_dir = self.root / "site" / "themes" / "curriculum-hugo-theme"
         self.assertTrue(theme_dir.is_dir())
         self.assertTrue(theme_dir.is_symlink(), "Theme should be a symlink for development")
 
@@ -257,21 +257,21 @@ class ProductionThemeIntegrationTest(unittest.TestCase):
             cls.result = scaffold_structure(cls.root, cls.STRUCTURE, tier=2)
 
     def test_theme_cloned_not_symlinked(self) -> None:
-        theme_dir = self.root / "themes" / "curriculum-hugo-theme"
+        theme_dir = self.root / "site" / "themes" / "curriculum-hugo-theme"
         self.assertTrue(theme_dir.is_dir())
         self.assertFalse(theme_dir.is_symlink(), "Production theme should be a copy, not symlink")
 
     def test_theme_has_no_git_dir(self) -> None:
         """Cloned theme should have .git removed."""
-        git_dir = self.root / "themes" / "curriculum-hugo-theme" / ".git"
+        git_dir = self.root / "site" / "themes" / "curriculum-hugo-theme" / ".git"
         self.assertFalse(git_dir.exists())
 
     def test_theme_has_layouts(self) -> None:
-        baseof = self.root / "themes" / "curriculum-hugo-theme" / "layouts" / "_default" / "baseof.html"
+        baseof = self.root / "site" / "themes" / "curriculum-hugo-theme" / "layouts" / "_default" / "baseof.html"
         self.assertTrue(baseof.is_file())
 
     def test_theme_has_shortcodes(self) -> None:
-        shortcodes = self.root / "themes" / "curriculum-hugo-theme" / "layouts" / "shortcodes"
+        shortcodes = self.root / "site" / "themes" / "curriculum-hugo-theme" / "layouts" / "shortcodes"
         self.assertTrue(shortcodes.is_dir())
         self.assertTrue((shortcodes / "instructor-guide.html").is_file())
         self.assertTrue((shortcodes / "callout.html").is_file())
@@ -286,7 +286,7 @@ class ProductionThemeIntegrationTest(unittest.TestCase):
 
     def test_real_content_preserved(self) -> None:
         lesson = (
-            self.root / "content" / "01-variables" / "01-what-are-variables.md"
+            self.root / "site" / "content" / "01-variables" / "01-what-are-variables.md"
         ).read_text()
         self.assertIn("labeled box", lesson)
 
@@ -368,7 +368,7 @@ class ReadmeGenerationIntegrationTest(unittest.TestCase):
     def test_parse_guards_on_real_content(self) -> None:
         """parse_guards extracts correctly from real lesson files."""
         lesson = (
-            self.root / "content" / "02-css-styling" / "03-responsive.md"
+            self.root / "site" / "content" / "02-css-styling" / "03-responsive.md"
         ).read_text()
         guards = parse_guards(lesson)
         self.assertEqual(len(guards["shared"]), 1)

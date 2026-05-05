@@ -1,7 +1,7 @@
 ---
 id: "003"
 title: "Update hugo.py — build cwd and content paths"
-status: todo
+status: done
 use-cases: [SUC-003, SUC-004]
 depends-on: ["001"]
 github-issue: ""
@@ -34,15 +34,15 @@ Four functions require attention:
 
 ## Acceptance Criteria
 
-- [ ] `hugo_build(root)` runs Hugo with `cwd = root/site/`
-- [ ] `list_content_pages(root)` reads from `root/site/content/`
-- [ ] Paths returned by `list_content_pages` are relative to `site/content/`,
+- [x] `hugo_build(root)` runs Hugo with `cwd = root/site/`
+- [x] `list_content_pages(root)` reads from `root/site/content/`
+- [x] Paths returned by `list_content_pages` are relative to `site/content/`,
   not to `root` (e.g., `01-intro/01-hello.md`, not `site/content/01-intro/01-hello.md`)
-- [ ] `create_content_page(root, "mod/page.md", "Title")` creates
+- [x] `create_content_page(root, "mod/page.md", "Title")` creates
   `root/site/content/mod/page.md`
-- [ ] `create_content_page` returns `"mod/page.md"` (not `"site/content/mod/page.md"`)
-- [ ] Path traversal guard blocks paths escaping `site/content/`
-- [ ] `update_frontmatter` resolves pages under `site/content/`
+- [x] `create_content_page` returns `"mod/page.md"` (not `"site/content/mod/page.md"`)
+- [x] Path traversal guard blocks paths escaping `site/content/`
+- [x] `update_frontmatter` resolves pages under `site/content/`
 
 ## Implementation Plan
 

@@ -1,7 +1,7 @@
 ---
 id: "005"
 title: "Update gitignore template, deploy-pages.yml, and agent-facing docs"
-status: todo
+status: done
 use-cases: [SUC-001, SUC-002]
 depends-on: []
 github-issue: ""
@@ -55,16 +55,16 @@ site/.hugo_build.lock
 
 ## Acceptance Criteria
 
-- [ ] `curik/init/gitignore` CURIK block uses `site/public/`, `site/resources/_gen/`,
+- [x] `curik/init/gitignore` CURIK block uses `site/public/`, `site/resources/_gen/`,
   `site/.hugo_build.lock`; old root-level paths removed
-- [ ] `curik/init/deploy-pages.yml` build step runs `hugo --minify --source site`
-- [ ] `curik/init/deploy-pages.yml` upload artifact path is `./site/public`
-- [ ] `curik/init/claude-section.md` "Hugo Theme" section references `site/themes/`
+- [x] `curik/init/deploy-pages.yml` build step runs `hugo --minify --source site`
+- [x] `curik/init/deploy-pages.yml` upload artifact path is `./site/public`
+- [x] `curik/init/claude-section.md` "Hugo Theme" section references `site/themes/`
   and `site/hugo.toml`
-- [ ] `curik/references/hugo-conventions.md` has no root-relative Hugo paths (all
+- [x] `curik/references/hugo-conventions.md` has no root-relative Hugo paths (all
   updated with `site/` prefix)
-- [ ] `curik/skills/repo-scaffolding.md` layout example shows `site/` directory tree
-- [ ] `curik/agents/start-curik.md` paths table reflects new layout
+- [x] `curik/skills/repo-scaffolding.md` layout example shows `site/` directory tree
+- [x] `curik/agents/start-curik.md` paths table reflects new layout
 
 ## Implementation Plan
 

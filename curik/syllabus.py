@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 from syllabus.models import Course, LessonSet
 
+from .paths import content_dir as content_dir_fn
 from .project import CurikError
 
 
@@ -88,8 +89,8 @@ def validate_syllabus_consistency(root: Path) -> dict:
     # Collect UIDs from syllabus
     syllabus_uids = {e["uid"] for e in entries if e.get("uid")}
 
-    # Scan content/ for .md files with uid in frontmatter
-    docs_dir = root / "content"
+    # Scan site/content/ for .md files with uid in frontmatter
+    docs_dir = content_dir_fn(root)
     page_uids: set[str] = set()
     pages_without_uid: list[str] = []
 

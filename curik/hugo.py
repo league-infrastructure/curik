@@ -9,6 +9,7 @@ from typing import Any
 
 import yaml
 
+from .paths import site_root, content_dir as content_dir_fn
 from .project import CurikError
 
 
@@ -53,11 +54,11 @@ def list_content_pages(
     Each entry has: ``path`` (relative to root), ``title``, ``weight``,
     ``draft``.  Optional *section* limits to a subdirectory of ``content/``.
     """
-    content_dir = root / "content"
-    if not content_dir.is_dir():
+    _content_dir = content_dir_fn(root)
+    if not _content_dir.is_dir():
         return []
 
-    search_dir = content_dir / section if section else content_dir
+    search_dir = _content_dir / section if section else _content_dir
     if not search_dir.is_dir():
         return []
 
@@ -66,7 +67,7 @@ def list_content_pages(
         text = md_file.read_text(encoding="utf-8")
         fm, _ = parse_frontmatter(text)
         pages.append({
-            "path": str(md_file.relative_to(root)),
+            "path": str(md_file.relative_to(_content_dir)),
             "title": fm.get("title", ""),
             "weight": fm.get("weight", 0),
             "draft": fm.get("draft", False),
@@ -87,11 +88,11 @@ def create_content_page(
     Returns the relative path of the created file.
     Raises CurikError if the file already exists or path escapes content/.
     """
-    content_dir = (root / "content").resolve()
-    full_path = (content_dir / page_path).resolve()
+    _content_dir = content_dir_fn(root).resolve()
+    full_path = (_content_dir / page_path).resolve()
 
     # Prevent path traversal
-    if not str(full_path).startswith(str(content_dir)):
+    if not str(full_path).startswith(str(_content_dir)):
         raise CurikError(f"Path escapes content directory: {page_path}")
 
     if full_path.exists():
@@ -105,7 +106,7 @@ def create_content_page(
     text = render_frontmatter(fm) + "\n" + content
     full_path.write_text(text, encoding="utf-8")
 
-    return str(full_path.relative_to(root.resolve()))
+    return str(full_path.relative_to(_content_dir))
 
 
 def update_frontmatter(
@@ -116,7 +117,7 @@ def update_frontmatter(
     Returns the merged frontmatter dict. Body content is preserved.
     Raises CurikError if the file doesn't exist.
     """
-    full_path = root / page_path
+    full_path = content_dir_fn(root) / page_path
     if not full_path.is_file():
         raise CurikError(f"Page not found: {page_path}")
 
@@ -146,10 +147,21 @@ def hugo_build(root: Path) -> dict[str, Any]:
             ),
         }
 
+    build_dir = site_root(root)
+    if not build_dir.is_dir():
+        return {
+            "success": False,
+            "output": "",
+            "error": (
+                f"Hugo site directory not found: {build_dir}. "
+                "Run 'curik hugo setup' first."
+            ),
+        }
+
     try:
         result = subprocess.run(
             ["hugo"],
-            cwd=str(root),
+            cwd=str(build_dir),
             capture_output=True,
             text=True,
             timeout=60,

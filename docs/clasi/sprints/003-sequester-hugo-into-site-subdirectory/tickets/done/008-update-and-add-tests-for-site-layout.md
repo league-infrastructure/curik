@@ -1,7 +1,7 @@
 ---
 id: "008"
 title: "Update and add tests for site/ layout"
-status: todo
+status: done
 use-cases: [SUC-001, SUC-002, SUC-003, SUC-004]
 depends-on: ["002", "003", "004", "006", "007"]
 github-issue: ""
@@ -24,21 +24,21 @@ the remaining cross-cutting test work and ensures the full suite passes.
 
 ## Acceptance Criteria
 
-- [ ] `uv run pytest -q` passes with zero failures
-- [ ] `tests/test_hugo.py` — all fixtures use `site/content/` layout; all Hugo
+- [x] `uv run pytest -q` passes with zero failures
+- [x] `tests/test_hugo.py` — all fixtures use `site/content/` layout; all Hugo
   setup assertions use `site/hugo.toml` and `site/themes/`
-- [ ] `tests/test_scaffolding.py` — module and lesson stub assertions use
+- [x] `tests/test_scaffolding.py` — module and lesson stub assertions use
   `site/content/...`
-- [ ] `tests/test_migration.py` — `migrate_structure` output paths use `site/`
+- [x] `tests/test_migration.py` — `migrate_structure` output paths use `site/`
   prefix; `_PROTECTED_NAMES` tests verify `"site"` is in the set and `"hugo.toml"`
   and `"themes"` are not
-- [ ] `tests/test_cli.py` — Hugo CLI handler fixtures use `site/` layout;
+- [x] `tests/test_cli.py` — Hugo CLI handler fixtures use `site/` layout;
   `--docs-dir` default tests expect `"site/content"` not `"content"`
-- [ ] `tests/test_publish.py` — readiness check fixtures place Hugo files under
+- [x] `tests/test_publish.py` — readiness check fixtures place Hugo files under
   `site/`
-- [ ] `tests/test_layout_check.py` (new) — see T006 testing plan for required cases
-- [ ] `tests/test_layout_migrate.py` (new) — see T007 testing plan for required cases
-- [ ] `tests/test_paths.py` (new) — see T001 testing plan for required cases
+- [x] `tests/test_layout_check.py` (new) — see T006 testing plan for required cases
+- [x] `tests/test_layout_migrate.py` (new) — see T007 testing plan for required cases
+- [x] `tests/test_paths.py` (new) — see T001 testing plan for required cases
 
 ## Implementation Plan
 

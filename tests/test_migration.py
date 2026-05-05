@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from curik.migrate import inventory_course, migrate_structure
+from curik.migrate import _PROTECTED_NAMES, inventory_course, migrate_structure
 from curik.templates import get_course_yml_template, get_devcontainer_json, get_hugo_config
 
 
@@ -75,6 +75,30 @@ class TestInventoryCoursePopulated(unittest.TestCase):
             result = inventory_course(tmp)
             self.assertTrue(result["has_devcontainer"])
 
+    def test_detects_hugo_via_new_layout(self) -> None:
+        """inventory_course detects Hugo when hugo.toml is under site/."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "site").mkdir()
+            (root / "site" / "hugo.toml").write_text('title = "test"\n')
+            result = inventory_course(tmp)
+            self.assertEqual(result["generator_guess"], "hugo")
+
+
+class TestProtectedNames(unittest.TestCase):
+    """_PROTECTED_NAMES reflects new-layout design."""
+
+    def test_site_is_protected(self) -> None:
+        self.assertIn("site", _PROTECTED_NAMES)
+
+    def test_hugo_toml_not_protected(self) -> None:
+        """hugo.toml no longer lives at root in new-layout projects."""
+        self.assertNotIn("hugo.toml", _PROTECTED_NAMES)
+
+    def test_themes_not_protected(self) -> None:
+        """themes/ no longer lives at root in new-layout projects."""
+        self.assertNotIn("themes", _PROTECTED_NAMES)
+
 
 class TestMigrateStructure(unittest.TestCase):
     """migrate_structure creates expected directories for tier 3."""
@@ -88,31 +112,31 @@ class TestMigrateStructure(unittest.TestCase):
             # .course/ should be initialized
             self.assertTrue((root / ".course" / "state.json").is_file())
 
-            # content/ and hugo.toml should exist
-            self.assertTrue((root / "content").is_dir())
-            self.assertTrue((root / "hugo.toml").is_file())
-            self.assertTrue((root / "content" / "_index.md").is_file())
+            # site/content/ and site/hugo.toml should exist
+            self.assertTrue((root / "site" / "content").is_dir())
+            self.assertTrue((root / "site" / "hugo.toml").is_file())
+            self.assertTrue((root / "site" / "content" / "_index.md").is_file())
 
-            # Theme should be copied into themes/
-            self.assertTrue((root / "themes" / "curriculum-hugo-theme").is_dir())
-            self.assertTrue((root / "themes" / "curriculum-hugo-theme" / "theme.toml").is_file())
+            # Theme should be copied into site/themes/
+            self.assertTrue((root / "site" / "themes" / "curriculum-hugo-theme").is_dir())
+            self.assertTrue((root / "site" / "themes" / "curriculum-hugo-theme" / "theme.toml").is_file())
 
             # Each module should have a directory and _index.md
             for mod in modules:
-                self.assertTrue((root / "content" / mod).is_dir())
-                self.assertTrue((root / "content" / mod / "_index.md").is_file())
+                self.assertTrue((root / "site" / "content" / mod).is_dir())
+                self.assertTrue((root / "site" / "content" / mod / "_index.md").is_file())
 
             # created list should contain relevant paths
-            self.assertIn("content", result["created"])
-            self.assertIn("hugo.toml", result["created"])
-            self.assertIn("content/_index.md", result["created"])
-            self.assertIn("themes/curriculum-hugo-theme", result["created"])
+            self.assertIn("site/content", result["created"])
+            self.assertIn("site/hugo.toml", result["created"])
+            self.assertIn("site/content/_index.md", result["created"])
+            self.assertIn("site/themes/curriculum-hugo-theme", result["created"])
 
     def test_hugo_config_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             migrate_structure(root, 3, ["01-intro"])
-            content = (root / "hugo.toml").read_text()
+            content = (root / "site" / "hugo.toml").read_text()
             self.assertIn("curriculum-hugo-theme", content)
             self.assertIn("title =", content)
 
@@ -124,7 +148,7 @@ class TestMigrateStructure(unittest.TestCase):
             # Run again — should not fail
             result2 = migrate_structure(root, 3, modules)
             # Theme is always refreshed; everything else is idempotent
-            self.assertEqual(result2["created"], ["themes/curriculum-hugo-theme"])
+            self.assertEqual(result2["created"], ["site/themes/curriculum-hugo-theme"])
 
 
 class TestGetHugoConfig(unittest.TestCase):

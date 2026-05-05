@@ -67,8 +67,8 @@ class ListContentPagesTest(unittest.TestCase):
         self.assertEqual(result, [])
 
     def test_lists_pages(self) -> None:
-        content = self.root / "content"
-        content.mkdir()
+        content = self.root / "site" / "content"
+        content.mkdir(parents=True)
         (content / "_index.md").write_text("---\ntitle: Home\nweight: 1\n---\n")
         mod = content / "01-intro"
         mod.mkdir()
@@ -78,15 +78,16 @@ class ListContentPagesTest(unittest.TestCase):
         pages = list_content_pages(self.root)
         self.assertEqual(len(pages), 3)
         paths = [p["path"] for p in pages]
-        self.assertIn("content/01-intro/01-hello.md", paths)
+        # Paths are now relative to content_dir, not root
+        self.assertIn("01-intro/01-hello.md", paths)
 
         hello = next(p for p in pages if "01-hello" in p["path"])
         self.assertEqual(hello["title"], "Hello")
         self.assertTrue(hello["draft"])
 
     def test_section_filter(self) -> None:
-        content = self.root / "content"
-        content.mkdir()
+        content = self.root / "site" / "content"
+        content.mkdir(parents=True)
         (content / "_index.md").write_text("---\ntitle: Home\n---\n")
         mod = content / "01-intro"
         mod.mkdir()
@@ -101,20 +102,23 @@ class CreateContentPageTest(unittest.TestCase):
     def setUp(self) -> None:
         self._tmpdir = TemporaryDirectory()
         self.root = Path(self._tmpdir.name)
-        (self.root / "content").mkdir()
+        (self.root / "site" / "content").mkdir(parents=True)
 
     def tearDown(self) -> None:
         self._tmpdir.cleanup()
 
     def test_creates_page(self) -> None:
         rel = create_content_page(self.root, "about.md", "About Us")
-        self.assertEqual(rel, "content/about.md")
-        page = (self.root / "content" / "about.md").read_text()
+        # Return value is relative to content_dir, not root
+        self.assertEqual(rel, "about.md")
+        page = (self.root / "site" / "content" / "about.md").read_text()
         self.assertIn("title: About Us", page)
 
     def test_creates_parent_dirs(self) -> None:
         create_content_page(self.root, "guides/setup.md", "Setup Guide")
-        self.assertTrue((self.root / "content" / "guides" / "setup.md").exists())
+        self.assertTrue(
+            (self.root / "site" / "content" / "guides" / "setup.md").exists()
+        )
 
     def test_extra_frontmatter(self) -> None:
         create_content_page(
@@ -122,7 +126,7 @@ class CreateContentPageTest(unittest.TestCase):
             extra_frontmatter={"weight": 5, "draft": True},
         )
         fm, _ = parse_frontmatter(
-            (self.root / "content" / "page.md").read_text()
+            (self.root / "site" / "content" / "page.md").read_text()
         )
         self.assertEqual(fm["weight"], 5)
         self.assertTrue(fm["draft"])
@@ -138,7 +142,7 @@ class CreateContentPageTest(unittest.TestCase):
 
     def test_content_body(self) -> None:
         create_content_page(self.root, "page.md", "Title", content="Hello world")
-        text = (self.root / "content" / "page.md").read_text()
+        text = (self.root / "site" / "content" / "page.md").read_text()
         self.assertIn("Hello world", text)
 
 
@@ -146,8 +150,8 @@ class UpdateFrontmatterTest(unittest.TestCase):
     def setUp(self) -> None:
         self._tmpdir = TemporaryDirectory()
         self.root = Path(self._tmpdir.name)
-        content = self.root / "content"
-        content.mkdir()
+        content = self.root / "site" / "content"
+        content.mkdir(parents=True)
         (content / "page.md").write_text(
             "---\ntitle: Original\nweight: 1\n---\n\nBody content here."
         )
@@ -156,22 +160,23 @@ class UpdateFrontmatterTest(unittest.TestCase):
         self._tmpdir.cleanup()
 
     def test_updates_existing_field(self) -> None:
-        result = update_frontmatter(self.root, "content/page.md", {"weight": 99})
+        # page_path is relative to content_dir
+        result = update_frontmatter(self.root, "page.md", {"weight": 99})
         self.assertEqual(result["weight"], 99)
         self.assertEqual(result["title"], "Original")
 
     def test_adds_new_field(self) -> None:
-        result = update_frontmatter(self.root, "content/page.md", {"draft": True})
+        result = update_frontmatter(self.root, "page.md", {"draft": True})
         self.assertTrue(result["draft"])
 
     def test_preserves_body(self) -> None:
-        update_frontmatter(self.root, "content/page.md", {"weight": 2})
-        text = (self.root / "content" / "page.md").read_text()
+        update_frontmatter(self.root, "page.md", {"weight": 2})
+        text = (self.root / "site" / "content" / "page.md").read_text()
         self.assertIn("Body content here.", text)
 
     def test_error_file_not_found(self) -> None:
         with self.assertRaises(CurikError):
-            update_frontmatter(self.root, "content/missing.md", {"weight": 1})
+            update_frontmatter(self.root, "missing.md", {"weight": 1})
 
 
 class HugoBuildTest(unittest.TestCase):
@@ -187,6 +192,26 @@ class HugoBuildTest(unittest.TestCase):
         self.assertIn("success", result)
         self.assertIn("output", result)
         self.assertIn("error", result)
+
+    def test_build_uses_site_root_as_cwd(self) -> None:
+        """hugo_build must run Hugo with cwd = root/site/."""
+        site_dir = self.root / "site"
+        site_dir.mkdir()
+
+        mock_result = type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+        with patch("shutil.which", return_value="/usr/bin/hugo"), \
+             patch("subprocess.run", return_value=mock_result) as mock_run:
+            hugo_build(self.root)
+
+        call_kwargs = mock_run.call_args
+        self.assertEqual(call_kwargs[1]["cwd"], str(site_dir))
+
+    def test_build_returns_error_when_site_dir_missing(self) -> None:
+        """hugo_build returns an error when site/ directory does not exist."""
+        with patch("shutil.which", return_value="/usr/bin/hugo"):
+            result = hugo_build(self.root)
+        self.assertFalse(result["success"])
+        self.assertIn("site", result["error"])
 
 
 def _fake_clone(dest: Path, tag: str) -> None:
@@ -209,11 +234,46 @@ class HugoSetupTest(unittest.TestCase):
             root = Path(tmp)
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test Course", 2)
-            self.assertIn("hugo.toml", result["created"])
-            toml = (root / "hugo.toml").read_text()
+            self.assertIn("site/hugo.toml", result["created"])
+            toml = (root / "site" / "hugo.toml").read_text()
             self.assertIn('title = "Test Course"', toml)
             self.assertIn('theme = "curriculum-hugo-theme"', toml)
             self.assertIn("instructorGuide = true", toml)
+
+    def test_hugo_toml_not_at_root(self) -> None:
+        """hugo.toml must NOT be written at the project root."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                self.hugo_setup(root, "Test", 2)
+            self.assertFalse((root / "hugo.toml").exists())
+
+    def test_course_yml_mount_uses_parent_relative_path(self) -> None:
+        """Generated hugo.toml must mount course.yml with source = '../course.yml'."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                self.hugo_setup(root, "Test", 2)
+            toml = (root / "site" / "hugo.toml").read_text()
+            self.assertIn('source = "../course.yml"', toml)
+
+    def test_content_mount_source_unchanged(self) -> None:
+        """Generated hugo.toml content mount source remains 'content'."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                self.hugo_setup(root, "Test", 2)
+            toml = (root / "site" / "hugo.toml").read_text()
+            self.assertIn('source = "content"', toml)
+
+    def test_site_dir_created_if_missing(self) -> None:
+        """hugo_setup creates site/ directory when it doesn't exist."""
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertFalse((root / "site").exists())
+            with patch("curik.templates._clone_theme", side_effect=_fake_clone):
+                self.hugo_setup(root, "Test", 2)
+            self.assertTrue((root / "site").is_dir())
 
     def test_clones_theme_from_repo(self) -> None:
         """Production mode clones theme at the pinned THEME_VERSION."""
@@ -222,9 +282,9 @@ class HugoSetupTest(unittest.TestCase):
             with patch("curik.templates._clone_theme", side_effect=_fake_clone) as mock_clone, \
                  patch("curik.templates.THEME_VERSION", "v0.20260313.7"):
                 result = self.hugo_setup(root, "Test", 3)
-            theme_dir = root / "themes" / self.theme_name
+            theme_dir = root / "site" / "themes" / self.theme_name
             self.assertTrue(theme_dir.is_dir())
-            self.assertIn(f"themes/{self.theme_name}", result["created"])
+            self.assertIn(f"site/themes/{self.theme_name}", result["created"])
             args = mock_clone.call_args
             self.assertEqual(args[0][1], "v0.20260313.7")
             self.assertEqual(args[0][0].name, self.theme_name)
@@ -236,7 +296,7 @@ class HugoSetupTest(unittest.TestCase):
             with patch("curik.templates._clone_theme") as mock_clone:
                 result = self.hugo_setup(root, "Test", 2, symlink_theme=True)
             mock_clone.assert_not_called()
-            theme_dir = root / "themes" / self.theme_name
+            theme_dir = root / "site" / "themes" / self.theme_name
             if self.theme_source.is_dir():
                 self.assertTrue(theme_dir.is_symlink())
 
@@ -245,28 +305,32 @@ class HugoSetupTest(unittest.TestCase):
         from curik.templates import get_hugo_config
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
+            site_dir = root / "site"
+            site_dir.mkdir()
             config = get_hugo_config("Test", 2)
-            (root / "hugo.toml").write_text(config)
+            (site_dir / "hugo.toml").write_text(config)
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)
-            self.assertIn("hugo.toml", result["existing"])
+            self.assertIn("site/hugo.toml", result["existing"])
 
     def test_existing_hugo_toml_updated_when_stale(self) -> None:
         """hugo.toml is regenerated when it differs from the expected config."""
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "hugo.toml").write_text("old config\n")
+            site_dir = root / "site"
+            site_dir.mkdir()
+            (site_dir / "hugo.toml").write_text("old config\n")
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)
-            self.assertIn("hugo.toml", result["created"])
-            content = (root / "hugo.toml").read_text()
+            self.assertIn("site/hugo.toml", result["created"])
+            content = (site_dir / "hugo.toml").read_text()
             self.assertIn('title = "Test"', content)
             self.assertIn("curriculum_version", content)
 
     def test_existing_theme_not_overwritten(self) -> None:
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            theme_dir = root / "themes" / self.theme_name
+            theme_dir = root / "site" / "themes" / self.theme_name
             theme_dir.mkdir(parents=True)
             (theme_dir / "marker.txt").write_text("original")
             # Write a theme.toml with matching version so it's not updated
@@ -276,7 +340,7 @@ class HugoSetupTest(unittest.TestCase):
             )
             with patch("curik.templates._clone_theme", side_effect=_fake_clone):
                 result = self.hugo_setup(root, "Test", 2)
-            self.assertIn(f"themes/{self.theme_name}", result["existing"])
+            self.assertIn(f"site/themes/{self.theme_name}", result["existing"])
             self.assertEqual(
                 (theme_dir / "marker.txt").read_text(), "original"
             )
