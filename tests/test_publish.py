@@ -39,7 +39,8 @@ class CheckPublishReadyTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             result = check_publish_ready(root)
-            expected_top_keys = {"ready", "checks", "slug", "title", "url",
+            expected_top_keys = {"ready", "checks", "title", "url",
+                                  "base_url", "expected_base_url",
                                   "content_sections", "content_pages"}
             self.assertTrue(expected_top_keys.issubset(result.keys()))
             expected_check_keys = {
@@ -129,6 +130,90 @@ class CheckPublishReadyHugoLayoutTest(unittest.TestCase):
             (content_path / "intro.md").write_text("---\ntitle: Intro\n---\n")
             result = check_publish_ready(root)
             self.assertTrue(result["checks"]["has_content"])
+
+
+class BaseUrlConfiguredTest(unittest.TestCase):
+    """Verify base_url_configured uses TOML parsing and is CNAME-aware."""
+
+    def _make_site(self, root: Path, *, base_url: str, cname: str | None = None) -> None:
+        site = root / "site"
+        site.mkdir(parents=True)
+        (site / "hugo.toml").write_text(
+            f'baseURL = "{base_url}"\ntitle = "Test"\n', encoding="utf-8"
+        )
+        if cname is not None:
+            static = site / "static"
+            static.mkdir()
+            (static / "CNAME").write_text(cname + "\n", encoding="utf-8")
+
+    def test_subpath_match_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "course.yml").write_text(
+                "title: T\nrepo_url: https://github.com/league-curriculum/Motors\n",
+                encoding="utf-8",
+            )
+            self._make_site(root, base_url="/Motors/")
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["base_url_configured"])
+            self.assertEqual(result["expected_base_url"], "/Motors/")
+
+    def test_subpath_mismatch_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "course.yml").write_text(
+                "title: T\nrepo_url: https://github.com/league-curriculum/Motors\n",
+                encoding="utf-8",
+            )
+            self._make_site(root, base_url="/SomethingElse/")
+            result = check_publish_ready(root)
+            self.assertFalse(result["checks"]["base_url_configured"])
+
+    def test_cname_match_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "course.yml").write_text(
+                "title: T\nrepo_url: https://github.com/league-curriculum/labs\n",
+                encoding="utf-8",
+            )
+            self._make_site(
+                root,
+                base_url="https://labs.jointheleague.org/",
+                cname="labs.jointheleague.org",
+            )
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["base_url_configured"])
+            self.assertEqual(result["url"], "https://labs.jointheleague.org/")
+
+    def test_cname_present_but_subpath_baseurl_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "course.yml").write_text(
+                "title: T\nrepo_url: https://github.com/league-curriculum/labs\n",
+                encoding="utf-8",
+            )
+            self._make_site(
+                root, base_url="/labs/", cname="labs.jointheleague.org"
+            )
+            result = check_publish_ready(root)
+            self.assertFalse(result["checks"]["base_url_configured"])
+
+    def test_baseurl_parsed_with_inline_comment(self) -> None:
+        """Substring matching used to break on comments; TOML parsing handles them."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "course.yml").write_text(
+                "title: T\nrepo_url: https://github.com/league-curriculum/Motors\n",
+                encoding="utf-8",
+            )
+            site = root / "site"
+            site.mkdir()
+            (site / "hugo.toml").write_text(
+                'baseURL = "/Motors/" # inline comment\ntitle = "Test"\n',
+                encoding="utf-8",
+            )
+            result = check_publish_ready(root)
+            self.assertTrue(result["checks"]["base_url_configured"])
 
 
 if __name__ == "__main__":

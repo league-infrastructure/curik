@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -9,12 +10,27 @@ import yaml
 from .hugo import hugo_build
 from .paths import content_dir as content_dir_fn, hugo_toml_path, site_root, theme_dir
 from .project import COURSE_YML_REQUIRED_FIELDS, _is_tbd
+from .templates import compute_base_url
+
+
+def _read_hugo_base_url(root: Path) -> str:
+    """Parse site/hugo.toml and return the baseURL value, or '' on failure.
+
+    Uses ``tomllib`` (stdlib) to parse the file rather than substring
+    matching — string matching is fragile (whitespace, quoting, comments)
+    and was the cause of the long-standing broken base_url check.
+    """
+    try:
+        data = tomllib.loads(hugo_toml_path(root).read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return ""
+    value = data.get("baseURL", "")
+    return value if isinstance(value, str) else ""
 
 
 def _read_publish_state(root: Path) -> dict:
     """Read course metadata and check publish-readiness indicators."""
     state: dict = {
-        "slug": "",
         "title": "this course",
         "tier": 0,
         "has_course_yml": False,
@@ -24,7 +40,10 @@ def _read_publish_state(root: Path) -> dict:
         "has_gitignore": (root / ".gitignore").exists(),
         "has_hugo_toml": hugo_toml_path(root).exists(),
         "base_url_ok": False,
+        "base_url": "",
+        "expected_base_url": "",
         "has_repo_url": False,
+        "repo_url": "",
         "has_local_baseof": (site_root(root) / "layouts" / "_default" / "baseof.html").exists(),
         "has_content": False,
         "content_sections": 0,
@@ -40,12 +59,11 @@ def _read_publish_state(root: Path) -> dict:
             data = yaml.safe_load(course_yml.read_text(encoding="utf-8"))
             if isinstance(data, dict):
                 state["course_yml_data"] = data
-                state["slug"] = data.get("slug", "")
                 state["title"] = data.get("title", state["title"])
                 state["tier"] = data.get("tier", 0)
                 repo_url = data.get("repo_url", "")
-                state["has_repo_url"] = bool(repo_url) and repo_url != "TBD"
-                # Check required fields for TBD/empty values
+                state["repo_url"] = repo_url if isinstance(repo_url, str) else ""
+                state["has_repo_url"] = bool(state["repo_url"]) and state["repo_url"] != "TBD"
                 tbd = []
                 for field in COURSE_YML_REQUIRED_FIELDS:
                     if _is_tbd(data.get(field)):
@@ -55,9 +73,14 @@ def _read_publish_state(root: Path) -> dict:
             pass
 
     if state["has_hugo_toml"]:
-        content = hugo_toml_path(root).read_text(encoding="utf-8")
-        state["base_url_ok"] = "curriculum.jointheleague.org" in content
-        # repo_url is now read from course.yml via data mount, not hugo.toml
+        state["base_url"] = _read_hugo_base_url(root)
+        state["expected_base_url"] = compute_base_url(root, state["repo_url"])
+        # base_url_ok: hugo.toml's baseURL must match what compute_base_url
+        # would produce for this repo (CNAME → https://<cname>/, otherwise
+        # → /<repo>/). Trailing slashes are normalized for comparison.
+        actual = state["base_url"].rstrip("/")
+        expected = state["expected_base_url"].rstrip("/")
+        state["base_url_ok"] = bool(expected) and actual == expected
 
     content_dir = content_dir_fn(root)
     if content_dir.is_dir():
@@ -93,16 +116,26 @@ def get_publish_guide(root: Path) -> str:
     """
     s = _read_publish_state(root)
 
-    slug = s["slug"]
     title = s["title"]
-    has_slug = slug and slug != "TBD"
+    repo_url = s["repo_url"]
+    expected = s["expected_base_url"]
 
-    if has_slug:
-        url = f"https://curriculum.jointheleague.org/{slug}/"
-        repo = f"league-curriculum/{slug}"
+    if expected.startswith("http"):
+        # CNAME deployment — site is at the custom domain root.
+        url = expected
+    elif repo_url and repo_url != "TBD":
+        repo_name = repo_url.rstrip("/").rsplit("/", 1)[-1]
+        url = f"https://league-curriculum.github.io/{repo_name}/"
     else:
-        url = "https://curriculum.jointheleague.org/<slug>/"
-        repo = "league-curriculum/<slug>"
+        url = "https://league-curriculum.github.io/<repo>/"
+
+    if repo_url and repo_url != "TBD":
+        # Strip the GitHub host to get owner/repo.
+        repo = repo_url.removeprefix("https://github.com/").rstrip("/")
+        if not repo:
+            repo = "league-curriculum/<repo>"
+    else:
+        repo = "league-curriculum/<repo>"
 
     lines = [
         f"# Publishing Guide: {title}",
@@ -112,14 +145,11 @@ def get_publish_guide(root: Path) -> str:
         "",
         "## Hosting Architecture",
         "",
-        "All League curricula are published to GitHub Pages under the",
-        "`league-curriculum` GitHub organization with a shared custom domain:",
+        "League curricula are published to GitHub Pages. A site is served",
+        "either at a custom domain root (when a `site/static/CNAME` file is",
+        "present) or as a project subpath under `league-curriculum.github.io`.",
         "",
-        "- **Index:** https://curriculum.jointheleague.org/ (from league-curriculum/league-curriculum)",
         f"- **This course:** {url}",
-        "",
-        "GitHub Pages automatically routes project repos as subpaths of",
-        "the org custom domain.",
         "",
 
         # ── Pre-publish checklist ──────────────────────────────────
@@ -167,7 +197,6 @@ def get_publish_guide(root: Path) -> str:
             ])
             field_hints = {
                 "title": "Human-readable course title",
-                "slug": "URL path segment (lowercase, hyphenated)",
                 "tier": "1 (K-2), 2 (3-5), 3 (6-8), or 4 (9-12)",
                 "grades": "Grade range, e.g. 'K-2', '6-8'",
                 "category": "unplugged, block-programming, text-programming, or advanced",
@@ -199,8 +228,9 @@ def get_publish_guide(root: Path) -> str:
     ))
     lines.append(check(
         s["base_url_ok"],
-        f"`baseURL` set to `{url}`",
-        "**Fix `baseURL`** in `hugo.toml` — run `tool_hugo_setup()` to regenerate",
+        f"`baseURL` set to `{s['expected_base_url']}`",
+        f"**Fix `baseURL`** in `hugo.toml` — expected `{s['expected_base_url']}`, "
+        f"got `{s['base_url']}`. Run `curik hugo setup` to regenerate.",
     ))
     lines.append(check(
         s["has_theme"],
@@ -281,13 +311,15 @@ def get_publish_guide(root: Path) -> str:
         "3. Under **Build and deployment → Source**, select **GitHub Actions**",
         "4. Push to `main` to trigger the first deploy",
         "",
-        "## DNS (one-time, org-level)",
+        "## Custom Domain (optional)",
         "",
-        "If not already configured:",
+        "To serve this course at a custom domain instead of the default",
+        "`league-curriculum.github.io/<repo>/` URL:",
         "",
-        "1. Add a CNAME record: `curriculum.jointheleague.org` → `league-curriculum.github.io`",
-        "2. In the `league-curriculum` org GitHub settings, configure",
-        "   `curriculum.jointheleague.org` as the verified custom domain",
+        "1. Create `site/static/CNAME` containing the domain (one line, no scheme)",
+        "2. Add a DNS CNAME record pointing the domain at `league-curriculum.github.io`",
+        "3. In the repo's GitHub Pages settings, set the custom domain and verify it",
+        "4. Re-run `curik hugo setup` so `baseURL` reflects the custom domain",
         "",
 
         # ── Post-publish checklist ─────────────────────────────────
@@ -306,7 +338,6 @@ def get_publish_guide(root: Path) -> str:
 
     lines.extend([
         "- [ ] Site works on mobile (sidebar collapses correctly)",
-        f"- [ ] Course added to index at `league-curriculum/league-curriculum`",
         "",
         "## How Deployment Works",
         "",
@@ -325,7 +356,6 @@ def check_publish_ready(root: Path) -> dict:
     ``ready`` boolean.
     """
     s = _read_publish_state(root)
-    has_slug = bool(s["slug"]) and s["slug"] != "TBD"
 
     course_yml_complete = s["has_course_yml"] and len(s["course_yml_tbd_fields"]) == 0
 
@@ -348,16 +378,24 @@ def check_publish_ready(root: Path) -> dict:
             "layouts/_default/baseof.html exists and shadows the theme template"
         )
 
-    url = ""
-    if has_slug:
-        url = f"https://curriculum.jointheleague.org/{s['slug']}/"
+    # Public URL: CNAME root if set, else github.io subpath, else "".
+    expected = s["expected_base_url"]
+    repo_url = s["repo_url"]
+    if expected.startswith("http"):
+        url = expected
+    elif repo_url and repo_url != "TBD":
+        repo_name = repo_url.rstrip("/").rsplit("/", 1)[-1]
+        url = f"https://league-curriculum.github.io/{repo_name}/"
+    else:
+        url = ""
 
     result: dict = {
         "ready": all(checks.values()),
         "checks": checks,
-        "slug": s["slug"],
         "title": s["title"],
         "url": url,
+        "base_url": s["base_url"],
+        "expected_base_url": s["expected_base_url"],
         "content_sections": s["content_sections"],
         "content_pages": s["content_pages"],
     }

@@ -12,13 +12,12 @@ from typing import Any
 import re
 from datetime import date
 
-from .paths import hugo_toml_path, theme_dir, site_root, THEME_NAME
+from .paths import hugo_toml_path, site_root, theme_dir, THEME_NAME
 
 THEME_REPO = "https://github.com/league-infrastructure/curriculum-hugo-theme.git"
 # Theme version is pinned independently of curik — the two repos release on
 # different cadences. Bump deliberately when adopting a new theme release.
 THEME_VERSION = "v0.20260320.2"
-CURRICULUM_BASE = "https://curriculum.jointheleague.org"
 
 _VERSION_RE = re.compile(r'^(\s*curriculum_version)\s*=\s*"([^"]*)"', re.MULTILINE)
 
@@ -74,6 +73,14 @@ def get_curik_version() -> str:
     return pkg_version("curik")
 
 
+def _read_cname(root: Path) -> str:
+    """Return the trimmed CNAME value if site/static/CNAME exists, else ''."""
+    cname_file = site_root(root) / "static" / "CNAME"
+    if not cname_file.is_file():
+        return ""
+    return cname_file.read_text(encoding="utf-8").strip()
+
+
 def _base_url_from_repo(repo_url: str) -> str:
     """Derive the GitHub Pages baseURL from a repo_url.
 
@@ -82,27 +89,44 @@ def _base_url_from_repo(repo_url: str) -> str:
     """
     if not repo_url or repo_url == "TBD":
         return "/"
-    # Extract the repo name (last path segment)
     repo_name = repo_url.rstrip("/").rsplit("/", 1)[-1]
     if not repo_name:
         return "/"
     return f"/{repo_name}/"
 
 
+def compute_base_url(root: Path, repo_url: str) -> str:
+    """Return the baseURL that should appear in hugo.toml.
+
+    If ``site/static/CNAME`` exists, the site is served at the root of a
+    custom domain → ``https://<cname>/``. Otherwise the site is served as
+    a project subpath under ``league-curriculum.github.io`` → ``/<repo>/``.
+    """
+    cname = _read_cname(root)
+    if cname:
+        return f"https://{cname}/"
+    return _base_url_from_repo(repo_url)
+
+
 def get_hugo_config(
-    title: str, tier: int, *, repo_url: str = "",
+    title: str, tier: int, *, repo_url: str = "", root: Path | None = None,
 ) -> str:
     """Return a tier-appropriate hugo.toml configuration string.
 
     All tiers reference the curriculum-hugo-theme. Tiers 1-2 include
     an ``instructorGuide = true`` parameter.
 
-    The baseURL is derived from *repo_url* (the GitHub repo name becomes
-    the path segment). Course metadata (description, repo_url, etc.) is
-    read by Hugo from ``course.yml`` via a data mount — not duplicated
-    in ``[params]``.
+    ``baseURL`` resolution: if *root* is given and a CNAME file exists
+    at ``site/static/CNAME``, that domain is used. Otherwise the URL is
+    derived from *repo_url* (the GitHub repo name becomes the path
+    segment). Course metadata (description, repo_url, etc.) is read by
+    Hugo from ``course.yml`` via a data mount — not duplicated in
+    ``[params]``.
     """
-    base_url = _base_url_from_repo(repo_url)
+    if root is not None:
+        base_url = compute_base_url(root, repo_url)
+    else:
+        base_url = _base_url_from_repo(repo_url)
     curik_ver = get_curik_version()
 
     lines = [
@@ -246,7 +270,7 @@ def hugo_setup(
     # Generate or update hugo.toml
     hugo_toml = hugo_toml_path(root)
     rel_toml = str(hugo_toml.relative_to(root))
-    new_config = get_hugo_config(title, tier, repo_url=repo_url)
+    new_config = get_hugo_config(title, tier, repo_url=repo_url, root=root)
     if hugo_toml.exists():
         old_config = hugo_toml.read_text(encoding="utf-8")
         # Preserve the old [params] section — it's user-managed
@@ -388,7 +412,6 @@ def get_course_yml_template(tier: int) -> str:
 
     lines = [
         "title: TBD",
-        "slug: TBD",
         "uid: TBD",
         f"tier: {tier}",
         f"grades: {grades}",
