@@ -1,0 +1,1 @@
+/Users/eric/proj/league/infrastructure/curik/.agents/skills/issue/SKILL.md
