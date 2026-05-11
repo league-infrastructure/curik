@@ -1,0 +1,12 @@
+2026-05-11T14:13:32 [INFO] ============================================================
+2026-05-11T14:13:32 [INFO] CLASI MCP server starting
+2026-05-11T14:13:32 [INFO]   serving: team-lead (tier 0)
+2026-05-11T14:13:32 [INFO]   project_root: /Users/eric/proj/league/infrastructure/curik
+2026-05-11T14:13:32 [INFO]   clasi_dir: /Users/eric/proj/league/infrastructure/curik/.clasi
+2026-05-11T14:13:32 [INFO]   content_root: /Users/eric/proj/ai-project/clasi/clasi
+2026-05-11T14:13:32 [INFO]   active_schema: /Users/eric/proj/ai-project/clasi/clasi/schemas/se-process/schema.yaml
+2026-05-11T14:13:32 [INFO]   python: /Users/eric/.local/pipx/venvs/clasi/bin/python
+2026-05-11T14:13:32 [INFO]   log_file: /Users/eric/proj/league/infrastructure/curik/.clasi/log/mcp-server.log
+2026-05-11T14:13:32 [INFO]   preflight: all required submodules importable
+2026-05-11T14:13:32 [INFO]   tools registered: 31
+2026-05-11T14:13:32 [INFO] CLASI MCP server ready

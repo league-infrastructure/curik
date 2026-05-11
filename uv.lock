@@ -34,7 +34,7 @@ wheels = [
 
 [[package]]
 name = "curik"
-version = "0.20260504.2"
+version = "0.20260505.1"
 source = { editable = "." }
 dependencies = [
     { name = "jtl-syllabus" },

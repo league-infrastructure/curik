@@ -94,3 +94,14 @@
 2026-05-04T16:19:50 [INFO] [team-lead]   OK list_todos -> ([TextContent(type='text', text='[\n  {\n    "filename": "sequester-hugo-into-site-in-scaffolded-curriculum-projects.md",\n    "title": "Sequester Hugo into `site/` in scaffolded curriculum projects",\n    "status": "in-progress",\n    "sprint": "003",\n    "tickets": [\n      "003-001"\n    ]\n  }\n]', annotations=None, meta=None)], {'result': '[\n  {\n    "filename": "sequester-hugo-into-site-in-scaffolded-curriculum-projects.md",\n    "title": "Sequester Hugo into `site/` in scaffolded curric...
 2026-05-04T16:20:20 [INFO] [team-lead] CALL get_sprint_phase({"sprint_id": "003"})
 2026-05-04T16:20:20 [INFO] [team-lead]   OK get_sprint_phase -> ([TextContent(type='text', text='{\n  "id": "003",\n  "slug": "sequester-hugo-into-site-subdirectory",\n  "phase": "ticketing",\n  "branch": "sprint/003-sequester-hugo-into-site-subdirectory",\n  "created_at": "2026-05-03T02:32:03.831975+00:00",\n  "updated_at": "2026-05-03T02:35:56.223364+00:00",\n  "gates": [\n    {\n      "gate_name": "architecture_review",\n      "result": "passed",\n      "recorded_at": "2026-05-03T02:35:29.677873+00:00",\n      "notes": "APPROVE. Architecture is internally...
+2026-05-10T23:07:01 [INFO] ============================================================
+2026-05-10T23:07:01 [INFO] CLASI MCP server starting
+2026-05-10T23:07:01 [INFO]   serving: team-lead (tier 0)
+2026-05-10T23:07:01 [INFO]   project_root: /Users/eric/proj/league/infrastructure/curik
+2026-05-10T23:07:01 [INFO]   clasi_dir: /Users/eric/proj/league/infrastructure/curik/docs/clasi
+2026-05-10T23:07:01 [INFO]   content_root: /Users/eric/.local/pipx/venvs/clasi/lib/python3.14/site-packages/clasi
+2026-05-10T23:07:01 [INFO]   python: /Users/eric/.local/pipx/venvs/clasi/bin/python
+2026-05-10T23:07:01 [INFO]   log_file: /Users/eric/proj/league/infrastructure/curik/docs/clasi/log/mcp-server.log
+2026-05-10T23:07:01 [INFO]   preflight: all required submodules importable
+2026-05-10T23:07:02 [INFO]   tools registered: 29
+2026-05-10T23:07:02 [INFO] CLASI MCP server ready

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: done
 ---
 
 # Fix publish URL handling: CNAME-aware baseURL, real publish guide, drop unused slug
@@ -29,11 +29,16 @@ model that no site actually uses. Real deployments are one of two shapes:
 
 ## Required changes
 
+- **Parse `hugo.toml` as TOML, do not grep it.** Use `tomllib` (stdlib in
+  Python 3.11+) to load the file and read the `baseURL` key. String
+  matching is fragile (whitespace, quoting, comments, multi-line values)
+  and is the proximate cause of bug #2. Apply this rule to every other
+  publish/check site that currently substring-matches `hugo.toml`.
 - **`get_hugo_config`**: if `site/static/CNAME` exists, write
   `baseURL = "https://<cname>/"`; otherwise keep `/<repo>/`.
-- **`base_url_ok`**: rewrite to check the real invariant — CNAME present
-  → baseURL matches `https://<cname>/`; no CNAME → baseURL is `/<repo>/`
-  matching `repo_url`.
+- **`base_url_ok`**: rewrite to parse the TOML and check the real
+  invariant — CNAME present → baseURL matches `https://<cname>/`;
+  no CNAME → baseURL is `/<repo>/` matching `repo_url`.
 - **Publish guide**: show the actual target URL (CNAME root or
   `league-curriculum.github.io/<repo>/`), not the fictional
   curriculum.jointheleague.org path.
