@@ -13,6 +13,7 @@ from curik.init_command import (
     _update_claude_md,
     _update_settings_json,
     _write_curik_skill,
+    _write_justfile,
     run_init,
 )
 
@@ -169,6 +170,33 @@ class UpdateSettingsJsonTest(unittest.TestCase):
         self.assertIn("mcp__clasi__*", allow)
 
 
+class WriteJustfileTest(unittest.TestCase):
+    """Tests for _write_justfile()."""
+
+    def setUp(self) -> None:
+        self._tmpdir = TemporaryDirectory()
+        self.target = Path(self._tmpdir.name)
+
+    def tearDown(self) -> None:
+        self._tmpdir.cleanup()
+
+    def test_creates_justfile(self) -> None:
+        status = _write_justfile(self.target)
+        self.assertEqual(status, "created")
+        justfile = self.target / "justfile"
+        self.assertTrue(justfile.exists())
+        content = justfile.read_text()
+        self.assertIn("dev:", content)
+        self.assertIn("hugo server", content)
+
+    def test_leaves_existing_justfile_untouched(self) -> None:
+        justfile = self.target / "justfile"
+        justfile.write_text("# my custom justfile\ncustom:\n    echo hi\n")
+        status = _write_justfile(self.target)
+        self.assertEqual(status, "unchanged")
+        self.assertIn("my custom justfile", justfile.read_text())
+
+
 class RunInitTest(unittest.TestCase):
     """Tests for run_init() orchestrator."""
 
@@ -184,6 +212,8 @@ class RunInitTest(unittest.TestCase):
         self.assertIn("CLAUDE.md", result["created"])
         self.assertIn(".claude/skills/curik/SKILL.md", result["created"])
         self.assertIn(".claude/settings.local.json", result["created"])
+        self.assertIn("justfile", result["created"])
+        self.assertTrue((self.target / "justfile").exists())
 
     def test_does_not_create_vscode_mcp_json(self) -> None:
         result = run_init(self.target)
@@ -195,7 +225,7 @@ class RunInitTest(unittest.TestCase):
         run_init(self.target)
         result = run_init(self.target)
         self.assertEqual(len(result["created"]), 0)
-        self.assertEqual(len(result["unchanged"]), 5)
+        self.assertEqual(len(result["unchanged"]), 6)
 
     def test_settings_has_bash_permission(self) -> None:
         run_init(self.target)

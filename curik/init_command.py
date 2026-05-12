@@ -124,6 +124,21 @@ def _write_github_workflow(target: Path) -> str:
     return "created"
 
 
+def _write_justfile(target: Path) -> str:
+    """Create a justfile with dev/build/clean targets if missing.
+
+    The justfile is not curik-managed after creation — once it exists,
+    re-running init leaves it untouched so users can customize freely.
+    Returns "created" or "unchanged".
+    """
+    justfile = target / "justfile"
+    if justfile.exists():
+        return "unchanged"
+
+    justfile.write_text(_read_template("justfile"), encoding="utf-8")
+    return "created"
+
+
 def _update_settings_json(target: Path) -> str:
     """Add Bash(curik *) to the permissions allowlist.
 
@@ -185,6 +200,7 @@ def run_init(target: Path) -> dict[str, list[str]]:
         (".claude/settings.local.json", _update_settings_json(target)),
         (".gitignore", _write_gitignore(target)),
         (".github/workflows/deploy-pages.yml", _write_github_workflow(target)),
+        ("justfile", _write_justfile(target)),
     ]
 
     for path, status in actions:

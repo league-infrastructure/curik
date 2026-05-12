@@ -155,6 +155,7 @@ _PROTECTED_NAMES = frozenset({
     ".vscode",
     "CLAUDE.md",
     "course.yml",
+    "justfile",   # installed by init
     "site",       # Hugo site subdirectory (new-layout projects)
     "_old",
 })
